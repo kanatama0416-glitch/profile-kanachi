@@ -23,6 +23,37 @@
 @media(max-width:700px){.top{padding:18px 19px}.brand{font-size:12px;letter-spacing:.13em}.chapter{display:none}.head-btn{padding:10px 13px;font-size:11px}.intro{left:25px;right:20px;top:21%;transform:none;max-width:360px}.intro.hidden{transform:translateY(-20px)}.intro h1{font-size:clamp(42px,11vw,61px);margin:16px 0 12px}.intro p{font-size:13px;line-height:1.85;margin-bottom:22px}.eyebrow{font-size:10px;padding:7px 11px}.start-btn{font-size:14px;padding:11px 12px 11px 20px;gap:14px;box-shadow:4px 4px 0 var(--ink)}.micro{margin-top:13px!important;font-size:10px!important}.city-name{top:75px;left:20px;font-size:10px}.city-name strong{font-size:19px}.move{left:15px;bottom:calc(env(safe-area-inset-bottom) + 24px)}.move button{width:63px;height:62px}.action{bottom:calc(env(safe-area-inset-bottom) + 30px);left:auto;right:15px;transform:none;min-width:0;padding:15px 17px;font-size:12px;max-width:210px;animation:none}.action:active{transform:scale(.96)}.city-hint{bottom:calc(env(safe-area-inset-bottom) + 115px);font-size:10px;padding:8px 12px}.ticker{right:15px;top:78px;bottom:auto;font-size:10px;padding:8px 11px}.ticker b{font-size:18px}.panel{padding:26px 24px}.panel h2{font-size:27px}.panel p{font-size:13px}.note-tile{min-height:100px}.fall-label{font-size:16px}#introCounter{bottom:13px;right:22px;font-size:10px}}
 @media(max-width:380px){.intro{top:22%}.intro h1{font-size:39px}.intro p{font-size:12px}.city-hint{max-width:88vw;white-space:normal;text-align:center}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+
+/* THE LAST STRAWBERRY — finale overlay. All motion is independent of the city controls. */
+#endingStage{position:fixed;inset:0;z-index:60;display:none;pointer-events:none;isolation:isolate;color:#fff7eb;font-weight:900;overflow:hidden}
+#endingStage.active{display:block}
+#endingStage .ending-copy{position:absolute;left:8%;right:8%;top:47%;transform:translateY(-50%);text-align:center;font-size:clamp(24px,5.4vw,72px);letter-spacing:.12em;line-height:1.7;text-shadow:0 5px 25px #502a7099;opacity:0;filter:blur(5px);transition:opacity .85s,filter .85s,transform .85s}
+#endingStage .ending-copy.show{opacity:1;filter:blur(0);transform:translateY(-52%)}
+#endingStage .ending-copy.petite{font-size:clamp(19px,3.2vw,39px);letter-spacing:.19em}
+#endingStage .ending-note{position:absolute;left:0;right:0;bottom:12%;text-align:center;font-size:11px;letter-spacing:.27em;opacity:0;transition:opacity 1s;color:#ffeac9}
+#endingStage .ending-note.show{opacity:.88}
+#endingStage .ending-skip{position:absolute;right:clamp(18px,4vw,65px);bottom:calc(env(safe-area-inset-bottom) + 22px);pointer-events:auto;z-index:5;border:1.5px solid #fff7da99;border-radius:40px;background:#3c285f70;color:#fff7e7;padding:11px 17px;font-size:12px;font-weight:900;letter-spacing:.08em}
+#endingStage .ending-flash{position:absolute;inset:0;background:#fff9e9;opacity:0;pointer-events:none;z-index:2;transition:opacity .15s}
+#endingStage .ending-flash.bang{animation:absorbFlash 1.65s ease-out both}
+@keyframes absorbFlash{0%{opacity:0}16%{opacity:1}38%{opacity:.95}100%{opacity:0}}
+#endCredits{position:absolute;inset:0;z-index:4;display:none;justify-content:center;align-items:center;text-align:center;overflow:auto;padding:70px 18px 48px;background:radial-gradient(ellipse at 50% 18%,#49306c 0%,#251f42 58%,#171b33 100%);pointer-events:auto}
+#endCredits.show{display:flex;animation:creditsEnter 1.25s ease-out both}
+@keyframes creditsEnter{from{opacity:0;filter:blur(17px)}to{opacity:1;filter:blur(0)}}
+#endCredits .end-card{width:min(565px,100%);margin:auto;position:relative;z-index:2}
+#endCredits .end-glimmer{font-size:clamp(12px,2vw,18px);letter-spacing:.37em;color:#f9c8bc;margin-bottom:20px}
+#endCredits .end-huge{font-size:clamp(44px,10vw,98px);line-height:1.03;letter-spacing:-.07em;margin:10px 0 20px;color:#fff6e4;text-shadow:0 8px 0 #9c558a,0 17px 20px #171b3388}
+#endCredits .end-quiet{font-size:clamp(12px,2vw,17px);line-height:1.9;letter-spacing:.04em;color:#eedbea;margin:0 auto 22px}
+#endCredits .contact-sign{display:inline-block;border:1px solid #efd6df89;border-radius:99px;padding:7px 14px;font-size:10px;letter-spacing:.17em;color:#f4c4cd;margin:10px 0 12px}
+#endCredits .contact-name{font-size:clamp(23px,5vw,39px);font-weight:1000;letter-spacing:.12em;margin:3px 0 9px}
+#endCredits .contact-status{font-size:12px;line-height:1.9;font-weight:700;color:#dfcddd;margin:0 0 18px}
+#endCredits .end-actions{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap}
+#endCredits .end-actions a,#endCredits .end-actions button{border:2px solid #fdf2e6;border-radius:99px;padding:14px 21px;font-weight:1000;font-size:13px;text-decoration:none;cursor:pointer;color:#24223e;background:#ffd97e;min-height:49px}
+#endCredits .end-actions button{background:transparent;color:#fff4dc}
+#endCredits .end-foot{font-weight:700;letter-spacing:.13em;color:#e2bfd3;font-size:10px;margin-top:27px}
+#endCredits .credit-spark{position:absolute;width:5px;height:5px;background:#fffbd8;transform:rotate(45deg);border-radius:1px;opacity:.75;animation:glimmer 2.4s ease-in-out infinite alternate}
+@keyframes glimmer{from{transform:scale(.35) rotate(0deg);opacity:.2}to{transform:scale(2) rotate(90deg);opacity:.9}}
+@media(max-width:700px){#endingStage .ending-copy{left:6%;right:6%;top:42%;font-size:clamp(23px,7vw,40px)}#endingStage .ending-copy.petite{font-size:19px}#endCredits{padding:72px 21px 32px}#endCredits .end-huge{font-size:clamp(43px,11vw,70px)}#endCredits .end-quiet{font-size:12px}#endCredits .end-actions a,#endCredits .end-actions button{font-size:12px;padding:12px 15px}}
+
 </style>
 </head>
 <body>
@@ -34,7 +65,24 @@
 <div id="cityHud"><div class="city-name"><span id="districtNumber">WELCOME TO YOUR INSIDE</span><strong id="districtName">ちょうないタウン</strong></div><div class="move"><button id="leftBtn" type="button" aria-label="左に歩く">←</button><button id="rightBtn" type="button" aria-label="右に歩く">→</button></div><button class="action" id="actionBtn" type="button">ここを調べる ↑</button><div class="city-hint" id="cityHint">← → でお散歩　／　気になる場所で E</div><div class="ticker">発見 <b id="discoverCount">0</b> / 6</div></div>
 <div class="overlay" id="cardOverlay" role="dialog" aria-modal="true" aria-labelledby="cardTitle"><article class="panel"><button class="close" type="button" data-close aria-label="閉じる">×</button><div class="panel-num" id="cardNum">FIND 01 / 06</div><div class="panel-icon" id="cardIcon">✦</div><h2 id="cardTitle"></h2><p id="cardBody"></p><p class="panel-note" id="cardDetail"></p><button class="claim" type="button" id="claimBtn">これを持っていく ＋</button></article></div>
 <div class="overlay" id="notebookOverlay" role="dialog" aria-modal="true" aria-labelledby="notebookTitle"><article class="panel"><button class="close" type="button" data-close aria-label="閉じる">×</button><div class="panel-topline">COLLECTED THOUGHTS</div><h2 class="panel-title" id="notebookTitle">ひろったものノート</h2><p id="bookSub">街で見つけた、かなちをつくる6つのかけら。</p><div class="notebook-grid" id="bookGrid"></div><button class="claim" id="backTown" type="button">街にもどる →</button></article></div>
-<div class="overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-labelledby="helpTitle"><article class="panel"><button class="close" type="button" data-close aria-label="閉じる">×</button><div class="panel-topline">HOW TO PLAY</div><h2 id="helpTitle">あそびかた</h2><p>まず「のみこまれてみる」を押すと、食べ物になってからだの中へ落ちていきます。落下の先には、腸の中に生まれた街が待っています。</p><p>街では <b>← →</b> キー、または画面下の矢印ボタンで移動。気になる建物に近づいたら <b>E</b> キーか「ここを調べる」で発見できます。建物を直接タップしてもOK。</p><p class="panel-note">この街は、かなちの自己紹介をゲームの形にした試作です。6つの発見を集めてみてください。</p><button class="claim" id="helpClose" type="button">わかった！</button></article></div>
+<div class="overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-labelledby="helpTitle"><article class="panel"><button class="close" type="button" data-close aria-label="閉じる">×</button><div class="panel-topline">HOW TO PLAY</div><h2 id="helpTitle">あそびかた</h2><p>まず「のみこまれてみる」を押すと、食べ物になってからだの中へ落ちていきます。落下の先には、腸の中に生まれた街が待っています。</p><p>街では <b>← →</b> キー、または画面下の矢印ボタンで移動。気になる建物に近づいたら <b>E</b> キーか「ここを調べる」で発見できます。建物を直接タップしてもOK。</p><p class="panel-note">この街は、かなちの自己紹介をゲームの形にした試作です。6つの発見を全部集めたら、いちごに何かが起こります。</p><button class="claim" id="helpClose" type="button">わかった！</button></article></div>
+
+<div id="endingStage" aria-live="polite" aria-label="エンディング演出">
+  <div id="endingCopy" class="ending-copy"></div>
+  <div id="endingNote" class="ending-note">A LITTLE STRAWBERRY BECOMES A PART OF KANACHI</div>
+  <div id="endingFlash" class="ending-flash"></div>
+  <button type="button" id="endingSkip" class="ending-skip">エンディングへ ↗</button>
+  <div id="endCredits" aria-label="クリア画面と連絡先"><div class="end-card">
+    <div class="end-glimmer">· · ✦ · ·</div>
+    <div class="end-huge">THANK<br>YOU!</div>
+    <p class="end-quiet">いちごは、かなちの一部になりました。<br>たべられてくれて、ありがとう。<br>……ということで、連絡先です。</p>
+    <div class="contact-sign">CONTACT / いきなり現実にもどる</div>
+    <div class="contact-name">KANACHI</div>
+    <p class="contact-status">メール窓口は準備中。<br>いまはGitHubのプロフィールを置いておきます。</p>
+    <div class="end-actions"><a href="https://github.com/kanatama0416-glitch" target="_blank" rel="noopener noreferrer">GitHubを見る ↗</a><button type="button" id="restartJourney">もう一度たべられる ↺</button></div>
+    <div class="end-foot">THE END ? — これからも、よろしくね、、、、</div>
+  </div></div>
+</div>
 <div id="toast" aria-live="polite"></div>
 <script>
 (()=>{
@@ -220,9 +268,52 @@ function setModal(id,on){$(id).classList.toggle('open',on);if(on){keys.left=fals
 function anyModal(){return Array.from(document.querySelectorAll('.overlay')).some(e=>e.classList.contains('open'))}
 function hideAll(){document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('open'));}
 function inspect(index){if(index===null||mode!=='city')return;activeSpot=index;let s=spots[index];$('cardNum').textContent=s.tag+' / DISCOVERY '+String(index+1).padStart(2,'0');$('cardIcon').textContent=s.emoji;$('cardIcon').style.background=s.color;$('cardTitle').textContent=s.title;$('cardBody').textContent=s.body;$('cardDetail').textContent=s.detail;$('claimBtn').textContent=collected.has(s.id)?'街に戻る →':'この発見をポケットへ ＋';setModal('cardOverlay',true)}
-function claim(){if(activeSpot===null)return;let s=spots[activeSpot];if(!collected.has(s.id)){collected.add(s.id);$('headCount').textContent=collected.size;$('discoverCount').textContent=collected.size;toast('「'+s.short+'」を見つけた！');if(collected.size===total)setTimeout(()=>toast('6つの発見がそろった！ ノートを開いてみよう'),1300)}hideAll();}
+function claim(){if(activeSpot===null)return;let s=spots[activeSpot];if(!collected.has(s.id)){collected.add(s.id);$('headCount').textContent=collected.size;$('discoverCount').textContent=collected.size;toast('「'+s.short+'」を見つけた！');if(collected.size===total)setTimeout(startFinale,600)}hideAll();}
 function notebook(){let grid=$('bookGrid');grid.innerHTML='';spots.forEach((s,i)=>{let found=collected.has(s.id),b=document.createElement('button');b.type='button';b.className='note-tile '+(found?'found':'missing');b.innerHTML=`<div class="tile-symbol">${found?s.emoji:'？'}</div><div class="tile-name">${found?s.short:'まだ見つけていない'}</div><div class="tile-desc">${found?s.name:'街を歩いて探そう'}</div>`;b.onclick=()=>{if(found){hideAll();inspect(i)}else{hideAll();player.x=s.x-170;updateNear()}};grid.appendChild(b)});$('bookSub').textContent=`${collected.size} / ${total} を発見。かなちをつくる6つのかけら。`;setModal('notebookOverlay',true)}
 function toast(msg){let el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2400)}
+
+// A deliberately overdramatic, slightly absurd absorption ending.
+let finalT=0,finalCue=-1,finalDone=false,finalParticles=[];
+function startFinale(){
+ if(finalDone||mode!=='city')return;
+ finalDone=true;finalT=0;finalCue=-1;mode='ending';keys.left=false;keys.right=false;
+ $('cityHud').style.display='none';$('noteBtn').style.display='none';$('chapter').textContent='03 / からだに吸収され中';$('endingStage').classList.add('active');
+ $('endingCopy').textContent='';$('endingCopy').className='ending-copy';$('endingNote').classList.remove('show');$('endCredits').classList.remove('show');$('endingSkip').style.display='block';$('endingFlash').classList.remove('bang');
+ finalParticles=Array.from({length:160},(_,i)=>({a:random(i+702)*TAU,r:40+random(i+1203)*Math.max(W,H)*.66,s:18+random(i+1300)*120,size:1+random(i+513)*5,phase:random(i+423)*TAU,color:['#ffe3a0','#fff7d9','#fdb4cf','#87e4d1','#e8ccff'][i%5]}));
+}
+function finaleText(s,petite=false){let el=$('endingCopy');el.className='ending-copy'+(petite?' petite':'');el.textContent=s;requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')))}
+function endingCue(n,s,petite=false){if(finalCue===n)return;finalCue=n;finaleText(s,petite)}
+function showCredits(){if(mode!=='ending'&&mode!=='credits')return;mode='credits';$('endingCopy').classList.remove('show');$('endingNote').classList.remove('show');$('endingSkip').style.display='none';$('endCredits').classList.add('show');$('chapter').textContent='THE END / またね';}
+function restartJourney(){mode='intro';finalT=0;finalCue=-1;finalDone=false;finalParticles=[];collected.clear();hasEntered=false;activeSpot=null;nearest=null;player.x=100;player.facing=1;cam=0;cityTime=0;fallT=0;keys.left=false;keys.right=false;
+ $('headCount').textContent='0';$('discoverCount').textContent='0';$('endingStage').classList.remove('active');$('endCredits').classList.remove('show');$('endingFlash').classList.remove('bang');$('intro').classList.remove('hidden');$('introCounter').style.display='block';$('fallHud').style.display='none';$('cityHud').style.display='none';$('noteBtn').style.display='none';$('chapter').textContent='PROLOGUE / 体内への入口';hideAll();}
+function drawEnding(){let q=finalT;
+ if(q<2.6){drawCity();let u=smooth(0,2.6,q);ctx.fillStyle=`rgba(239,91,141,${u*.39})`;ctx.fillRect(0,0,W,H);let cx=W*.52,cy=H*.45;for(let i=0;i<65;i++){let a=i*2.4+t*.6,rad=40+i*7*(1-u*.6),x=cx+Math.cos(a)*rad,y=cy+Math.sin(a)*rad*.58;star(x,y,4+5*u, i%2?'#fff9c9':'#ffc1da',a)}vignette(.05+u*.19);return}
+ if(q<7.6){let u=smooth(2.6,7.1,q),cx=W*.5,cy=H*.48,base=Math.max(W,H);
+ ctx.fillStyle=grad(0,0,W,H,[[0,'#ad4f88'],[.42,'#f99ab2'],[1,'#742e77']]);ctx.fillRect(0,0,W,H);
+ for(let i=13;i>=0;i--){let ph=(i/13+t*(.12+u*.22))%1,rad=38+ph*base*.87,rrx=rad*1.35,dx=Math.sin(t*2+i)*22*(1-ph),dy=Math.cos(t*1.6+i)*25*(1-ph);ell(cx+dx,cy+dy,rrx,rad,i%2?'#d86b9e':'#f3a2b0','#7d376f',Math.max(2,5*(1-ph)),t*.11);for(let j=0;j<8;j++){let a=j*TAU/8+t*.2;ell(cx+dx+Math.cos(a)*rrx,cy+dy+Math.sin(a)*rad,16+ph*21,24+ph*31,j%2?'#ffccd1':'#f7bcae',null,0,a)}}
+ for(let i=0;i<55;i++){let a=i*2.39+t*.35,rad=((i*39+t*(120+u*100))%(base*.72)),x=cx+Math.cos(a)*rad,y=cy+Math.sin(a)*rad*.8;seg(x,y,x+Math.cos(a)*(10+u*90),y+Math.sin(a)*(10+u*90),i%2?'#ffe7c999':'#ffe9f5a0',2+u*3)}
+ let zz=(1-smooth(3,6.9,q))*Math.min(W,H)/420*2.2+.02,rx=Math.sin(q*4)*W*.21*(1-u),ry=-H*.22+u*H*.69;ctx.save();ctx.translate(cx+rx,cy+ry);ctx.rotate(q*2+u*13);berry(0,0,Math.max(.025,zz),q*.7);ctx.restore();
+ // Tissue embraces the strawberry and draws it into the intestinal wall.
+ for(let i=0;i<9;i++){let a=i*TAU/9+t*.25,r=base*(.39-u*.23),x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r*.68;ell(x,y,35+u*20,72+u*44,i%2?'#f7a2b5':'#e381a9','#a24b89',4,a)}
+ if(q>6.75&&q<7.2){ctx.fillStyle=`rgba(255,252,229,${smooth(6.75,7.16,q)})`;ctx.fillRect(0,0,W,H)}return}
+ // The digestive city falls away into a tender over-the-top galaxy of stars.
+ ctx.fillStyle=grad(0,0,W,H,[[0,'#281d48'],[.52,'#463063'],[1,'#191a38']]);ctx.fillRect(0,0,W,H);let glow=ctx.createRadialGradient(W*.5,H*.48,0,W*.5,H*.48,Math.max(W,H)*.57);glow.addColorStop(0,'#f3b7cd52');glow.addColorStop(.25,'#d39bc32a');glow.addColorStop(1,'#1d1e3900');ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+ for(let i=0;i<finalParticles.length;i++){let p=finalParticles[i],rad=p.r+Math.sin(t*1.3+p.phase)*17;let a=p.a+q*.024*(i%2?1:-1),x=W*.5+Math.cos(a)*rad,y=H*.48+Math.sin(a)*rad*.7,blink=.42+.5*Math.sin(t*(1.3+i%5)+p.phase);ell(x,y,p.size*(.65+blink*.75),p.size*(.65+blink*.75),p.color);if(i%7===0)star(x,y,p.size*(2+blink),p.color,t*.4+p.a)}
+ if(q<8.5){let flash=smooth(7.1,7.6,q)*(1-smooth(7.7,8.5,q));ctx.fillStyle=`rgba(255,248,228,${flash*.76})`;ctx.fillRect(0,0,W,H)}
+}
+function tickFinale(delta){finalT+=delta;
+ if(finalT<1.8)return;
+ if(finalT<4){endingCue(0,'あれっ……？',true);return}
+ if(finalT<6.9){endingCue(1,'いちごが、吸収されてゆく……',true);return}
+ if(finalT<8.8){if(finalCue!==2){endingCue(2,'きらきらきら……',true);$('endingFlash').classList.add('bang')}return}
+ if(finalT<11.2){endingCue(3,'あり、がとう、、、');return}
+ if(finalT<13.2){endingCue(4,'これからも、、');return}
+ if(finalT<15.4){endingCue(5,'よろしくね、、、、');$('endingNote').classList.add('show');return}
+ showCredits();
+}
+$('endingSkip').addEventListener('click',showCredits);
+$('restartJourney').addEventListener('click',restartJourney);
+
 $('startBtn').addEventListener('click',begin);$('skipBtn').addEventListener('click',arrive);$('noteBtn').addEventListener('click',notebook);$('helpBtn').addEventListener('click',()=>setModal('helpOverlay',true));$('helpClose').addEventListener('click',hideAll);$('backTown').addEventListener('click',hideAll);$('claimBtn').addEventListener('click',claim);$('actionBtn').addEventListener('click',()=>inspect(nearest));document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',hideAll));document.querySelectorAll('.overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)hideAll()}));
 for(let [id,k] of [['leftBtn','left'],['rightBtn','right']]){const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();keys[k]=true;try{b.setPointerCapture(e.pointerId)}catch(_err){};if(mode==='city'&&!anyModal()){player.x=clamp(player.x+(k==='right'?95:-95),70,worldEnd-180);updateNear()}b.classList.add('pressed')});for(let ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>{keys[k]=false;b.classList.remove('pressed')})}
 addEventListener('keydown',e=>{if(['ArrowRight','ArrowLeft',' ','ArrowUp'].includes(e.key))e.preventDefault();if(e.key==='Escape'){hideAll();return}if(anyModal())return;if(mode==='intro'&&(e.key==='Enter'||e.key===' ')){begin();return}if(mode==='fall'&&(e.key==='Enter'||e.key===' ')){arrive();return}if(mode==='city'){if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')keys.right=true;if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')keys.left=true;if(e.key.toLowerCase()==='e'||e.key==='ArrowUp'||e.key===' '){inspect(nearest)}if(e.key.toLowerCase()==='n')notebook();}});
@@ -230,11 +321,13 @@ addEventListener('keyup',e=>{if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')
 canvas.addEventListener('pointerdown',e=>{if(mode!=='city'||anyModal())return;let s=cityScale(),tx=W*(W<700?.32:.36)-cam*s,ty=H*(W<700?.77:.79);let x=(e.clientX-tx)/s,y=(e.clientY-ty)/s;let best=null,d=999;spots.forEach((sp,i)=>{let delta=Math.hypot((x-sp.x),Math.max(0,y+180)*.5);if(delta<d){d=delta;best=i}});if(d<235)inspect(best)});
 let prev=performance.now();function frame(now){dt=Math.min((now-prev)/1000,.04);prev=now;t+=dt;
  if(mode==='fall'){fallT+=dt;$('fallProgress').style.width=Math.min(100,fallT/11.4*100)+'%';$('fallLabel').textContent=fallT<2?'ぱくっ！ のみこまれた！':fallT<5.1?'食道を ぐんぐん落下中…':fallT<7.4?'胃に ぽちゃん！':fallT<9.7?'くねくね道を 抜けて…':'なにかが見えてきた！';if(fallT>11.7)arrive()}
+ if(mode==='ending')tickFinale(dt);
  if(mode==='city'){cityTime+=dt;if(!anyModal()){let dir=(keys.right?1:0)-(keys.left?1:0);player.x=clamp(player.x+dir*dt*350,70,worldEnd-180);if(dir)player.facing=dir;cam+= (player.x-cam)*(1-Math.exp(-dt*4.6));updateNear();}}
- ctx.save();ctx.setTransform(DPR,0,0,DPR,0,0);if(mode==='intro')drawIntro();else if(mode==='fall'){if(fallT<9.7)drawFall();else drawReveal()}else drawCity();ctx.restore();requestAnimationFrame(frame)}
+ ctx.save();ctx.setTransform(DPR,0,0,DPR,0,0);if(mode==='intro')drawIntro();else if(mode==='fall'){if(fallT<9.7)drawFall();else drawReveal()}else if(mode==='ending'||mode==='credits')drawEnding();else drawCity();ctx.restore();requestAnimationFrame(frame)}
 player.facing=1;requestAnimationFrame(frame);
 // Test-only scene override to support visual QA without waiting for the cinematic.
 if(new URLSearchParams(location.search).get('scene')==='city')arrive();
+if(new URLSearchParams(location.search).get('scene')==='ending'){arrive();startFinale()}
 })();
 </script>
 </body>
