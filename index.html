@@ -127,36 +127,50 @@ main,header,footer,section{max-width:100%}
 @media(max-width:760px){.hamster-section{padding:50px 0}.hamster-layout{grid-template-columns:1fr;gap:12px}.hamster-copy h2{font-size:clamp(52px,13vw,76px)}.hamster-stage{min-height:260px}.hamster-photo{height:270px;max-width:280px}.tape-track{font-size:17px;animation-duration:13s}}
 @media(prefers-reduced-motion:reduce){.tape-track,.hamster-photo{animation:none}}
 
-/* Always-moving playful elements */
-.tape-track{animation-duration:11s}
-.hero h1 .line:first-child{animation:headline-sway 4s ease-in-out infinite;transform-origin:left center}
-.hero h1 .line:last-child{animation:headline-sway 4s ease-in-out -2s infinite;transform-origin:left center}
-@keyframes headline-sway{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-7px) rotate(1deg)}}
-.hero-stage{animation:stage-breathe 5s ease-in-out infinite}
-@keyframes stage-breathe{50%{transform:translateY(-10px)}}
-.section-title{animation:title-breathe 6s ease-in-out infinite}
-@keyframes title-breathe{50%{letter-spacing:-.085em;transform:translateX(5px)}}
-.object-button{animation:object-float 4s ease-in-out infinite}
-.object-button:nth-of-type(2){animation-delay:-1.5s}.object-button:nth-of-type(3){animation-delay:-2.7s}.object-button:nth-of-type(4){animation-delay:-.8s}
-@keyframes object-float{50%{translate:0 -15px;rotate:5deg}}
-.work-card{animation:card-float 6s ease-in-out infinite}.work-card:nth-child(even){animation-delay:-3s}
-@keyframes card-float{50%{translate:0 -8px}}
-.hamster-photo{cursor:pointer;transition:filter .2s}
-.hamster-photo.is-peace{animation:hamster-peace .6s ease-in-out infinite alternate}
-@keyframes hamster-peace{to{transform:translateY(-18px) rotate(7deg)}}
-.hamster-hint{font-size:12px;font-weight:900;letter-spacing:.08em}
-@media(prefers-reduced-motion:reduce){.tape-track,.hero h1 .line,.hero-stage,.section-title,.object-button,.work-card,.hamster-photo{animation:none!important}}
+
+/* Kinetic editorial motion — no wandering eyes or bouncing stickers */
+.tape-track{animation-duration:13s}
+.hero h1 .line,.hero-stage,.section-title,.object-button,.work-card{animation:none!important;translate:none!important;rotate:none!important}
+.hero-copy{position:relative}
+.kinetic-stamp{position:absolute;right:5px;top:0;width:94px;height:94px;z-index:3;pointer-events:none}
+.kinetic-stamp svg{width:100%;height:100%;animation:stamp-spin 15s linear infinite}
+@keyframes stamp-spin{to{transform:rotate(360deg)}}
+.flip-word{display:inline-block;min-width:3.5em;color:var(--pink);vertical-align:baseline;transition:transform .3s,opacity .3s}
+.flip-word.changing{transform:translateY(-12px) rotateX(75deg);opacity:0}
+.kinetic-strip{background:var(--yellow);color:#111;border-top:3px solid #111;border-bottom:3px solid #111;overflow:hidden;padding:15px 0}
+.kinetic-strip .track{display:flex;width:max-content;gap:32px;white-space:nowrap;animation:strip-move 17s linear infinite;font:900 clamp(24px,4.8vw,56px)/1 Arial,sans-serif;letter-spacing:-.055em}
+.kinetic-strip .track span{flex:none}
+.kinetic-strip .dot{display:inline-block;width:.32em;height:.32em;border-radius:50%;background:var(--pink);border:2px solid #111;vertical-align:middle;margin:0 15px}
+@keyframes strip-move{to{transform:translateX(-50%)}}
+.hamster-photo{animation:none!important;filter:drop-shadow(8px 10px 0 #1112)}
+.hamster-photo.is-peace{animation:none!important}
+.hamster-flip{width:min(100%,340px);height:340px;display:grid;place-items:center;perspective:900px;cursor:pointer;transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.hamster-flip .hamster-photo{width:100%;height:100%;transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .2s;transform-style:preserve-3d}
+.hamster-flip.turning .hamster-photo{transform:rotateY(90deg) scale(.9);opacity:.35}
+.hamster-stage{position:relative}
+.hamster-stage .hamster-hint{position:absolute;bottom:-12px;left:8px;letter-spacing:.09em}
+.hamster-caption{animation:caption-pop 5s ease-in-out infinite}
+@keyframes caption-pop{0%,75%,100%{transform:rotate(-7deg) scale(1)}80%,90%{transform:rotate(2deg) scale(1.12)}}
+@media(max-width:760px){
+ .kinetic-stamp{right:4px;top:-33px;width:68px;height:68px}
+ .hamster-flip{height:270px;max-width:280px}
+ .hamster-stage .hamster-hint{bottom:-16px}
+}
+@media(prefers-reduced-motion:reduce){
+ .tape-track,.kinetic-stamp svg,.kinetic-strip .track,.hamster-caption{animation:none!important}
+ .flip-word,.hamster-flip .hamster-photo{transition:none!important}
+}
 </style>
 </head>
 <body>
 <header class="topbar"><a href="#top" class="brand"><span class="logo-eye" aria-hidden="true"></span><span>KANACHI / LITTLE UNIVERSE</span></a><nav class="topnav" aria-label="メインメニュー"><a href="#about">ABOUT</a><a href="#likes">LIKES</a><a href="#works">WORKS</a><a href="#now" class="nav-contact">NOW</a></nav></header>
 <main id="top">
-<section class="hero" aria-label="イントロダクション"><div class="wrap hero-grid"><div class="hero-copy"><div class="hero-kicker">HELLO, NICE TO MEET YOU.</div><h1><span class="line">WHO IS</span><span class="line">KANACHI?</span></h1><p class="hero-lead">わたしの中を、<br>のぞいてみる。</p><p class="hero-sub">拾って、眺めて、考えて、つくる。<br>いろんな「好き」と「気になる」を詰め込んだ、KANAの小さな宇宙です。</p><div class="hero-actions"><a class="pill-link" href="#about">のぞきにいく</a><span class="micro">でも、その前に<br>目玉を押してみて！</span></div></div>
+<section class="hero" aria-label="イントロダクション"><div class="wrap hero-grid"><div class="hero-copy"><div class="hero-kicker">HELLO, NICE TO MEET YOU.</div><div class="kinetic-stamp" aria-hidden="true"><svg viewBox="0 0 100 100"><defs><path id="stamp-circle" d="M50,50 m-35,0 a35,35 0 1,1 70,0 a35,35 0 1,1 -70,0"/></defs><circle cx="50" cy="50" r="46" fill="#f6d77d" stroke="#111" stroke-width="2"/><text font-size="11.3" font-family="Arial" font-weight="900" letter-spacing="1.3"><textPath href="#stamp-circle">HELLO KANACHI · HELLO KANACHI · </textPath></text><circle cx="50" cy="50" r="14" fill="#f58eac" stroke="#111" stroke-width="2"/><circle cx="50" cy="50" r="6" fill="#111"/></svg></div><h1><span class="line">WHO IS</span><span class="line">KANACHI?</span></h1><p class="hero-lead">わたしの中を、<br>のぞいてみる。</p><p class="hero-sub">拾って、眺めて、考えて、つくる。<br>いろんな「好き」と「気になる」を詰め込んだ、KANAの小さな宇宙です。</p><div class="hero-actions"><a class="pill-link" href="#about">のぞきにいく</a><span class="micro">でも、その前に<br>目玉を押してみて！</span></div></div>
 <div class="hero-stage" id="eyeStage"><div class="burst">TOUCH<br>ME!<small>目玉がふえる</small></div><span class="scribble s1" aria-hidden="true"></span><span class="scribble s2" aria-hidden="true"></span>
 <svg id="heroEye" class="eye-giant" viewBox="0 0 600 350" role="img" aria-label="触ると小さな目玉が増える大きな目玉"><path class="lash" d="M95 98L74 70M153 52L145 18M482 75L504 46M530 114L556 91"/><path class="sclera" d="M27 181C125 17 451-5 574 172C486 357 126 372 27 181Z"/><g class="look-group"><circle class="iris" cx="300" cy="176" r="105"/><circle class="pupil" cx="300" cy="176" r="55"/><circle class="shine" cx="277" cy="150" r="21"/><circle class="shine" cx="326" cy="206" r="8"/></g></svg>
 <div class="stage-count" aria-live="polite">EYES FOUND: <span id="eyeCount">01</span></div></div><div class="hero-bottom eyebrow"><span>THIS IS A PLAYABLE PROFILE.</span><span>KEEP SCROLLING</span></div></div></section>
 <div class="tape" aria-hidden="true"><div class="tape-track"><span>COLLECT THINGS <b class="tape-dot"></b> MAKE THINGS <b class="tape-dot"></b> FOLLOW CURIOSITY <b class="tape-dot"></b> KEEP MOVING <b class="tape-dot"></b></span><span>COLLECT THINGS <b class="tape-dot"></b> MAKE THINGS <b class="tape-dot"></b> FOLLOW CURIOSITY <b class="tape-dot"></b> KEEP MOVING <b class="tape-dot"></b></span></div></div>
-<section class="hamster-section" id="hamster"><div class="wrap hamster-layout"><div class="hamster-copy"><span class="eyebrow">SPECIAL GUEST / LITTLE FRIEND</span><h2>HELLO,<br>HAMSTER.</h2><p>かなちの小さな仲間。<br>ここにも、ひとつ好きなものを飾っておく。</p></div><div class="hamster-stage"><img class="hamster-photo" id="hamsterToggle" src="hamster-normal.svg" alt="クリーム色のハムスター" loading="lazy" role="button" tabindex="0" aria-label="ハムスターをピースさせる"><span class="hamster-hint">TAP TO SAY PEACE!</span><span class="hamster-caption">LOOK AT ME!</span></div></div></section><section class="about" id="about"><div class="wrap"><div class="section-head"><h2 class="section-title">01 / ABOUT<br>ME<span style="color:var(--pink)">.</span></h2><div class="section-caption">名刺みたいに整った自己紹介は、<br>ちょっと物足りない。<br><span class="highlight">めくると、もう少し見えてくる。</span></div></div><div class="about-grid"><div class="about-left"><div class="about-intro"><span class="small-eyeball" aria-hidden="true"></span><span class="eyebrow">WHAT KIND OF PERSON?</span></div><p>気になったら、まず近づいてみる。<br>観察して、調べて、ときどき形にする。<br><br>何かひとつの肩書きよりも、<br>「何を面白がっているか」で知ってほしい。</p><div class="footnote">右のピンクの紙をタップ、または<br>横にスワイプして破ってね。</div></div><div class="tear-board" id="tearBoard"><div class="tear-back"><span class="sheet-label">UNDER THE SURFACE / PROFILE</span><h3>あ、見つかった。<span class="inline-spark" aria-hidden="true"></span></h3><dl><dt>NAME</dt><dd>かなち / KANA</dd><dt>DOING</dt><dd>九谷焼に関わる企画・発信・展示づくり</dd><dt>LIKE</dt><dd>海、石、植物、小さな発見</dd><dt>MODE</dt><dd>考える / 試す / また考える</dd><dt>KEYWORD</dt><dd>好奇心 / 観察 / ものづくり</dd></dl><button id="resetTear" type="button" class="reset-btn">元にもどす</button></div><div class="tear-front" id="tearFront" tabindex="0" aria-label="タップ、または左右にスワイプしてプロフィールの紙を破る"><span class="sheet-label">PEEL HERE / A PIECE OF ME</span><h3>MEET<br><span>KANACHI.</span></h3><div class="tear-front-bottom"><p>ひとつめの<br>自己紹介は、<br>紙の下。</p><div><button id="tearBtn" type="button" class="tear-btn">ビリッと破る</button><div class="rip-hint" style="margin-top:10px">紙をタップしてもOK</div></div></div></div></div></div></div></section>
+<section class="hamster-section" id="hamster"><div class="wrap hamster-layout"><div class="hamster-copy"><span class="eyebrow">SPECIAL GUEST / LITTLE FRIEND</span><h2>HELLO,<br><span class="flip-word" id="flipWord">HAMSTER.</span></h2><p>かなちの小さな仲間。<br>ここにも、ひとつ好きなものを飾っておく。</p></div><div class="hamster-stage"><div class="hamster-flip" id="hamsterFlip"><img class="hamster-photo" id="hamsterToggle" src="hamster-normal.svg" alt="クリーム色のハムスター" loading="lazy" role="button" tabindex="0" aria-label="ハムスターをピースさせる"></div><span class="hamster-hint">TAP TO SAY PEACE!</span><span class="hamster-caption">LOOK AT ME!</span></div></div></section><div class="kinetic-strip" aria-hidden="true"><div class="track"><span>LOOK CLOSER <i class="dot"></i> MAKE SOMETHING <i class="dot"></i> STAY CURIOUS <i class="dot"></i></span><span>LOOK CLOSER <i class="dot"></i> MAKE SOMETHING <i class="dot"></i> STAY CURIOUS <i class="dot"></i></span></div></div><section class="about" id="about"><div class="wrap"><div class="section-head"><h2 class="section-title">01 / ABOUT<br>ME<span style="color:var(--pink)">.</span></h2><div class="section-caption">名刺みたいに整った自己紹介は、<br>ちょっと物足りない。<br><span class="highlight">めくると、もう少し見えてくる。</span></div></div><div class="about-grid"><div class="about-left"><div class="about-intro"><span class="small-eyeball" aria-hidden="true"></span><span class="eyebrow">WHAT KIND OF PERSON?</span></div><p>気になったら、まず近づいてみる。<br>観察して、調べて、ときどき形にする。<br><br>何かひとつの肩書きよりも、<br>「何を面白がっているか」で知ってほしい。</p><div class="footnote">右のピンクの紙をタップ、または<br>横にスワイプして破ってね。</div></div><div class="tear-board" id="tearBoard"><div class="tear-back"><span class="sheet-label">UNDER THE SURFACE / PROFILE</span><h3>あ、見つかった。<span class="inline-spark" aria-hidden="true"></span></h3><dl><dt>NAME</dt><dd>かなち / KANA</dd><dt>DOING</dt><dd>九谷焼に関わる企画・発信・展示づくり</dd><dt>LIKE</dt><dd>海、石、植物、小さな発見</dd><dt>MODE</dt><dd>考える / 試す / また考える</dd><dt>KEYWORD</dt><dd>好奇心 / 観察 / ものづくり</dd></dl><button id="resetTear" type="button" class="reset-btn">元にもどす</button></div><div class="tear-front" id="tearFront" tabindex="0" aria-label="タップ、または左右にスワイプしてプロフィールの紙を破る"><span class="sheet-label">PEEL HERE / A PIECE OF ME</span><h3>MEET<br><span>KANACHI.</span></h3><div class="tear-front-bottom"><p>ひとつめの<br>自己紹介は、<br>紙の下。</p><div><button id="tearBtn" type="button" class="tear-btn">ビリッと破る</button><div class="rip-hint" style="margin-top:10px">紙をタップしてもOK</div></div></div></div></div></div></div></section>
 <section class="likes" id="likes"><div class="wrap"><div class="section-head likes-header"><h2 class="section-title">02 / LITTLE<br>THINGS<span style="color:var(--pink)">.</span></h2><p class="section-caption">つい拾ってしまうもの。<br>気がつくと見入ってしまうもの。<br>好きなものをタップしてみて。</p></div><div class="likes-grid"><div class="object-space" aria-label="触って選べる好きなもののコレクション"><span class="obj-note n1">PICK ONE</span><span class="obj-note n2">MY PERSONAL ARCHIVE</span><span class="obj-note n3" aria-hidden="true"></span>
 <button type="button" class="object-button obj-stone is-active" data-object="0" aria-label="石を選ぶ"><svg width="205" height="170" viewBox="0 0 205 170"><path d="M28 120Q8 80 65 29Q113 -5 163 46Q198 79 172 128Q140 169 82 155Q43 154 28 120Z" fill="#c6b3f0" stroke="#111" stroke-width="7"/><path d="M65 31L91 91L29 120M91 91L160 47M91 91L171 128" fill="none" stroke="#111" stroke-width="4"/><circle cx="111" cy="58" r="8" fill="#fff"/><circle cx="134" cy="101" r="5" fill="#fff"/></svg></button>
 <button type="button" class="object-button obj-urchin" data-object="1" aria-label="ウニを選ぶ"><svg width="190" height="190" viewBox="0 0 190 190"><g transform="translate(95 95)" stroke="#111" stroke-width="5" stroke-linecap="round"><path d="M0-87V-62M0 87V62M-87 0H-62M87 0H62M-62-62L-43-43M62 62L43 43M62-62L43-43M-62 62L-43 43M-32-80L-23-55M32-80L23-55M-32 80L-23 55M32 80L23 55M-80-32L-55-23M80-32L55-23M-80 32L-55 23M80 32L55 23"/></g><circle cx="95" cy="95" r="62" fill="#ff7a9e" stroke="#111" stroke-width="7"/><circle cx="95" cy="95" r="33" fill="#ffcedb" stroke="#111" stroke-width="5"/><circle cx="95" cy="95" r="12" fill="#111"/></svg></button>
@@ -270,13 +284,19 @@ const projects=[{k:'PROJECT 01 / WEB & EXPERIENCE',title:'SHITEN — 視展',des
 </script>
 <script>
 (function(){
- const h=document.getElementById('hamsterToggle');if(!h)return;
- const normal='hamster-normal.svg',peace='hamster-peace.svg';let active=false;
+ const h=document.getElementById('hamsterToggle'),frame=document.getElementById('hamsterFlip'),word=document.getElementById('flipWord');
+ if(!h||!frame||!word)return;
+ const normal='hamster-normal.svg',peace='hamster-peace.svg';let active=false,busy=false,wordIndex=0;
  const pre=new Image();pre.src=peace;
- function show(v){active=v;h.src=v?peace:normal;h.classList.toggle('is-peace',v);h.setAttribute('aria-label',v?'ハムスターを普通の姿に戻す':'ハムスターをピースさせる')}
+ function show(v){if(busy||v===active)return;busy=true;frame.classList.add('turning');setTimeout(()=>{active=v;h.src=v?peace:normal;h.setAttribute('aria-label',v?'ハムスターを普通の姿に戻す':'ハムスターをピースさせる');frame.classList.remove('turning');setTimeout(()=>{busy=false},520)},260)}
  h.addEventListener('click',()=>show(!active));
  h.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();show(!active)}});
- if(!matchMedia('(prefers-reduced-motion: reduce)').matches){setInterval(()=>{if(!document.hidden)show(!active)},4800)}
+ const words=['HAMSTER.','CURIOUS.','PLAYFUL.','KANACHI.'];
+ function changeWord(){word.classList.add('changing');setTimeout(()=>{wordIndex=(wordIndex+1)%words.length;word.textContent=words[wordIndex];word.classList.remove('changing')},300)}
+ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+   setInterval(()=>{if(!document.hidden)show(!active)},5200);
+   setInterval(()=>{if(!document.hidden)changeWord()},3200);
+ }
 })();
 </script></body>
 </html>
