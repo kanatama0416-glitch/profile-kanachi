@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#f8f2e7" />
+<meta name="theme-color" content="#111111" />
 <meta name="description" content="かなちの小さな宇宙。好きなもの、やっていること、考えていること。さわって、のぞいて、見つけてみて。" />
-<title>WHO IS KANACHI? — KANA'S LITTLE UNIVERSE</title>
+<title>WHO IS KANACHI? — THE OBSERVATION SHOW</title>
 <style>
 :root{--paper:#f8f2e7;--ink:#151515;--pink:#ff5a92;--yellow:#ecf563;--blue:#73d8f5;--mint:#9be6c0;--purple:#b1a0f9;--line:3px solid var(--ink);--shadow:6px 6px 0 var(--ink);font-synthesis:none}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:Arial,"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",Meiryo,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}button,a{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible{outline:3px dashed #e42c77;outline-offset:4px}a{color:inherit}::selection{background:var(--pink);color:#111}.wrap{width:min(1340px,calc(100% - 72px));margin-inline:auto}.eyebrow{font:900 13px/1.35 Arial,sans-serif;letter-spacing:.16em}.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:32px}.section-title{font-size:clamp(55px,9.7vw,146px);line-height:.83;letter-spacing:-.085em;font-weight:1000;margin:0;text-transform:uppercase}.section-caption{font-size:clamp(13px,1.2vw,17px);line-height:1.85;font-weight:800;max-width:345px}.highlight{background:var(--yellow);padding:0 .15em}.topbar{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:var(--line);padding:0 clamp(16px,3vw,45px);position:relative;z-index:20;background:var(--paper)}.brand{display:inline-flex;align-items:center;gap:12px;text-decoration:none;font-size:15px;font-weight:1000;letter-spacing:-.035em}.logo-eye{width:44px;height:27px;border:3px solid var(--ink);border-radius:50%;background:#fff;position:relative;display:inline-block;transform:rotate(-10deg)}.logo-eye:after{content:"";position:absolute;left:14px;top:3px;width:14px;height:14px;background:var(--ink);border-radius:50%}.topnav{display:flex;align-items:center;gap:28px}.topnav a{text-decoration:none;font-size:12px;font-weight:900;letter-spacing:.08em;transition:background .2s}.topnav a:hover{background:var(--yellow)}.topnav .nav-contact{background:var(--ink);color:#fff;padding:11px 16px;transform:rotate(2deg)}.topnav .nav-contact:hover{background:var(--pink);color:var(--ink)}
@@ -161,68 +161,126 @@ main,header,footer,section{max-width:100%}
  .flip-word,.hamster-flip .hamster-photo{transition:none!important}
 }
 
-/* THE EYE ISSUE — psychedelic print-inspired redesign */
-:root{--paper:#f5e4ae;--ink:#111;--pink:#f04a5d;--yellow:#f6d52e;--blue:#35a6d1;--mint:#89cda3;--purple:#8a6cc6}
-body{background:var(--paper)}
-.topbar{background:#111;color:#fff;border-bottom:4px solid #111}
-.logo-eye{border-color:#fff}.logo-eye:after{background:#111}
-.topnav .nav-contact{background:var(--yellow);color:#111}
-.hero{background:#e84b54;isolation:isolate;min-height:min(880px,calc(100svh - 76px));border-bottom:6px solid #111}
-.hero:before{content:"";position:absolute;inset:-50%;background:repeating-conic-gradient(from 0deg at 50% 50%,#f8d941 0deg 12deg,#ef5657 12deg 24deg,#3f9cc1 24deg 27deg,#ef5657 27deg 36deg);opacity:.8;z-index:-2;animation:hero-rays 55s linear infinite}
-.hero:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:-1;background:radial-gradient(ellipse at 52% 50%,transparent 15%,#ef5d4d44 75%),repeating-linear-gradient(0deg,#11100000 0px,#11100000 4px,#1110000d 5px)}
-@keyframes hero-rays{to{transform:rotate(360deg)}}
-.hero-grid{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);min-height:690px}
-.hero-copy{background:#f6dc6d;border:4px solid #111;padding:30px 27px 25px;box-shadow:12px 12px 0 #111;transform:rotate(-3deg);z-index:4}
-.hero-copy h1{font-size:clamp(62px,8.4vw,135px)!important;line-height:.81;letter-spacing:-.09em;text-shadow:3px 3px 0 #fff}
-.hero-copy h1 .line:last-child{color:#e64350}
-.hero-kicker{background:#111;color:#fff;display:inline-block;padding:7px 10px;letter-spacing:.11em}
-.hero-lead{font-weight:1000}
-.hero-sub{max-width:430px}
-.hero-stage{z-index:3;transform:rotate(4deg) scale(1.2);filter:drop-shadow(10px 13px 0 #111)}
-.eye-giant{width:110%;max-width:none;overflow:visible;animation:eye-breathe 6s ease-in-out infinite}
-@keyframes eye-breathe{0%,100%{transform:scale(1)}45%{transform:scale(1.035)}}
-.eye-giant .iris{fill:#42a9d5}.eye-giant .pupil{fill:#111}
-.eye-giant .sclera{fill:#fff8e6;stroke-width:12}
-.hero-stage .burst{background:#f8d93c;transform:rotate(-13deg);border:4px solid #111}
-.hero-stage .scribble{opacity:.5}
-.hero-bottom{background:#111;color:#fff;padding:9px 14px;bottom:0!important}
-.kinetic-stamp{top:-65px;right:-40px;width:118px;height:118px}
-.kinetic-stamp svg{animation-duration:12s}
-.tape{background:#111;color:#fff;border-block:4px solid #111}
-.tape-track{font-weight:1000}
-.hamster-section{background:#75b8d0}
-.hamster-copy h2{color:#111;text-shadow:4px 4px 0 #fff}
-.kinetic-strip{background:#f6d52e}
-.about{background:#f5e6b8}
-.section-title{color:#111;text-shadow:3px 3px 0 #f04a5d}
+
+/* THE OBSERVATION SHOW — original poster-led art direction */
+:root{--paper:#f6ebc8;--ink:#151515;--pink:#e9494a;--yellow:#f5d642;--blue:#43b5cf;--mint:#a0d7b6;--purple:#c0a0dc;--line:3px solid #151515}
+body{background:#f6ebc8}
+.topbar{background:#111;color:#f9efca;border-bottom:3px solid #111;height:67px}
+.logo-eye{border-color:#f9efca;background:#fff}
+.topnav .nav-contact{background:#e9494a;color:white}
+.topnav a:hover{color:#111}
+.ocular-show{position:relative;overflow:hidden;background:#f4e6b4;border-bottom:0;min-height:0}
+.ocular-show .broadcast-ticker{position:relative;height:37px;background:#ea4b49;color:#111;border-bottom:3px solid #111;overflow:hidden;z-index:10}
+.ocular-show .broadcast-ticker .broadcast-track{display:flex;width:max-content;white-space:nowrap;gap:0;animation:poster-marquee 18s linear infinite;font:900 13px/34px Arial,sans-serif;letter-spacing:.22em}
+.ocular-show .broadcast-track span{padding:0 30px}
+@keyframes poster-marquee{to{transform:translateX(-50%)}}
+.ocular-show .poster-composition{position:relative;min-height:760px;isolation:isolate;background:radial-gradient(circle at 50% 46%,#fff2cb 0%,#f6dfa1 78%);overflow:hidden}
+.ocular-show .poster-composition:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:9;background:repeating-linear-gradient(0deg,transparent 0,transparent 5px,rgba(0,0,0,.018) 6px);mix-blend-mode:multiply}
+.ocular-show .poster-serial{position:absolute;left:30px;top:40px;z-index:6;font:900 14px/1.35 Arial,sans-serif;letter-spacing:.06em;border-left:6px solid #e9494a;padding-left:12px}
+.ocular-show .poster-serial b{display:block;font-size:11px;font-weight:800;letter-spacing:.13em}
+.ocular-show .poster-seal{position:absolute;right:3%;top:18px;z-index:7;width:130px;height:130px;pointer-events:none}
+.ocular-show .poster-seal svg{width:100%;height:100%;animation:stamp-spin 18s linear infinite}
+.ocular-show .poster-title{position:absolute;z-index:5;left:0;right:0;top:88px;margin:0!important;text-align:center;line-height:.75!important;font:1000 clamp(70px,12vw,168px)/.78 Arial,"Hiragino Kaku Gothic ProN",sans-serif!important;letter-spacing:-.095em!important;pointer-events:none;text-transform:uppercase}
+.ocular-show .poster-title span{display:block;white-space:nowrap}
+.ocular-show .poster-title .poster-title-top{font-size:.60em;color:#111;letter-spacing:-.06em}
+.ocular-show .poster-title .poster-title-bottom{color:#ef524c;-webkit-text-stroke:3px #111;text-shadow:5px 7px 0 #111;transform:rotate(-2deg);margin-top:.065em}
+.ocular-show .poster-radiant{width:min(65vw,720px);aspect-ratio:1;position:absolute;top:50%;left:50%;border:8px solid #111;border-radius:50%;transform:translate(-50%,-50%);background:repeating-conic-gradient(from -14deg,#eb4948 0deg 12deg,#f6d342 12deg 24deg,#3eaed0 24deg 29deg,#eb4948 29deg 36deg);z-index:1;box-shadow:0 0 0 13px #f6e4b4,0 0 0 17px #111;animation:poster-wheel 48s linear infinite}
+@keyframes poster-wheel{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.ocular-show .hero-stage{position:absolute;z-index:4;left:50%;top:52%;width:min(81vw,905px);height:auto;min-height:0;display:flex;align-items:center;justify-content:center;transform:translate(-50%,-50%)!important;filter:none;isolation:isolate}
+.ocular-show .hero-stage:before,.ocular-show .hero-stage:after,.ocular-show .scribble,.ocular-show .burst,.ocular-show .stage-count{display:none!important}
+.ocular-show .eye-giant{width:100%;max-width:none;min-width:0;cursor:pointer;overflow:visible;filter:drop-shadow(12px 17px 0 #111);transform:none!important;transition:none;animation:poster-eye-blink 12s ease-in-out infinite}
+.ocular-show .eye-giant:hover{transform:none!important}
+@keyframes poster-eye-blink{0%,45%,47%,88%,92%,96%,100%{scale:1 1}89.5%,94.3%{scale:1 .07}}
+.ocular-show .eye-giant .sclera{fill:#fff7e7;stroke:#111;stroke-width:13}
+.ocular-show .eye-giant .iris{fill:var(--iris-color,#43b5cf);stroke:#111;stroke-width:10;transition:fill .45s ease-out}
+.ocular-show .eye-giant .pupil{fill:#111}
+.ocular-show .eye-giant .lash{stroke-width:12}
+.ocular-show .eye-giant .look-group{transition:transform .7s cubic-bezier(.2,.7,.3,1)}
+.ocular-show .eye-broadcast{position:absolute;top:83%;left:50%;transform:translateX(-50%) rotate(-3deg);white-space:nowrap;padding:9px 20px;background:#111;color:#fff5d1;z-index:8;border:3px solid #f9edc8;font:900 clamp(12px,1.7vw,20px)/1.1 Arial,sans-serif;letter-spacing:.03em;box-shadow:6px 6px 0 #e9494a}
+.ocular-show .poster-side-caption{position:absolute;right:3%;top:46%;writing-mode:vertical-rl;z-index:5;font:900 15px/1.2 Arial,sans-serif;letter-spacing:.28em;border-right:4px solid #111;padding-right:9px}
+.ocular-show .poster-intro{position:absolute;left:5%;bottom:35px;z-index:6;max-width:310px;background:#f8edc9;border:4px solid #111;padding:15px 18px;transform:rotate(-3deg);box-shadow:7px 7px 0 #111}
+.ocular-show .poster-intro .poster-intro-kicker{font:900 11px/1.3 Arial,sans-serif;letter-spacing:.14em;color:#d74348}
+.ocular-show .poster-intro p{font-size:clamp(13px,1.3vw,17px);font-weight:900;line-height:1.6;margin:7px 0 0}
+.ocular-show .poster-footnote{position:absolute;right:4%;bottom:45px;z-index:5;text-align:right;font:900 12px/1.6 Arial,sans-serif;letter-spacing:.07em}
+.ocular-show .poster-bottom-bar{background:#111;color:#f8edcd;border-top:5px solid #111;min-height:73px;padding:12px clamp(20px,4vw,55px);display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative;z-index:8}
+.ocular-show .poster-bottom-bar p{font:900 clamp(13px,1.8vw,18px)/1.3 Arial,sans-serif;letter-spacing:.08em;margin:0}
+.ocular-show .poster-bottom-bar a{display:inline-block;background:#f5d642;border:2px solid #f5d642;color:#111;text-decoration:none;font-size:12px;font-weight:900;letter-spacing:.07em;padding:10px 16px;white-space:nowrap}
+.ocular-show .poster-bottom-bar a:hover{background:#ea4c4b;color:#fff}
+.tape{background:#e9494a;color:#111;border-block:4px solid #111}
+.tape-track{animation-duration:17s}
+.hamster-section{background:#58b5cf;padding:85px 0;border-block:5px solid #111}
+.hamster-copy h2{font-size:clamp(48px,7.3vw,96px);line-height:.88;letter-spacing:-.085em;color:#111;text-shadow:3px 3px 0 #f5db53}
+.hamster-stage{background:radial-gradient(circle at 50% 45%,#f5d642 0 40%,transparent 41%);border:4px solid #111;padding:12px;min-height:370px;box-shadow:10px 10px 0 #111}
+.hamster-caption{background:#e9494a;color:#fff}
+.kinetic-strip{background:#f5d642;border-block:5px solid #111}
+.about{background:#f6ebc8}
+.about .section-title,.works .section-title{color:#111;text-shadow:4px 4px 0 #e9494a}
+.about .tear-front{background:#e9494a}
+.likes{background:#ddc4e4;border-block:5px solid #111}
+.likes .section-title{color:#111;text-shadow:4px 4px 0 #f6d342}
+.works{background:#f1dbb5}
+.works .work-card{box-shadow:9px 9px 0 #111}
+.now{background:#f4d642;border-block:5px solid #111}
+.footer{background:#111;color:#f6ebc8}
+.footer a{color:inherit}
 @media(max-width:900px){
- .hero-grid{grid-template-columns:1fr;gap:10px;padding-top:55px;padding-bottom:45px}
- .hero-copy{width:min(95%,570px);padding:22px;transform:rotate(-2deg)}
- .hero-stage{transform:rotate(3deg) scale(1);min-height:310px}
- .hero-copy h1{font-size:clamp(65px,13vw,110px)!important}
- .kinetic-stamp{top:-43px;right:-5px;width:76px;height:76px}
+ .ocular-show .poster-composition{min-height:750px}
+ .ocular-show .poster-title{top:120px;font-size:clamp(69px,12.2vw,115px)!important}
+ .ocular-show .poster-radiant{width:83vw;top:54%}
+ .ocular-show .hero-stage{top:54%;width:96vw}
+ .ocular-show .poster-intro{bottom:33px;max-width:270px}
+ .ocular-show .poster-seal{width:95px;height:95px;top:15px}
+ .ocular-show .poster-side-caption{top:43%;font-size:12px}
 }
-@media(max-width:540px){
- .hero-grid{padding-top:45px;gap:0}
- .hero-copy{padding:19px 16px 17px;width:96%;box-shadow:7px 7px 0 #111}
- .hero-copy h1{font-size:clamp(55px,13.5vw,85px)!important}
- .hero-stage{transform:rotate(3deg) scale(1.08);min-height:260px}
- .hero-stage .burst{transform:rotate(-10deg) scale(.85)}
- .hero{min-height:0}
- .hero-sub{font-size:13px}
+@media(max-width:600px){
+ .topbar{height:63px}
+ .ocular-show .broadcast-ticker{height:31px}
+ .ocular-show .broadcast-ticker .broadcast-track{font-size:11px;line-height:28px}
+ .ocular-show .poster-composition{min-height:650px}
+ .ocular-show .poster-title{top:105px;font-size:clamp(55px,13vw,79px)!important}
+ .ocular-show .poster-title .poster-title-top{font-size:.65em}
+ .ocular-show .poster-title .poster-title-bottom{-webkit-text-stroke:2px #111;text-shadow:3px 4px 0 #111}
+ .ocular-show .poster-serial{left:17px;top:24px;font-size:12px}
+ .ocular-show .poster-serial b{font-size:10px}
+ .ocular-show .poster-seal{width:86px;height:86px;right:12px;top:5px}
+ .ocular-show .poster-radiant{width:116vw;top:49%;border-width:6px;box-shadow:0 0 0 8px #f6e4b4,0 0 0 11px #111}
+ .ocular-show .hero-stage{width:110vw;top:49%}
+ .ocular-show .eye-giant{filter:drop-shadow(6px 9px 0 #111)}
+ .ocular-show .eye-broadcast{top:83%;font-size:12px;padding:6px 11px}
+ .ocular-show .poster-intro{left:19px;bottom:28px;max-width:245px;padding:10px 12px;box-shadow:4px 4px 0 #111}
+ .ocular-show .poster-intro p{font-size:12px}
+ .ocular-show .poster-side-caption{right:8px;top:53%;font-size:10px;letter-spacing:.11em}
+ .ocular-show .poster-footnote{bottom:36px;right:9px;font-size:9px;line-height:1.4}
+ .ocular-show .poster-bottom-bar{min-height:70px;padding:9px 15px;gap:10px}
+ .ocular-show .poster-bottom-bar p{font-size:11px}
+ .ocular-show .poster-bottom-bar a{font-size:10px;padding:9px}
+ .hamster-stage{min-height:300px}
 }
-@media(prefers-reduced-motion:reduce){.hero:before,.eye-giant{animation:none!important}}
+@media(prefers-reduced-motion:reduce){.ocular-show .broadcast-track,.ocular-show .poster-radiant,.ocular-show .poster-seal svg,.ocular-show .eye-giant{animation:none!important}}
 </style>
 </head>
 <body>
 <header class="topbar"><a href="#top" class="brand"><span class="logo-eye" aria-hidden="true"></span><span>KANACHI / LITTLE UNIVERSE</span></a><nav class="topnav" aria-label="メインメニュー"><a href="#about">ABOUT</a><a href="#likes">LIKES</a><a href="#works">WORKS</a><a href="#now" class="nav-contact">NOW</a></nav></header>
 <main id="top">
-<section class="hero" aria-label="イントロダクション"><div class="wrap hero-grid"><div class="hero-copy"><div class="hero-kicker">THE STRANGE WORLD OF KANACHI</div><div class="kinetic-stamp" aria-hidden="true"><svg viewBox="0 0 100 100"><defs><path id="stamp-circle" d="M50,50 m-35,0 a35,35 0 1,1 70,0 a35,35 0 1,1 -70,0"/></defs><circle cx="50" cy="50" r="46" fill="#f6d77d" stroke="#111" stroke-width="2"/><text font-size="11.3" font-family="Arial" font-weight="900" letter-spacing="1.3"><textPath href="#stamp-circle">HELLO KANACHI · HELLO KANACHI · </textPath></text><circle cx="50" cy="50" r="14" fill="#f58eac" stroke="#111" stroke-width="2"/><circle cx="50" cy="50" r="6" fill="#111"/></svg></div><h1><span class="line">WHO IS</span><span class="line">KANACHI?</span></h1><p class="hero-lead">目を合わせたら、<br>もう逃げられない。</p><p class="hero-sub">拾って、眺めて、考えて、つくる。<br>いろんな「好き」と「気になる」を詰め込んだ、KANAの小さな宇宙です。</p><div class="hero-actions"><a class="pill-link" href="#about">のぞきにいく</a><span class="micro">でも、その前に<br>目玉を押してみて！</span></div></div>
-<div class="hero-stage" id="eyeStage"><div class="burst">TOUCH<br>ME!<small>TAP THE EYE</small></div><span class="scribble s1" aria-hidden="true"></span><span class="scribble s2" aria-hidden="true"></span>
-<svg id="heroEye" class="eye-giant" viewBox="0 0 600 350" role="img" aria-label="触ると小さな目玉が増える大きな目玉"><path class="lash" d="M95 98L74 70M153 52L145 18M482 75L504 46M530 114L556 91"/><path class="sclera" d="M27 181C125 17 451-5 574 172C486 357 126 372 27 181Z"/><g class="look-group"><circle class="iris" cx="300" cy="176" r="105"/><circle class="pupil" cx="300" cy="176" r="55"/><circle class="shine" cx="277" cy="150" r="21"/><circle class="shine" cx="326" cy="206" r="8"/></g></svg>
-<div class="stage-count" aria-live="polite">EYES FOUND: <span id="eyeCount">01</span></div></div><div class="hero-bottom eyebrow"><span>WELCOME TO MY STRANGE WORLD.</span><span>SCROLL TO LOOK INSIDE</span></div></div></section>
+<section class="hero ocular-show" aria-label="目玉からはじまる自己紹介">
+ <div class="broadcast-ticker" aria-hidden="true"><div class="broadcast-track"><span>ON AIR ・ THE STRANGE WORLD OF KANACHI ・ LOOK CLOSER ・ THINK ・ MAKE ・ FIND ・ </span><span>ON AIR ・ THE STRANGE WORLD OF KANACHI ・ LOOK CLOSER ・ THINK ・ MAKE ・ FIND ・ </span></div></div>
+ <div class="poster-composition">
+  <div class="poster-serial"><b>PERSONAL EXHIBITION / NO. 001</b>KANA'S LITTLE UNIVERSE<br>OPEN 24 HOURS</div>
+  <div class="poster-seal" aria-hidden="true"><svg viewBox="0 0 100 100"><defs><path id="eyePosterRing" d="M50,50m-34,0a34,34 0 1,1 68,0a34,34 0 1,1 -68,0"/></defs><circle cx="50" cy="50" r="47" stroke="#111" stroke-width="3" fill="#ef5252"/><text font-size="11" letter-spacing="1.4" font-family="Arial" font-weight="900"><textPath href="#eyePosterRing">LOOK CLOSER · LOOK CLOSER · </textPath></text><circle cx="50" cy="50" r="15" fill="#f6d642" stroke="#111" stroke-width="3"/><circle cx="50" cy="50" r="6" fill="#111"/></svg></div>
+  <h1 class="poster-title"><span class="poster-title-top">WHO IS</span><span class="poster-title-bottom">KANACHI?</span></h1>
+  <div class="poster-radiant" aria-hidden="true"></div>
+  <div class="hero-stage" id="eyeStage">
+   <svg id="heroEye" class="eye-giant" viewBox="0 0 600 350" role="img" aria-label="巨大な目玉。タップするとメッセージと色が変わる"><path class="lash" d="M90 115L63 84M155 57L144 22M468 67L497 34M526 115L555 86"/><path class="sclera" d="M22 177C136 3 464 7 578 177C467 355 133 359 22 177Z"/><g class="look-group"><circle class="iris" cx="300" cy="178" r="107"/><circle class="pupil" cx="300" cy="178" r="59"/><circle class="shine" cx="268" cy="145" r="23"/><circle class="shine" cx="333" cy="207" r="10"/></g></svg>
+   <div class="eye-broadcast" id="eyeMessage" aria-live="polite">まずは、のぞいてみる。</div>
+  </div>
+  <div class="poster-side-caption">好奇心を、のぞきこむ。</div>
+  <div class="poster-intro"><div class="poster-intro-kicker">THIS IS NOT A NORMAL PROFILE</div><p>拾って、観察して、考えて、つくる。<br>気になるものが、いつも次の入り口。</p></div>
+  <div class="poster-footnote">EYE CONTACT<br>CHANGES EVERYTHING.<br>TOUCH THE EYE.</div>
+ </div>
+ <div class="poster-bottom-bar"><p>見えているのは、ほんの一部。</p><a href="#about">もっと、のぞく ↓</a></div>
+</section>
 <div class="tape" aria-hidden="true"><div class="tape-track"><span>COLLECT THINGS <b class="tape-dot"></b> MAKE THINGS <b class="tape-dot"></b> FOLLOW CURIOSITY <b class="tape-dot"></b> KEEP MOVING <b class="tape-dot"></b></span><span>COLLECT THINGS <b class="tape-dot"></b> MAKE THINGS <b class="tape-dot"></b> FOLLOW CURIOSITY <b class="tape-dot"></b> KEEP MOVING <b class="tape-dot"></b></span></div></div>
-<section class="hamster-section" id="hamster"><div class="wrap hamster-layout"><div class="hamster-copy"><span class="eyebrow">SPECIAL GUEST / LITTLE FRIEND</span><h2>HELLO,<br><span class="flip-word" id="flipWord">HAMSTER.</span></h2><p>かなちの小さな仲間。<br>ここにも、ひとつ好きなものを飾っておく。</p></div><div class="hamster-stage"><div class="hamster-flip" id="hamsterFlip"><img class="hamster-photo" id="hamsterToggle" src="hamster-normal.svg" alt="クリーム色のハムスター" loading="lazy" role="button" tabindex="0" aria-label="ハムスターをピースさせる"></div><span class="hamster-hint">TAP TO SAY PEACE!</span><span class="hamster-caption">LOOK AT ME!</span></div></div></section><div class="kinetic-strip" aria-hidden="true"><div class="track"><span>LOOK CLOSER <i class="dot"></i> MAKE SOMETHING <i class="dot"></i> STAY CURIOUS <i class="dot"></i></span><span>LOOK CLOSER <i class="dot"></i> MAKE SOMETHING <i class="dot"></i> STAY CURIOUS <i class="dot"></i></span></div></div><section class="about" id="about"><div class="wrap"><div class="section-head"><h2 class="section-title">01 / ABOUT<br>ME<span style="color:var(--pink)">.</span></h2><div class="section-caption">名刺みたいに整った自己紹介は、<br>ちょっと物足りない。<br><span class="highlight">めくると、もう少し見えてくる。</span></div></div><div class="about-grid"><div class="about-left"><div class="about-intro"><span class="small-eyeball" aria-hidden="true"></span><span class="eyebrow">WHAT KIND OF PERSON?</span></div><p>気になったら、まず近づいてみる。<br>観察して、調べて、ときどき形にする。<br><br>何かひとつの肩書きよりも、<br>「何を面白がっているか」で知ってほしい。</p><div class="footnote">右のピンクの紙をタップ、または<br>横にスワイプして破ってね。</div></div><div class="tear-board" id="tearBoard"><div class="tear-back"><span class="sheet-label">UNDER THE SURFACE / PROFILE</span><h3>あ、見つかった。<span class="inline-spark" aria-hidden="true"></span></h3><dl><dt>NAME</dt><dd>かなち / KANA</dd><dt>DOING</dt><dd>九谷焼に関わる企画・発信・展示づくり</dd><dt>LIKE</dt><dd>海、石、植物、小さな発見</dd><dt>MODE</dt><dd>考える / 試す / また考える</dd><dt>KEYWORD</dt><dd>好奇心 / 観察 / ものづくり</dd></dl><button id="resetTear" type="button" class="reset-btn">元にもどす</button></div><div class="tear-front" id="tearFront" tabindex="0" aria-label="タップ、または左右にスワイプしてプロフィールの紙を破る"><span class="sheet-label">PEEL HERE / A PIECE OF ME</span><h3>MEET<br><span>KANACHI.</span></h3><div class="tear-front-bottom"><p>ひとつめの<br>自己紹介は、<br>紙の下。</p><div><button id="tearBtn" type="button" class="tear-btn">ビリッと破る</button><div class="rip-hint" style="margin-top:10px">紙をタップしてもOK</div></div></div></div></div></div></div></section>
+<section class="hamster-section" id="hamster"><div class="wrap hamster-layout"><div class="hamster-copy"><span class="eyebrow">SPECIAL GUEST / LITTLE FRIEND</span><h2>HELLO,<br><span class="flip-word" id="flipWord">HAMSTER.</span></h2><p>かなちの小さな仲間。<br>ここにも、ひとつ好きなものを飾っておく。</p></div><div class="hamster-stage"><div class="hamster-flip" id="hamsterFlip"><img class="hamster-photo" id="hamsterToggle" src="hamster-normal.webp" alt="クリーム色のハムスター" loading="lazy" role="button" tabindex="0" aria-label="ハムスターをピースさせる"></div><span class="hamster-hint">TAP TO SAY PEACE!</span><span class="hamster-caption">LOOK AT ME!</span></div></div></section><div class="kinetic-strip" aria-hidden="true"><div class="track"><span>LOOK CLOSER <i class="dot"></i> MAKE SOMETHING <i class="dot"></i> STAY CURIOUS <i class="dot"></i></span><span>LOOK CLOSER <i class="dot"></i> MAKE SOMETHING <i class="dot"></i> STAY CURIOUS <i class="dot"></i></span></div></div><section class="about" id="about"><div class="wrap"><div class="section-head"><h2 class="section-title">01 / ABOUT<br>ME<span style="color:var(--pink)">.</span></h2><div class="section-caption">名刺みたいに整った自己紹介は、<br>ちょっと物足りない。<br><span class="highlight">めくると、もう少し見えてくる。</span></div></div><div class="about-grid"><div class="about-left"><div class="about-intro"><span class="small-eyeball" aria-hidden="true"></span><span class="eyebrow">WHAT KIND OF PERSON?</span></div><p>気になったら、まず近づいてみる。<br>観察して、調べて、ときどき形にする。<br><br>何かひとつの肩書きよりも、<br>「何を面白がっているか」で知ってほしい。</p><div class="footnote">右のピンクの紙をタップ、または<br>横にスワイプして破ってね。</div></div><div class="tear-board" id="tearBoard"><div class="tear-back"><span class="sheet-label">UNDER THE SURFACE / PROFILE</span><h3>あ、見つかった。<span class="inline-spark" aria-hidden="true"></span></h3><dl><dt>NAME</dt><dd>かなち / KANA</dd><dt>DOING</dt><dd>九谷焼に関わる企画・発信・展示づくり</dd><dt>LIKE</dt><dd>海、石、植物、小さな発見</dd><dt>MODE</dt><dd>考える / 試す / また考える</dd><dt>KEYWORD</dt><dd>好奇心 / 観察 / ものづくり</dd></dl><button id="resetTear" type="button" class="reset-btn">元にもどす</button></div><div class="tear-front" id="tearFront" tabindex="0" aria-label="タップ、または左右にスワイプしてプロフィールの紙を破る"><span class="sheet-label">PEEL HERE / A PIECE OF ME</span><h3>MEET<br><span>KANACHI.</span></h3><div class="tear-front-bottom"><p>ひとつめの<br>自己紹介は、<br>紙の下。</p><div><button id="tearBtn" type="button" class="tear-btn">ビリッと破る</button><div class="rip-hint" style="margin-top:10px">紙をタップしてもOK</div></div></div></div></div></div></div></section>
 <section class="likes" id="likes"><div class="wrap"><div class="section-head likes-header"><h2 class="section-title">02 / LITTLE<br>THINGS<span style="color:var(--pink)">.</span></h2><p class="section-caption">つい拾ってしまうもの。<br>気がつくと見入ってしまうもの。<br>好きなものをタップしてみて。</p></div><div class="likes-grid"><div class="object-space" aria-label="触って選べる好きなもののコレクション"><span class="obj-note n1">PICK ONE</span><span class="obj-note n2">MY PERSONAL ARCHIVE</span><span class="obj-note n3" aria-hidden="true"></span>
 <button type="button" class="object-button obj-stone is-active" data-object="0" aria-label="石を選ぶ"><svg width="205" height="170" viewBox="0 0 205 170"><path d="M28 120Q8 80 65 29Q113 -5 163 46Q198 79 172 128Q140 169 82 155Q43 154 28 120Z" fill="#c6b3f0" stroke="#111" stroke-width="7"/><path d="M65 31L91 91L29 120M91 91L160 47M91 91L171 128" fill="none" stroke="#111" stroke-width="4"/><circle cx="111" cy="58" r="8" fill="#fff"/><circle cx="134" cy="101" r="5" fill="#fff"/></svg></button>
 <button type="button" class="object-button obj-urchin" data-object="1" aria-label="ウニを選ぶ"><svg width="190" height="190" viewBox="0 0 190 190"><g transform="translate(95 95)" stroke="#111" stroke-width="5" stroke-linecap="round"><path d="M0-87V-62M0 87V62M-87 0H-62M87 0H62M-62-62L-43-43M62 62L43 43M62-62L43-43M-62 62L-43 43M-32-80L-23-55M32-80L23-55M-32 80L-23 55M32 80L23 55M-80-32L-55-23M80-32L55-23M-80 32L-55 23M80 32L55 23"/></g><circle cx="95" cy="95" r="62" fill="#ff7a9e" stroke="#111" stroke-width="7"/><circle cx="95" cy="95" r="33" fill="#ffcedb" stroke="#111" stroke-width="5"/><circle cx="95" cy="95" r="12" fill="#111"/></svg></button>
@@ -241,13 +299,23 @@ body{background:var(--paper)}
 <script>
 (()=>{
 'use strict';
-const stage=document.getElementById('eyeStage'); const eye=document.getElementById('heroEye');const count=document.getElementById('eyeCount');let spawnCount=1;
+const stage=document.getElementById('eyeStage'),eye=document.getElementById('heroEye'),eyeMessage=document.getElementById('eyeMessage');
 const rand=(a,b)=>Math.random()*(b-a)+a;
-function lookAt(x,y){const r=eye.getBoundingClientRect();const cx=r.left+r.width/2,cy=r.top+r.height/2;const dx=Math.max(-35,Math.min(35,(x-cx)*.09));const dy=Math.max(-22,Math.min(22,(y-cy)*.07));eye.style.setProperty('--look-x',dx+'px');eye.style.setProperty('--look-y',dy+'px')}
-if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){let tick=0;setInterval(()=>{if(document.hidden)return;tick++;const r=eye.getBoundingClientRect();if(!r.width)return;lookAt(r.left+r.width*(.5+.38*Math.sin(tick*1.7)),r.top+r.height*(.5+.36*Math.cos(tick*1.1)))},2600)}
-stage.addEventListener('pointermove',e=>{if(e.target.closest('.float-eye'))return;lookAt(e.clientX,e.clientY)},{passive:true});stage.addEventListener('pointerleave',()=>{eye.style.setProperty('--look-x','0px');eye.style.setProperty('--look-y','0px')});
-function makeEye(){const child=document.createElement('button');child.type='button';child.className='float-eye';child.setAttribute('aria-label','小さな目玉を消す');child.style.left=rand(7,79)+'%';child.style.top=rand(6,79)+'%';child.style.setProperty('--rot',rand(-24,24)+'deg');child.style.setProperty('--c',['#ff5a92','#73d8f5','#eaf36d','#b1a0f9'][Math.floor(rand(0,4))]);child.style.animationDelay='0s, '+rand(-2,0)+'s';stage.appendChild(child);child.addEventListener('click',e=>{e.stopPropagation();child.remove();spawnCount=Math.max(1,spawnCount-1);count.textContent=String(spawnCount).padStart(2,'0')});if(stage.querySelectorAll('.float-eye').length>22)stage.querySelector('.float-eye').remove();spawnCount++;count.textContent=String(spawnCount).padStart(2,'0')}
-eye.addEventListener('click',makeEye);eye.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();makeEye()}});eye.setAttribute('tabindex','0');
+const transmissions=[
+ {message:'まずは、のぞいてみる。',color:'#43b5cf'},
+ {message:'好きなものは、まだ増える。',color:'#ec4d52'},
+ {message:'見つけたら、つくってみる。',color:'#e2c749'},
+ {message:'じっとしてる場合じゃない。',color:'#a58cda'}
+];
+let transmission=0,pointerUntil=0;
+function lookAt(x,y){const r=eye.getBoundingClientRect();const cx=r.left+r.width/2,cy=r.top+r.height/2;const dx=Math.max(-38,Math.min(38,(x-cx)*.1));const dy=Math.max(-24,Math.min(24,(y-cy)*.08));eye.style.setProperty('--look-x',dx+'px');eye.style.setProperty('--look-y',dy+'px')}
+function changeTransmission(){transmission=(transmission+1)%transmissions.length;eyeMessage.textContent=transmissions[transmission].message;eye.style.setProperty('--iris-color',transmissions[transmission].color)}
+eye.addEventListener('click',changeTransmission);eye.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();changeTransmission()}});eye.setAttribute('tabindex','0');
+stage.addEventListener('pointermove',e=>{pointerUntil=Date.now()+1800;lookAt(e.clientX,e.clientY)},{passive:true});
+if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+ let tick=0;setInterval(()=>{if(document.hidden||Date.now()<pointerUntil)return;tick++;const r=eye.getBoundingClientRect();if(!r.width)return;lookAt(r.left+r.width*(.5+.38*Math.sin(tick*1.2)),r.top+r.height*(.5+.30*Math.cos(tick*.85)))},2400);
+ setInterval(()=>{if(!document.hidden)changeTransmission()},6600)
+}
 const tear=document.getElementById('tearBoard');
 const tearFront=document.getElementById('tearFront');
 const tearBtn=document.getElementById('tearBtn');
@@ -339,7 +407,7 @@ const projects=[{k:'PROJECT 01 / WEB & EXPERIENCE',title:'SHITEN — 視展',des
 (function(){
  const h=document.getElementById('hamsterToggle'),frame=document.getElementById('hamsterFlip'),word=document.getElementById('flipWord');
  if(!h||!frame||!word)return;
- const normal='hamster-normal.svg',peace='hamster-peace.svg';let active=false,busy=false,wordIndex=0;
+ const normal='hamster-normal.webp',peace='hamster-peace.webp';let active=false,busy=false,wordIndex=0;
  const pre=new Image();pre.src=peace;
  function show(v){if(busy||v===active)return;busy=true;frame.classList.add('turning');setTimeout(()=>{active=v;h.src=v?peace:normal;h.setAttribute('aria-label',v?'ハムスターを普通の姿に戻す':'ハムスターをピースさせる');frame.classList.remove('turning');setTimeout(()=>{busy=false},520)},260)}
  h.addEventListener('click',()=>show(!active));
