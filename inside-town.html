@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#fff8ed">
+<title>INSIDE KANACHI｜からだの奥に、街があった。</title>
+<style>
+:root{--ink:#22243f;--paper:#fff8ed;--coral:#fb6d78;--yellow:#ffcc46;--mint:#79ddc6;--shadow:6px 7px 0 #22243f;}
+*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden}body{font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',sans-serif;background:var(--paper);color:var(--ink);-webkit-tap-highlight-color:transparent;user-select:none}button{font:inherit;cursor:pointer}button:focus-visible{outline:3px solid #17bba8;outline-offset:4px}
+#world{position:fixed;inset:0;display:block;width:100%;height:100%;touch-action:none}
+#grain{pointer-events:none;position:fixed;inset:0;z-index:2;opacity:.15;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.84' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.28' filter='url(%23n)'/%3E%3C/svg%3E")}
+.top{position:fixed;inset:0 0 auto;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:23px clamp(24px,4.5vw,68px);pointer-events:none;gap:16px}.top>*{pointer-events:auto}.brand{font-size:15px;font-weight:1000;letter-spacing:.19em;white-space:nowrap}.brand em{font-style:normal;color:#f65c76}.top-right{display:flex;gap:11px;align-items:center}.chapter{font-size:11px;font-weight:900;letter-spacing:.1em;border:2px solid var(--ink);background:#fffaf0d9;border-radius:99px;padding:10px 16px}.head-btn{border:2px solid var(--ink);background:#fffaf0e8;color:var(--ink);padding:10px 16px;border-radius:99px;font-weight:900;font-size:12px;box-shadow:3px 3px 0 var(--ink)}.head-btn:hover{transform:translateY(-2px)}
+.intro{position:fixed;left:clamp(25px,6.5vw,95px);top:50%;transform:translateY(-42%);z-index:5;max-width:600px;transition:opacity .4s, transform .4s}.intro.hidden{opacity:0;transform:translateY(-37%);pointer-events:none}.eyebrow{display:inline-block;border:2px solid var(--ink);background:var(--mint);padding:8px 14px;border-radius:99px;font-size:12px;font-weight:1000;letter-spacing:.1em;transform:rotate(-2deg)}.intro h1{margin:24px 0 19px;font-size:clamp(39px,5.7vw,82px);font-weight:1000;letter-spacing:-.07em;line-height:1.28;text-shadow:3px 4px 0 #fff8ed}.intro h1 span{display:inline-block;color:#f06576;transform:rotate(-2deg)}.intro p{font-size:clamp(13px,1.2vw,17px);font-weight:750;line-height:2.1;margin:0 0 31px;letter-spacing:.025em}.start-btn{border:3px solid var(--ink);background:var(--yellow);color:var(--ink);font-size:16px;font-weight:1000;padding:16px 22px 16px 27px;border-radius:100px;box-shadow:var(--shadow);display:inline-flex;align-items:center;gap:19px;transition:transform .2s,box-shadow .2s}.start-btn:hover{transform:translate(-2px,-3px);box-shadow:8px 10px 0 var(--ink)}.start-btn .arrow{font-size:21px;background:var(--ink);color:white;border-radius:50%;width:34px;height:34px;display:grid;place-items:center}.micro{font-size:11px!important;font-weight:800;letter-spacing:.05em;color:#52526d;margin:19px 0 0!important}.intro small{font-size:11px}
+#introCounter{position:fixed;right:40px;bottom:24px;z-index:5;font-size:12px;font-weight:900;letter-spacing:.11em;color:#323151}
+#fallHud{position:fixed;bottom:49px;left:50%;transform:translateX(-50%);width:min(470px,85vw);z-index:11;display:none;text-align:center}.fall-label{color:white;font-size:18px;font-weight:1000;letter-spacing:.14em;text-shadow:0 2px 0 var(--ink),2px 0 0 var(--ink),-2px 0 0 var(--ink);margin-bottom:17px}.progress-track{width:100%;border:2px solid var(--ink);height:12px;background:#fff8ed;border-radius:100px;overflow:hidden;box-shadow:3px 3px 0 var(--ink)}.progress-fill{width:0;height:100%;background:#ffce48;transition:width .12s linear}.skip{margin-top:13px;border:0;color:#fff;font-weight:900;background:transparent;text-decoration:underline;text-underline-offset:5px;letter-spacing:.07em}
+#cityHud{position:fixed;inset:0;z-index:6;pointer-events:none;display:none}.city-name{position:absolute;top:95px;left:clamp(24px,4.5vw,68px);font-size:12px;font-weight:1000;letter-spacing:.13em;border-left:5px solid #f67373;padding:3px 0 3px 12px;text-shadow:0 1px #fff}.city-name strong{display:block;font-size:clamp(17px,2.6vw,29px);margin-top:5px;letter-spacing:.005em}.city-hint{position:absolute;bottom:25px;left:50%;transform:translateX(-50%);white-space:nowrap;border:2px solid var(--ink);padding:9px 17px;background:#fff8eddb;border-radius:99px;font-size:12px;font-weight:850;box-shadow:3px 3px 0 var(--ink)}
+.action{position:absolute;bottom:96px;left:50%;transform:translateX(-50%);background:var(--yellow);color:var(--ink);border:3px solid var(--ink);border-radius:99px;box-shadow:5px 5px 0 var(--ink);font-weight:1000;font-size:13px;padding:13px 18px;display:none;pointer-events:auto;min-width:196px;animation:floatAction 1.8s ease-in-out infinite}.action:active{transform:translateX(-50%) scale(.96)}@keyframes floatAction{50%{translate:0 -5px}}
+.move{position:absolute;bottom:88px;left:24px;display:flex;gap:10px;pointer-events:auto}.move button{border:2.5px solid var(--ink);border-radius:18px;background:#fff8eddd;box-shadow:3px 4px 0 var(--ink);width:60px;height:58px;font-size:26px;font-weight:900;color:var(--ink);touch-action:none}.move button:active,.move button.pressed{transform:translate(2px,3px);box-shadow:1px 1px 0 var(--ink);background:var(--yellow)}
+.ticker{position:absolute;right:clamp(24px,4.5vw,68px);bottom:34px;border:2px solid var(--ink);border-radius:16px;background:#fffaf0d9;padding:12px 16px;box-shadow:3px 3px 0 var(--ink);font-size:12px;font-weight:850}.ticker b{font-size:25px;color:#e96c80;margin:0 2px}
+.overlay{position:fixed;inset:0;background:#1d203b9c;z-index:30;display:none;align-items:center;justify-content:center;padding:22px;backdrop-filter:blur(6px)}.overlay.open{display:flex}.panel{width:min(540px,100%);max-height:min(690px,87vh);overflow-y:auto;background:#fff8ed;border:3px solid var(--ink);border-radius:27px;box-shadow:10px 12px 0 #20223e;position:relative;padding:clamp(24px,5vw,43px)}.close{position:absolute;right:18px;top:18px;width:38px;height:38px;border:2px solid var(--ink);background:white;border-radius:50%;font-size:19px;font-weight:900;color:var(--ink)}.panel-num{font-size:12px;letter-spacing:.16em;font-weight:1000;color:#df6876}.panel-icon{display:grid;place-items:center;width:74px;height:74px;border:3px solid var(--ink);border-radius:20px;background:var(--mint);margin:13px 0 19px;font-size:37px;box-shadow:4px 5px 0 var(--ink)}.panel h2{font-size:clamp(25px,5vw,36px);line-height:1.38;letter-spacing:-.05em;margin:0 35px 17px 0}.panel p{font-size:15px;line-height:2;font-weight:700;letter-spacing:.02em;margin:0 0 18px}.panel .panel-note{background:#fff0c6;border-left:5px solid var(--yellow);padding:14px 16px;font-size:13px;line-height:1.7}.claim{margin-top:12px;width:100%;border:3px solid var(--ink);background:var(--yellow);padding:15px 14px;border-radius:99px;box-shadow:4px 5px 0 var(--ink);font-weight:1000;font-size:15px;color:var(--ink)}.claim:active{transform:translate(2px,3px);box-shadow:2px 2px 0 var(--ink)}.panel-topline{margin:0 40px 12px 0;font-weight:1000;font-size:11px;letter-spacing:.13em;color:#d06879}.panel-title{margin:0 0 22px!important}.notebook-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.note-tile{border:2px solid var(--ink);border-radius:16px;padding:14px;min-height:118px;background:white;box-shadow:3px 3px 0 var(--ink);text-align:left;color:var(--ink)}.note-tile.found{background:#d9f3e9}.note-tile .tile-symbol{font-size:26px;margin-bottom:8px}.note-tile .tile-name{font-size:13px;font-weight:1000}.note-tile .tile-desc{font-size:11px;margin-top:5px;font-weight:700}.note-tile.missing{opacity:.6;border-style:dashed}.note-tile.missing .tile-symbol{filter:grayscale(1)}
+#toast{position:fixed;z-index:40;bottom:32px;left:50%;transform:translate(-50%,30px);opacity:0;background:#fff8ed;border:2px solid var(--ink);border-radius:99px;box-shadow:4px 5px 0 var(--ink);font-size:13px;font-weight:1000;padding:12px 19px;pointer-events:none;transition:transform .3s,opacity .3s;white-space:nowrap}#toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:700px){.top{padding:18px 19px}.brand{font-size:12px;letter-spacing:.13em}.chapter{display:none}.head-btn{padding:10px 13px;font-size:11px}.intro{left:25px;right:20px;top:21%;transform:none;max-width:360px}.intro.hidden{transform:translateY(-20px)}.intro h1{font-size:clamp(42px,11vw,61px);margin:16px 0 12px}.intro p{font-size:13px;line-height:1.85;margin-bottom:22px}.eyebrow{font-size:10px;padding:7px 11px}.start-btn{font-size:14px;padding:11px 12px 11px 20px;gap:14px;box-shadow:4px 4px 0 var(--ink)}.micro{margin-top:13px!important;font-size:10px!important}.city-name{top:75px;left:20px;font-size:10px}.city-name strong{font-size:19px}.move{left:15px;bottom:calc(env(safe-area-inset-bottom) + 24px)}.move button{width:63px;height:62px}.action{bottom:calc(env(safe-area-inset-bottom) + 30px);left:auto;right:15px;transform:none;min-width:0;padding:15px 17px;font-size:12px;max-width:210px;animation:none}.action:active{transform:scale(.96)}.city-hint{bottom:calc(env(safe-area-inset-bottom) + 115px);font-size:10px;padding:8px 12px}.ticker{right:15px;top:78px;bottom:auto;font-size:10px;padding:8px 11px}.ticker b{font-size:18px}.panel{padding:26px 24px}.panel h2{font-size:27px}.panel p{font-size:13px}.note-tile{min-height:100px}.fall-label{font-size:16px}#introCounter{bottom:13px;right:22px;font-size:10px}}
+@media(max-width:380px){.intro{top:22%}.intro h1{font-size:39px}.intro p{font-size:12px}.city-hint{max-width:88vw;white-space:normal;text-align:center}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+</style>
+</head>
+<body>
+<canvas id="world" aria-label="食べ物になって人体の中にある街を探検するアニメーションゲーム"></canvas><div id="grain"></div>
+<header class="top"><div class="brand">IN <em>／</em> KANACHI</div><div class="top-right"><div id="chapter" class="chapter">PROLOGUE / 体内への入口</div><button class="head-btn" id="noteBtn" type="button" style="display:none">発見ノート <span id="headCount">0</span>/6</button><button class="head-btn" id="helpBtn" type="button" aria-label="遊び方">？ あそびかた</button></div></header>
+<section class="intro" id="intro"><div class="eyebrow">A LITTLE JOURNEY INSIDE ME</div><h1>からだの奥に、<br><span>街があった。</span></h1><p>もしも、ひと粒の食べ物になったら？<br>飲み込まれて、落ちて、流されて。<br>行き着いた先は、わたしの中の不思議な街。</p><button class="start-btn" id="startBtn" type="button">のみこまれてみる <span class="arrow">↘</span></button><p class="micro">たべものになって、かなちの世界を探検しよう。</p></section>
+<div id="introCounter">FOLLOW THE LITTLE STRAWBERRY · 2026</div>
+<div id="fallHud"><div id="fallLabel" class="fall-label">ただいま、のみこまれ中…</div><div class="progress-track"><div class="progress-fill" id="fallProgress"></div></div><button class="skip" type="button" id="skipBtn">街へスキップ →</button></div>
+<div id="cityHud"><div class="city-name"><span id="districtNumber">WELCOME TO YOUR INSIDE</span><strong id="districtName">ちょうないタウン</strong></div><div class="move"><button id="leftBtn" type="button" aria-label="左に歩く">←</button><button id="rightBtn" type="button" aria-label="右に歩く">→</button></div><button class="action" id="actionBtn" type="button">ここを調べる ↑</button><div class="city-hint" id="cityHint">← → でお散歩　／　気になる場所で E</div><div class="ticker">発見 <b id="discoverCount">0</b> / 6</div></div>
+<div class="overlay" id="cardOverlay" role="dialog" aria-modal="true" aria-labelledby="cardTitle"><article class="panel"><button class="close" type="button" data-close aria-label="閉じる">×</button><div class="panel-num" id="cardNum">FIND 01 / 06</div><div class="panel-icon" id="cardIcon">✦</div><h2 id="cardTitle"></h2><p id="cardBody"></p><p class="panel-note" id="cardDetail"></p><button class="claim" type="button" id="claimBtn">これを持っていく ＋</button></article></div>
+<div class="overlay" id="notebookOverlay" role="dialog" aria-modal="true" aria-labelledby="notebookTitle"><article class="panel"><button class="close" type="button" data-close aria-label="閉じる">×</button><div class="panel-topline">COLLECTED THOUGHTS</div><h2 class="panel-title" id="notebookTitle">ひろったものノート</h2><p id="bookSub">街で見つけた、かなちをつくる6つのかけら。</p><div class="notebook-grid" id="bookGrid"></div><button class="claim" id="backTown" type="button">街にもどる →</button></article></div>
+<div class="overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-labelledby="helpTitle"><article class="panel"><button class="close" type="button" data-close aria-label="閉じる">×</button><div class="panel-topline">HOW TO PLAY</div><h2 id="helpTitle">あそびかた</h2><p>まず「のみこまれてみる」を押すと、食べ物になってからだの中へ落ちていきます。落下の先には、腸の中に生まれた街が待っています。</p><p>街では <b>← →</b> キー、または画面下の矢印ボタンで移動。気になる建物に近づいたら <b>E</b> キーか「ここを調べる」で発見できます。建物を直接タップしてもOK。</p><p class="panel-note">この街は、かなちの自己紹介をゲームの形にした試作です。6つの発見を集めてみてください。</p><button class="claim" id="helpClose" type="button">わかった！</button></article></div>
+<div id="toast" aria-live="polite"></div>
+<script>
+(()=>{
+'use strict';
+const canvas=document.getElementById('world'),ctx=canvas.getContext('2d',{alpha:false});
+const $=id=>document.getElementById(id);
+let W=1,H=1,DPR=1,t=0,dt=0,mode='intro',fallT=0,cam=0,cityTime=0,activeSpot=null,nearest=null,toastTimer=null,hasEntered=false;
+const keys={left:false,right:false};let player={x:100,vy:0,bob:0},particles=[],collected=new Set();
+const PI=Math.PI,TAU=Math.PI*2,INK='#292544',PINK='#fa7380',DEEP='#852e68',CREAM='#fff4df';
+const spots=[
+{id:'brain',x:625,name:'ひらめき発電所',short:'アイデア',tag:'01 / THINKING',emoji:'✳',color:'#cfb3f9',title:'思いついたら、まず動かす。',body:'知らないことを見つけたり、何かを思いついたり。まだ道が見えなくても、作りながら考えるのが好き。',detail:'発見：アイデアは、動き出すと次のアイデアを連れてくる。'},
+{id:'craft',x:1360,name:'つくる工房',short:'ものづくり',tag:'02 / MAKING',emoji:'◈',color:'#ffc276',title:'手を動かして、かたちにする。',body:'九谷焼や地域のものづくりに関わりながら、展示や体験の企画を考えたり、伝え方を工夫したりしている。',detail:'発見：考えたことを実物にして、反応を見る時間が好き。'},
+{id:'sea',x:2085,name:'採集の庭',short:'好きなもの',tag:'03 / FAVORITES',emoji:'❋',color:'#7bd6c1',title:'海辺で、宝探しをする。',body:'かわいい植物を見つけたり、ウニを拾ったり、石を並べたり。自然の中で自分だけの面白さを探す。',detail:'発見：小さなものを、じっくり観察するのが好き。'},
+{id:'lab',x:2810,name:'なんでも実験室',short:'試行錯誤',tag:'04 / EXPERIMENT',emoji:'⌘',color:'#a7c9fd',title:'やったことのないことも、試す。',body:'AIを使った制作、Webサイトづくり、新しい仕組みの実験。知らない分野でも、まず触ってみたくなる。',detail:'発見：うまくいかない途中も、次のヒントになる。'},
+{id:'heart',x:3500,name:'どきどき広場',short:'大切なこと',tag:'05 / VALUES',emoji:'♥',color:'#ff98a0',title:'いちばん大切なのは、解放感。',body:'誰かの決めた枠だけに収まるより、自分の興味を頼りに動きたい。新しい場所へ進む感覚を大切にしている。',detail:'発見：道は、動いた先に現れることもある。'},
+{id:'letter',x:4220,name:'これから駅',short:'これから',tag:'06 / TO BE CONTINUED',emoji:'✉',color:'#ffe189',title:'この先は、まだ決まっていない。',body:'何を面白いと思うのか、次に何をつくるのか。まだ知らない自分を、これからも探していく。',detail:'発見：この自己紹介は、更新されつづける。'}
+];
+const total=spots.length,worldEnd=4670;
+function resize(){W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(W*DPR);canvas.height=Math.round(H*DPR);canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(DPR,0,0,DPR,0,0)}
+addEventListener('resize',resize,{passive:true});resize();
+function clamp(n,a,b){return Math.max(a,Math.min(b,n))}function lerp(a,b,u){return a+(b-a)*u}function smooth(a,b,x){let q=clamp((x-a)/(b-a),0,1);return q*q*(3-2*q)}function easeOut(u){return 1-(1-u)*(1-u)*(1-u)}
+function rr(x,y,w,h,r,fill,stroke=INK,lw=3){ctx.beginPath();ctx.roundRect(x,y,w,h,r);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.stroke()}}
+function ell(x,y,rx,ry,fill,stroke=null,lw=3,rot=0){ctx.beginPath();ctx.ellipse(x,y,Math.max(.01,rx),Math.max(.01,ry),rot,0,TAU);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.stroke()}}
+function path(fn,fill,stroke=null,lw=3){ctx.beginPath();fn(ctx);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.stroke()}}
+function seg(x1,y1,x2,y2,color=INK,w=3){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=color;ctx.lineWidth=w;ctx.lineCap='round';ctx.stroke()}
+function label(s,x,y,size=20,color=INK,align='center',weight=900){ctx.font=`${weight} ${size}px 'Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif`;ctx.textAlign=align;ctx.textBaseline='middle';ctx.fillStyle=color;ctx.fillText(s,x,y)}
+function grad(x1,y1,x2,y2,stops){let g=ctx.createLinearGradient(x1,y1,x2,y2);for(let [p,c] of stops)g.addColorStop(p,c);return g}
+function random(seed){const v=Math.sin(seed*127.1+311.7)*43758.5453123;return v-Math.floor(v)}
+function curvy(points,color=INK,w=4){ctx.beginPath();ctx.moveTo(...points[0]);for(let i=1;i<points.length;i++){const p0=points[i-1],p1=points[i];ctx.quadraticCurveTo(p0[0],p0[1],(p0[0]+p1[0])/2,(p0[1]+p1[1])/2)}ctx.lineTo(...points[points.length-1]);ctx.lineCap='round';ctx.lineJoin='round';ctx.lineWidth=w;ctx.strokeStyle=color;ctx.stroke()}
+function star(x,y,r,color,rot=0){path(c=>{for(let i=0;i<8;i++){let a=rot+i*PI/4,rad=i%2?r*.39:r;c[i?'lineTo':'moveTo'](x+Math.cos(a)*rad,y+Math.sin(a)*rad)}c.closePath()},color,INK,2.5)}
+function berry(x,y,scale=1,angle=0,bob=0){ctx.save();ctx.translate(x,y+bob);ctx.rotate(angle);ctx.scale(scale,scale);
+  ell(2,31,30,7,'#642e6e33');path(c=>{c.moveTo(0,-21);c.bezierCurveTo(24,-27,34,-10,30,9);c.bezierCurveTo(25,30,11,43,0,49);c.bezierCurveTo(-15,39,-31,16,-30,-3);c.bezierCurveTo(-29,-21,-12,-28,0,-21)},'#f65369',INK,4);
+  path(c=>{c.moveTo(-13,-16);c.bezierCurveTo(-29,-31,-17,-40,-2,-26);c.bezierCurveTo(1,-48,11,-40,10,-25);c.bezierCurveTo(26,-39,26,-19,12,-16);c.lineTo(0,-8);c.closePath()},'#74d6a6',INK,3.4);
+  seg(-17,3,-13,8,'#ffbc72',2.6);seg(8,3,5,8,'#ffbc72',2.6);seg(-13,17,-11,22,'#ffbc72',2.6);seg(13,20,11,24,'#ffbc72',2.6);seg(0,34,2,37,'#ffbc72',2.6);ell(-8,5,2.7,3.5,INK);ell(11,5,2.7,3.5,INK);path(c=>{c.arc(2,13,5,.05,PI-.05)},null,INK,2.1);ell(-17,11,4,2.7,'#ffb2aa');ell(18,11,4,2.7,'#ffb2aa');ctx.restore()}
+function bubble(x,y,r,fill='#fff3d989',outline='#fff7ee'){ell(x,y,r,r,fill,outline,2);ell(x-r*.3,y-r*.33,r*.2,r*.13,'#ffffff')}
+function vignette(alpha=.15){let g=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.15,W/2,H/2,Math.max(W,H)*.85);g.addColorStop(0,'#00000000');g.addColorStop(1,`rgba(54,20,72,${alpha})`);ctx.fillStyle=g;ctx.fillRect(0,0,W,H)}
+
+function drawIntro(){ctx.fillStyle='#fff8ed';ctx.fillRect(0,0,W,H);
+  // Graphic cut-paper squiggles and spot color.
+  const right=W>700?W*.76:W*.91,baseY=W>700?H*.51:(H>740?H*.85:H*1.10),r=Math.max(W>700?W*.2:W*.42,215);
+  ctx.save();ctx.translate(right,baseY);
+  ctx.rotate(.07*Math.sin(t*.4));ell(-r*.05,0,r*1.29,r*1.32,'#ffcf7b',null,1,.14);ell(r*.32,r*.22,r*.9,r*.83,'#c1f4e0');
+  // head and cheeks
+  path(c=>{c.moveTo(-r*.98,-r*.75);c.bezierCurveTo(-r*1.34,-r*.39,-r*1.36,r*.53,-r*.86,r*.9);c.bezierCurveTo(-r*.35,r*1.36,r*.56,r*1.28,r*.98,r*.64);c.bezierCurveTo(r*1.4,r*.01,r*1.13,-r*.9,r*.39,-r*1.05);c.bezierCurveTo(-r*.2,-r*1.3,-r*.74,-r*1.13,-r*.98,-r*.75)},'#ffe1cc',INK,8);
+  // nose and cheeks
+  ell(-r*.96,-r*.02,r*.13,r*.10,'#f9a0a7');ell(r*.80,-r*.04,r*.16,r*.12,'#ffaab2');ell(-r*.62,-r*.55,8,11,INK);ell(r*.62,-r*.54,8,11,INK);
+  // giant open mouth closeup
+  ell(0,r*.13,r*.93,r*.74,'#fb767b',INK,9);ell(0,r*.21,r*.78,r*.62,'#65305f',INK,6);ell(0,r*.53,r*.52,r*.25,'#f2a3a4');
+  // teeth around mouth
+  for(let i=-3;i<=3;i++){const px=i*r*.212;rr(px-r*.108,-r*.33+Math.abs(i)*r*.041,r*.19,r*.31,Math.max(5,r*.039),'#fff9df',INK,3.2);rr(px-r*.102,r*.53-Math.abs(i)*r*.02,r*.18,r*.19,Math.max(5,r*.025),'#fff8df',INK,3)}
+  ctx.save();ctx.translate(r*.12,r*.23);ctx.rotate(Math.sin(t*1.4)*.09);ell(0,0,r*.19,r*.18,'#fa9fb3');ctx.restore();
+  // berry slowly travels near mouth
+  berry(-r*.48+Math.sin(t*.9)*r*.12,r*.02+Math.sin(t*2)*12,Math.max(.65,r/270),-.12+Math.sin(t)*.13);
+  star(-r*1.3,-r*1.05,19,'#f5ce51',t*.4);star(r*.94,-r*1.08,15,'#7acdb9',-t*.2);bubble(r*1.18,r*.82,12,'#cfb8f9');
+  ctx.restore();
+  for(let i=0;i<11;i++){let x=(random(i+3)*W+t*(i%2?13:-8))%W;let y=(random(i+15)*H+t*6)%H;ell(x,y,2.5+(i%3),2.5+(i%3),i%2?'#eea2b5':'#f2d57e')}
+  if(W>700){label('OPEN WIDE!',W*.7,H*.12,15,INK);seg(W*.65,H*.15,W*.7,H*.19,'#f57c84',4)}
+}
+function drawFall(){const p=fallT;let bg;
+  if(p<2){ctx.fillStyle='#fbd3c7';ctx.fillRect(0,0,W,H);let z=lerp(.95,6.7,smooth(0,2,p));ctx.save();ctx.translate(W*.5,H*.49);ctx.scale(z,z);const r=Math.max(180,Math.min(W,H)*.39);ell(0,0,r*1.18,r*.94,'#fd8393',INK,7);ell(0,0,r*.94,r*.79,'#67325e',INK,6);for(let i=-4;i<=4;i++){rr(i*r*.19-r*.09,-r*.84+Math.abs(i)*r*.04,r*.17,r*.25,9,'#fff6df',INK,3);rr(i*r*.19-r*.09,r*.55-Math.abs(i)*r*.03,r*.17,r*.24,9,'#fff8e7',INK,3)}ell(0,r*.52,r*.52,r*.21,'#f5a6ae');ctx.restore();berry(W*.5,H*.52,1.2+easeOut(p/2)*.25,p*1.2,Math.sin(t*12)*4);label('ぱくっ！',W*.5,H*.18,Math.min(W*.1,53),'#fff9df');return}
+  if(p<5.1||p>7.4){let q=p<5.1?p-2:p-7.4;let flash=p>7.4?1:0;ctx.fillStyle=flash?'#b74984':'#bc557f';ctx.fillRect(0,0,W,H);
+    let speed=p<5.1?1:1.6;for(let i=10;i>=0;i--){let pr=((i/11+q*speed*.32)%1),z=Math.pow(pr,1.7),r=lerp(28,Math.max(W,H)*1.1,z);let dx=Math.sin(q*2.5+i*.55)*W*.13*(1-z),dy=Math.cos(q*1.75+i*.5)*H*.11*(1-z);
+      ell(W*.5+dx,H*.5+dy,r*(W/H>1?1.3:1.05),r, i%2?'#e47594':'#f18e9b','#72365f',Math.max(3,5*z+2),q*.18);
+      if(i%3===0)for(let j=0;j<9;j++){let a=(j/9)*TAU+q*.8;let rx=r*(W/H>1?1.3:1.05);ell(W*.5+dx+Math.cos(a)*rx,H*.5+dy+Math.sin(a)*r,r*.055,r*.11,'#ffb8a1',null,0,a)}
+    }
+    for(let i=0;i<27;i++){let a=i*2.399,tick=((q*speed*.9+i*.218)%1);let rr=Math.pow(tick,1.3)*Math.max(W,H);seg(W/2+Math.cos(a)*rr*.4,H/2+Math.sin(a)*rr*.4,W/2+Math.cos(a)*(rr*.4+tick*80),H/2+Math.sin(a)*(rr*.4+tick*80),'#ffd6a888',2+tick*4)}
+    ctx.save();ctx.translate(W*.5,H*.48);berry(0,0,1.08,Math.sin(p*4)*.34+p*.5,Math.sin(t*9)*9);ctx.restore();vignette(.18);if(p<5.1)label('ごくん！',W*.5,H*.18,Math.min(W*.1,46),'#fff7e6');else label('まだまだ、落ちる！',W*.5,H*.18,Math.min(W*.07,38),'#fff7e6');return}
+  // stomach pool chamber
+  let q=(p-5.1)/(7.4-5.1);ctx.fillStyle='#e97591';ctx.fillRect(0,0,W,H);
+  for(let i=0;i<10;i++){let x=(i*.18-.3)*W,y=H*.3+Math.sin(i*2+t)*H*.06;ell(x,y,W*.18,H*.35,'#f8a4ab','#a94875',5,.3)}
+  path(c=>{c.moveTo(0,H*.72);for(let x=0;x<=W+25;x+=25)c.lineTo(x,H*.68+Math.sin(x*.016+t*3)*21);c.lineTo(W,H);c.lineTo(0,H);c.closePath()},'#ffb34e','#a84b7b',5);
+  for(let i=0;i<27;i++){let a=i*11.2,xx=(random(i)*W+Math.sin(t+i)*25),yy=((random(i+42)*H+t*45*(i%2?1:-.6))%H+H)%H;bubble(xx,yy,7+random(i+25)*17,i%3?'#ffdba3aa':'#d6f4e4aa')}
+  berry(W*.5+Math.sin(t*3)*W*.08,H*(.27+q*.4)+Math.sin(t*8)*8,1.3,Math.sin(t*4)*.25);label('ぽちゃん！',W*.5,H*.14,Math.min(W*.09,45),'#fff8df');vignette(.1)
+}
+function drawReveal(){let q=clamp((fallT-9.7)/2,0,1);drawCity(true);ctx.save();ctx.globalAlpha=1-smooth(0,.88,q);ctx.fillStyle='#b64983';ctx.fillRect(0,0,W,H);for(let i=0;i<9;i++){let y=i*H/8,offs=(Math.sin(i*2+t*2)*60);path(c=>{c.moveTo(0,y);c.bezierCurveTo(W*.32+offs,y-H*.16,W*.62-offs,y+H*.18,W,y);c.lineTo(W,y+H*.07);c.lineTo(0,y+H*.07);c.closePath()},i%2?'#ed7992':'#e68ca3')};ctx.restore();berry(W*.4,H*(.12+.61*easeOut(q)),lerp(1.7,.7,q),pseudorandomSin(t)*PI*.3);}
+function pseudorandomSin(n){return Math.sin(n*1.7)+Math.sin(n*3.1)*.25}
+
+const skyGrad=()=>grad(0,0,0,H,[[0,'#ffb5b6'],[.4,'#ffe5bd'],[1,'#fbd1bb']]);
+function drawCavern(){ctx.fillStyle=skyGrad();ctx.fillRect(0,0,W,H);let ox=cam*.16;
+  // Large wet intestinal folds, cavern ceiling and side glow.
+  path(c=>{c.moveTo(-50,-100);for(let x=-60;x<W+70;x+=16){let a=x+ox;c.lineTo(x,H*.12+Math.sin(a*.008+t*.11)*55+Math.sin(a*.022)*19)}c.lineTo(W+50,-100);c.closePath()},'#e686a8','#a95083',5);
+  path(c=>{c.moveTo(-50,-100);for(let x=-60;x<W+70;x+=15){let a=x+ox;c.lineTo(x,H*.07+Math.sin(a*.008+t*.11)*35+Math.sin(a*.022)*10)}c.lineTo(W+50,-100);c.closePath()},'#bd6195',null);
+  // Giant translucent organic structures behind city
+  for(let i=-2;i<12;i++){let x=(i*310-ox*.9)%(W+650)-300;let y=H*.37+Math.sin(i*2.3)*H*.045;let rad=145+40*random(i+1);ell(x,y,rad,rad*.91,'#f69baa66','#e87b9c88',4,.12);ell(x+25,y+15,rad*.62,rad*.68,'#ffd3b77a');}
+  // veins from ceiling
+  for(let i=0;i<7;i++){let x=((i*330-ox*1.15)%(W+400)+W+400)%(W+400)-200;curvy([[x,-30],[x+40,H*.11],[x-20,H*.21],[x+40,H*.34]],'#ac527e',9);curvy([[x+10,H*.14],[x+80,H*.2],[x+105,H*.29]],'#fa8e9b',6);ell(x+40,H*.34,13,19,'#fa9e80','#8b4575',3)}
+  // sparkle lights and floating red blood cells
+  for(let i=0;i<26;i++){let x=((random(i+20)*W*1.5-t*(8+random(i)*20)-cam*.07)%(W+70)+(W+70))%(W+70)-35;let y=H*(.12+random(i+87)*.53)+Math.sin(t+i)*12;ell(x,y,3+random(i+29)*4,3+random(i+29)*4,i%2?'#fff4d1':'#ffdc82');}
+  for(let i=0;i<5;i++){let x=((i*380-t*(15+i*2)-cam*.25)%(W+280)+(W+280))%(W+280)-140;let y=H*(.43+random(i+99)*.2)+Math.sin(t*.9+i)*15;ell(x,y,22,14,'#fb7c83','#c85075',3,-.3);ell(x,y,11,5,'#f9b1b0');}
+}
+function drawCity(isReveal=false){drawCavern();const s=cityScale(),tx=W*(W<700?.32:.36)-cam*s,ty=H*(W<700?.77:.79);ctx.save();ctx.translate(tx,ty);ctx.scale(s,s);
+  // The dark and bright layered ground is an intestine fold, not normal asphalt.
+  path(c=>{c.moveTo(-1200,-35);for(let x=-1200;x<worldEnd+200;x+=20)c.lineTo(x,-38+Math.sin(x*.013+t*.55)*7+Math.sin(x*.005)*10);c.lineTo(worldEnd+300,1300);c.lineTo(-1200,1300);c.closePath()},'#ee7f95','#813a73',6);
+  path(c=>{c.moveTo(-1200,4);for(let x=-1200;x<worldEnd+200;x+=25)c.lineTo(x,-4+Math.sin(x*.012+t*.5)*5);c.lineTo(worldEnd+300,800);c.lineTo(-1200,800);c.closePath()},'#f9bd99','#e46d83',4);
+  for(let x=-500;x<worldEnd+250;x+=115){ell(x,40+Math.sin(x*.013+t*.55)*3,25,7,'#f4d6ba');ell(x+55,69,15,5,'#ffddc7')}
+  drawPlantsAndPipes();drawLandmark(100,'welcome');
+  for(let i=0;i<spots.length;i++){drawLandmark(spots[i].x,spots[i].id)}
+  drawStreetLife();drawTraveler();ctx.restore();
+  // atmosphere foreground bottom adds depth
+  let soft=ctx.createLinearGradient(0,H*.78,0,H);soft.addColorStop(0,'#fff1db00');soft.addColorStop(1,'#f47e9a29');ctx.fillStyle=soft;ctx.fillRect(0,H*.78,W,H*.22);
+  if(isReveal){return}
+}
+function cityScale(){return W<700?Math.min(W/420,H/760):Math.min(W/1100,H/780)}
+function shadow(x,w=200){ell(x+6,2,w*.5,13,'#8e387a55')}
+function drawPlantsAndPipes(){
+  // Winding vessel network doubles as a town's aerial walkway.
+  for(let i=0;i<9;i++){let x=i*560-320;path(c=>{c.moveTo(x-90,-145);c.bezierCurveTo(x+80,-335,x+260,-130,x+470,-235)},null,'#be5280',31);path(c=>{c.moveTo(x-90,-145);c.bezierCurveTo(x+80,-335,x+260,-130,x+470,-235)},null,'#fa9ca3',24);path(c=>{c.moveTo(x-90,-147);c.bezierCurveTo(x+80,-337,x+260,-132,x+470,-237)},null,'#ffe0c5',3)}
+  for(let i=0;i<105;i++){let x=i*47-100,y=-25;let a=Math.sin(i*11.7+t*.95)*.1;ctx.save();ctx.translate(x,y);ctx.rotate(a);path(c=>{c.moveTo(-8,0);c.quadraticCurveTo(-21,-50,-4,-66);c.quadraticCurveTo(20,-51,10,0);c.closePath()},i%4?'#ffc1ad':'#9ce4cb','#9c6683',2);ctx.restore()}
+  // Mucosal mushroom lights that gently pulse.
+  for(let i=0;i<34;i++){let x=i*141+47,y=-30;seg(x,y,x,-95,'#833f74',6);ell(x,-103,15+Math.sin(t*2+i)*2,20,i%3?'#ffdb8f':'#d4c1fa','#833f74',3);ell(x-4,-107,4,5,'#fff5de')}
+}
+function drawSign(x,y,text,color='#fff7df',width=220){ctx.save();ctx.translate(x,y);ctx.rotate(Math.sin(x*.1)*.025);rr(-width/2,-25,width,48,18,color,INK,4);label(text,0,0,18,INK);ctx.restore()}
+function door(x,y=0,fill='#573867'){path(c=>{c.moveTo(x-45,y);c.lineTo(x-45,y-85);c.bezierCurveTo(x-48,y-150,x+48,y-150,x+45,y-85);c.lineTo(x+45,y);c.closePath()},fill,INK,5);ell(x+26,y-56,5,5,'#ffdc78')}
+function windowRound(x,y,rad=33,color='#e8fef6'){ell(x,y,rad,rad,color,INK,4);ell(x-7,y-8,rad*.35,rad*.27,'#ffffffaa')}
+function displayMarker(x,y,color='#ffcf61'){ell(x,y,21+Math.sin(t*3)*2,21+Math.sin(t*3)*2,color,INK,3);star(x,y,10,'#fff8dc',t*.6)}
+function drawLandmark(x,id){let h=Math.sin(t*1.3+x*.01)*2;
+ ctx.save();ctx.translate(x,h);
+ if(id==='welcome'){
+   shadow(0,320);path(c=>{c.moveTo(-190,-10);c.bezierCurveTo(-215,-245,-90,-320,0,-295);c.bezierCurveTo(100,-328,216,-238,194,-10)},null,'#8d487e',30);path(c=>{c.moveTo(-190,-10);c.bezierCurveTo(-215,-245,-90,-320,0,-295);c.bezierCurveTo(100,-328,216,-238,194,-10)},null,'#f7a7af',23);path(c=>{c.moveTo(-187,-14);c.bezierCurveTo(-205,-247,-88,-311,0,-289);c.bezierCurveTo(100,-316,205,-238,191,-14)},null,'#ffe5ca',4);
+   rr(-158,-235,315,66,26,'#ffe48e',INK,5);label('WELCOME TO',0,-211,16,INK);label('ちょうないタウン',0,-186,25,INK);for(let i=0;i<5;i++)bubble(-120+i*62,-267+Math.sin(t*2+i)*8,8,'#fff0c7');
+   label('ENTER →',60,-55,15,'#7a3c71');
+ }
+ if(id==='brain'){
+   shadow(0,350);rr(-153,-215,306,210,43,'#d3b5f5',INK,6);rr(-137,-150,274,150,32,'#f8ddf8',INK,3);for(let i=-1;i<=1;i++)windowRound(i*95,-145,32,'#fff4de');
+   // giant brain roof
+   for(let i=0;i<9;i++){let a=i*TAU/9;ell(Math.cos(a)*92,-315+Math.sin(a)*43,70,65,i%2?'#ec98ce':'#f2abd9',INK,4)}ell(0,-323,104,81,'#f2add4',INK,5);
+   for(let i=0;i<7;i++){let vx=-85+i*29;path(c=>{c.moveTo(vx,-330+Math.sin(i)*25);c.bezierCurveTo(vx+40,-360+Math.cos(i)*20,vx-18,-280,vx+24,-295)},null,'#bc64a0',4)}
+   seg(-93,-217,-132,-267,'#b974b3',7);seg(93,-217,123,-274,'#b974b3',7);star(-145,-281,19,'#ffe58d',t*.6);star(134,-283,14,'#9be5cb',t*.5);
+   rr(-92,-241,184,46,20,'#fff4e7',INK,4);label('ひらめき発電所',0,-217,18);door(0,-1);
+ }
+ if(id==='craft'){
+   shadow(0,390);rr(-160,-229,320,224,55,'#ffbd79',INK,6);rr(-143,-161,286,160,25,'#ffe1ae',INK,4);ell(0,-220,166,55,'#ffa67b',INK,5);ell(0,-247,124,39,'#ffd6a2',INK,4);
+   rr(-107,-360,66,103,17,'#f29280',INK,4);rr(49,-343,50,89,14,'#ef8f7f',INK,4);
+   for(let i=0;i<3;i++)bubble(-67+Math.sin(t*.55+i)*23,-402-i*35,16+i*4,'#ffefc8cc','#fff8e5');
+   drawSign(0,-208,'つくる工房','#ffe7ab',210);windowRound(-91,-105,37,'#b7f0df');windowRound(94,-105,37,'#b7f0df');door(0,0,'#a9667b');
+   for(let d of [-1,1]){ell(d*119,-25,21,13,'#e8b477',INK,3);path(c=>{c.moveTo(d*119-17,-28);c.lineTo(d*119-13,-58);c.lineTo(d*119+12,-58);c.lineTo(d*119+17,-28)},'#fff6d5',INK,2)}
+ }
+ if(id==='sea'){
+   shadow(0,390);path(c=>{c.moveTo(-176,-8);c.lineTo(-176,-164);c.bezierCurveTo(-175,-343,175,-343,176,-164);c.lineTo(176,-8);c.closePath()},'#ade2d1',INK,6);path(c=>{c.moveTo(-152,-8);c.lineTo(-152,-170);c.bezierCurveTo(-151,-314,151,-314,152,-170);c.lineTo(152,-8);c.closePath()},'#d9f6dd','#4a9689',3);
+   for(let i=0;i<7;i++){let bx=-125+i*40;curvy([[bx,-36],[bx+Math.sin(t+i)*13,-92],[bx-15+Math.sin(t+i)*10,-148],[bx+Math.sin(t+i*1.3)*23,-198]],i%2?'#56b29f':'#5bbab3',10);ell(bx+Math.sin(t+i*1.3)*23,-200,16,9,'#8dd6b1',null,0,i*.4)}
+   for(let i=0;i<8;i++){let bx=-127+i*36;ell(bx,-32,15,13,i%2?'#fad09b':'#cdb2e0',INK,2);}
+   rr(-117,-233,236,51,18,'#fff0bf',INK,4);label('採集の庭',0,-207,21);door(0,0,'#448f8e');star(127,-295,19,'#ffce5e',.3+t*.2);for(let j=0;j<4;j++)bubble(-95+j*58,-271-Math.sin(t+j)*7,7,'#ffffff88');
+ }
+ if(id==='lab'){
+   shadow(0,350);rr(-164,-255,328,250,35,'#92bdf0',INK,6);rr(-141,-222,282,183,23,'#c2d7ff',INK,4);rr(-120,-197,240,112,12,'#363a70',INK,5);
+   for(let i=0;i<8;i++){seg(-93+i*25,-132,-71+i*25,-151,i%2?'#75dbc6':'#f7ca73',5)}label('</>',0,-175,47,'#fff1ae');
+   for(let i=0;i<5;i++)ell(-91+i*44,-105,6,6,i%2?'#ffad9e':'#8ee2c4');rr(-69,-279,138,42,20,'#fff1ce',INK,4);label('なんでも実験室',0,-257,16);door(0,0,'#3d5582');
+   ell(-132,-282,26,26,'#c9a9f2',INK,4);star(-132,-282,13,'#fff6ca',t*.7);for(let i=0;i<3;i++)bubble(105+i*26,-302+i*20,10,'#e8e0fa');
+ }
+ if(id==='heart'){
+   shadow(0,390);rr(-175,-215,350,210,67,'#ffb6b7',INK,6);rr(-151,-151,302,140,38,'#ffe2cd',INK,4);
+   // beating heart sculpture, directly integrated with capillaries
+   ctx.save();ctx.translate(0,-335);let puls=1+Math.sin(t*3.3)*.035;ctx.scale(puls,puls);path(c=>{c.moveTo(0,90);c.bezierCurveTo(-155,3,-120,-75,-49,-73);c.bezierCurveTo(-16,-72,0,-46,0,-43);c.bezierCurveTo(17,-79,59,-81,88,-61);c.bezierCurveTo(154,0,90,55,0,90)},'#fe727d',INK,6);path(c=>{c.moveTo(-43,-44);c.bezierCurveTo(-70,-12,-60,13,-37,22)},null,'#ffb7a1',9);ctx.restore();
+   drawSign(0,-221,'どきどき広場','#fff0bd',230);door(0,0,'#be637e');windowRound(-108,-105,31,'#ffc6ca');windowRound(108,-105,31,'#ffc6ca');
+   for(let i=-1;i<=1;i++)star(i*125,-266+Math.sin(t*2+i)*7,11,'#ffe18c',t+i)
+ }
+ if(id==='letter'){
+   shadow(0,400);rr(-182,-235,364,229,36,'#ffda84',INK,6);path(c=>{c.moveTo(-190,-225);c.lineTo(0,-347);c.lineTo(195,-225);c.closePath()},'#ff9b93',INK,6);rr(-144,-203,288,90,22,'#fff3c9',INK,4);label('これから駅',0,-163,27);door(0,0,'#62507a');
+   for(let i=-1;i<=1;i++){ell(i*132,-72,26,37,'#b7ebe0',INK,4);seg(i*130,-107,i*130,-39,'#e2aa82',4)}
+   star(0,-322,20,'#fff6d8',t*.5);rr(128,-161,53,76,8,'#f47d81',INK,4);label('✉',155,-123,27,'#fff9d9')
+ }
+ ctx.restore()}
+function drawStreetLife(){
+ // Roadside signs, footsteps, funny organic bicycles and wandering microbes.
+ for(let i=0;i<24;i++){let x=i*195+285;let bob=Math.sin(t*1.9+i)*5;seg(x,-40,x,-111+bob,'#6e4a78',5);ell(x,-115+bob,16,19,i%4?'#ffe2a5':'#a8e8d2',INK,3);ell(x-5,-119+bob,5,5,'#fff7d3')}
+ for(let i=0;i<10;i++){let x=((i*510+t*(i%2?36:-28))%(worldEnd+200)+worldEnd+200)%(worldEnd+200);let y=-50+Math.sin(t*2+i)*4;ell(x,y,28,22,i%2?'#ad9bde':'#8ed6ba',INK,3);ell(x-10,y-4,4,4,INK);ell(x+10,y-4,4,4,INK);path(c=>c.arc(x,y+3,7,.1,PI-.1),null,INK,2);for(let k=-1;k<=1;k++)seg(x+k*15,y+18,x+k*15-6,y+26,INK,2)}
+ for(let i=0;i<18;i++){let x=i*270+120,y=-38;star(x,y,7,i%2?'#ffe4ad':'#f8b5c6',t*.3+i)}
+}
+function drawTraveler(){let moving=keys.left||keys.right;let p=player.x,y=-56+Math.sin(t*7)*((moving)?5:2);if(!hasEntered)return;
+ ctx.save();ctx.translate(p,y);ctx.rotate(moving?Math.sin(t*10)*.05:Math.sin(t*2)*.03);
+ // tiny explorer strawberry with shoes and backpack
+ ell(0,55,40,9,'#873d755c');rr(-29,17,23,38,8,'#7054a1',INK,3);rr(17,17,23,38,8,'#7054a1',INK,3);
+ ctx.save();if(player.facing<0)ctx.scale(-1,1);rr(24,-15,18,45,9,'#ffdb77',INK,3);berry(0,-17,.88,0);seg(-17,23,-32,31,INK,4);seg(23,18,38,23,INK,4);ctx.restore();ctx.restore();
+ // speech bubble floating above when near a place
+ if(nearest!==null){let d=spots[nearest];let yy=-173+Math.sin(t*3)*4;rr(player.x-76,yy-37,152,40,20,'#fff8e4',INK,3);label('ここ、なんだろう？',player.x,yy-16,13,INK)}
+}
+function updateNear(){let best=null,dist=999;spots.forEach((s,i)=>{let d=Math.abs(player.x-s.x);if(d<dist){dist=d;best=i}});nearest=dist<195?best:null;const action=$('actionBtn');action.style.display=nearest!==null?'block':'none';if(nearest!==null){const s=spots[nearest];action.textContent=(collected.has(s.id)?'もう一度みる':'ちょっとのぞく')+' ↗';}
+ const x=player.x;let district=x<375?['ENTRANCE / 00','ちょうないタウン']:x<1020?['DISTRICT / 01','ひらめき通り']:x<1730?['DISTRICT / 02','ものづくり通り']:x<2450?['DISTRICT / 03','採集の庭']:x<3150?['DISTRICT / 04','実験の路地']:x<3890?['DISTRICT / 05','こころの広場']:['DISTRICT / 06','これから駅'];$('districtNumber').textContent=district[0];$('districtName').textContent=district[1];
+}
+function begin(){if(mode==='intro'){mode='fall';fallT=0;$('intro').classList.add('hidden');$('fallHud').style.display='block';$('introCounter').style.display='none';$('chapter').textContent='01 / のみこまれ中';}}
+function arrive(){mode='city';hasEntered=true;fallT=0;player.x=100;cam=75;$('fallHud').style.display='none';$('cityHud').style.display='block';$('noteBtn').style.display='inline-block';$('chapter').textContent='02 / ちょうないタウン';updateNear();toast('腸の街に、とうちゃく！')}
+function setModal(id,on){$(id).classList.toggle('open',on);if(on){keys.left=false;keys.right=false} }
+function anyModal(){return Array.from(document.querySelectorAll('.overlay')).some(e=>e.classList.contains('open'))}
+function hideAll(){document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('open'));}
+function inspect(index){if(index===null||mode!=='city')return;activeSpot=index;let s=spots[index];$('cardNum').textContent=s.tag+' / DISCOVERY '+String(index+1).padStart(2,'0');$('cardIcon').textContent=s.emoji;$('cardIcon').style.background=s.color;$('cardTitle').textContent=s.title;$('cardBody').textContent=s.body;$('cardDetail').textContent=s.detail;$('claimBtn').textContent=collected.has(s.id)?'街に戻る →':'この発見をポケットへ ＋';setModal('cardOverlay',true)}
+function claim(){if(activeSpot===null)return;let s=spots[activeSpot];if(!collected.has(s.id)){collected.add(s.id);$('headCount').textContent=collected.size;$('discoverCount').textContent=collected.size;toast('「'+s.short+'」を見つけた！');if(collected.size===total)setTimeout(()=>toast('6つの発見がそろった！ ノートを開いてみよう'),1300)}hideAll();}
+function notebook(){let grid=$('bookGrid');grid.innerHTML='';spots.forEach((s,i)=>{let found=collected.has(s.id),b=document.createElement('button');b.type='button';b.className='note-tile '+(found?'found':'missing');b.innerHTML=`<div class="tile-symbol">${found?s.emoji:'？'}</div><div class="tile-name">${found?s.short:'まだ見つけていない'}</div><div class="tile-desc">${found?s.name:'街を歩いて探そう'}</div>`;b.onclick=()=>{if(found){hideAll();inspect(i)}else{hideAll();player.x=s.x-170;updateNear()}};grid.appendChild(b)});$('bookSub').textContent=`${collected.size} / ${total} を発見。かなちをつくる6つのかけら。`;setModal('notebookOverlay',true)}
+function toast(msg){let el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2400)}
+$('startBtn').addEventListener('click',begin);$('skipBtn').addEventListener('click',arrive);$('noteBtn').addEventListener('click',notebook);$('helpBtn').addEventListener('click',()=>setModal('helpOverlay',true));$('helpClose').addEventListener('click',hideAll);$('backTown').addEventListener('click',hideAll);$('claimBtn').addEventListener('click',claim);$('actionBtn').addEventListener('click',()=>inspect(nearest));document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',hideAll));document.querySelectorAll('.overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)hideAll()}));
+for(let [id,k] of [['leftBtn','left'],['rightBtn','right']]){const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();keys[k]=true;try{b.setPointerCapture(e.pointerId)}catch(_err){};if(mode==='city'&&!anyModal()){player.x=clamp(player.x+(k==='right'?95:-95),70,worldEnd-180);updateNear()}b.classList.add('pressed')});for(let ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>{keys[k]=false;b.classList.remove('pressed')})}
+addEventListener('keydown',e=>{if(['ArrowRight','ArrowLeft',' ','ArrowUp'].includes(e.key))e.preventDefault();if(e.key==='Escape'){hideAll();return}if(anyModal())return;if(mode==='intro'&&(e.key==='Enter'||e.key===' ')){begin();return}if(mode==='fall'&&(e.key==='Enter'||e.key===' ')){arrive();return}if(mode==='city'){if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')keys.right=true;if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')keys.left=true;if(e.key.toLowerCase()==='e'||e.key==='ArrowUp'||e.key===' '){inspect(nearest)}if(e.key.toLowerCase()==='n')notebook();}});
+addEventListener('keyup',e=>{if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')keys.right=false;if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')keys.left=false});addEventListener('blur',()=>{keys.left=false;keys.right=false});
+canvas.addEventListener('pointerdown',e=>{if(mode!=='city'||anyModal())return;let s=cityScale(),tx=W*(W<700?.32:.36)-cam*s,ty=H*(W<700?.77:.79);let x=(e.clientX-tx)/s,y=(e.clientY-ty)/s;let best=null,d=999;spots.forEach((sp,i)=>{let delta=Math.hypot((x-sp.x),Math.max(0,y+180)*.5);if(delta<d){d=delta;best=i}});if(d<235)inspect(best)});
+let prev=performance.now();function frame(now){dt=Math.min((now-prev)/1000,.04);prev=now;t+=dt;
+ if(mode==='fall'){fallT+=dt;$('fallProgress').style.width=Math.min(100,fallT/11.4*100)+'%';$('fallLabel').textContent=fallT<2?'ぱくっ！ のみこまれた！':fallT<5.1?'食道を ぐんぐん落下中…':fallT<7.4?'胃に ぽちゃん！':fallT<9.7?'くねくね道を 抜けて…':'なにかが見えてきた！';if(fallT>11.7)arrive()}
+ if(mode==='city'){cityTime+=dt;if(!anyModal()){let dir=(keys.right?1:0)-(keys.left?1:0);player.x=clamp(player.x+dir*dt*350,70,worldEnd-180);if(dir)player.facing=dir;cam+= (player.x-cam)*(1-Math.exp(-dt*4.6));updateNear();}}
+ ctx.save();ctx.setTransform(DPR,0,0,DPR,0,0);if(mode==='intro')drawIntro();else if(mode==='fall'){if(fallT<9.7)drawFall();else drawReveal()}else drawCity();ctx.restore();requestAnimationFrame(frame)}
+player.facing=1;requestAnimationFrame(frame);
+// Test-only scene override to support visual QA without waiting for the cinematic.
+if(new URLSearchParams(location.search).get('scene')==='city')arrive();
+})();
+</script>
+</body>
+</html>
