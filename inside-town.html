@@ -69,18 +69,18 @@
 
 <div id="endingStage" aria-live="polite" aria-label="エンディング演出">
   <div id="endingCopy" class="ending-copy"></div>
-  <div id="endingNote" class="ending-note">A LITTLE STRAWBERRY BECOMES A PART OF KANACHI</div>
+  <div id="endingNote" class="ending-note">ABSORPTION COMPLETE · WELCOME TO KANACHI</div>
   <div id="endingFlash" class="ending-flash"></div>
   <button type="button" id="endingSkip" class="ending-skip">エンディングへ ↗</button>
   <div id="endCredits" aria-label="クリア画面と連絡先"><div class="end-card">
     <div class="end-glimmer">· · ✦ · ·</div>
     <div class="end-huge">THANK<br>YOU!</div>
-    <p class="end-quiet">いちごは、かなちの一部になりました。<br>たべられてくれて、ありがとう。<br>……ということで、連絡先です。</p>
-    <div class="contact-sign">CONTACT / いきなり現実にもどる</div>
+    <p class="end-quiet">いちごとしての冒険は、ここで終了。<br>かなちの一部としての生活が始まります。<br>……というわけで、連絡先です。</p>
+    <div class="contact-sign">CONTACT / 吸収後のお問い合わせ</div>
     <div class="contact-name">KANACHI</div>
     <p class="contact-status">メール窓口は準備中。<br>いまはGitHubのプロフィールを置いておきます。</p>
     <div class="end-actions"><a href="https://github.com/kanatama0416-glitch" target="_blank" rel="noopener noreferrer">GitHubを見る ↗</a><button type="button" id="restartJourney">もう一度たべられる ↺</button></div>
-    <div class="end-foot">THE END ? — これからも、よろしくね、、、、</div>
+    <div class="end-foot">THE END ? — また、どこかの細胞で。</div>
   </div></div>
 </div>
 <div id="toast" aria-live="polite"></div>
@@ -303,12 +303,12 @@ function drawEnding(){let q=finalT;
 }
 function tickFinale(delta){finalT+=delta;
  if(finalT<1.8)return;
- if(finalT<4){endingCue(0,'あれっ……？',true);return}
- if(finalT<6.9){endingCue(1,'いちごが、吸収されてゆく……',true);return}
- if(finalT<8.8){if(finalCue!==2){endingCue(2,'きらきらきら……',true);$('endingFlash').classList.add('bang')}return}
- if(finalT<11.2){endingCue(3,'あり、がとう、、、');return}
- if(finalT<13.2){endingCue(4,'これからも、、');return}
- if(finalT<15.4){endingCue(5,'よろしくね、、、、');$('endingNote').classList.add('show');return}
+ if(finalT<4){endingCue(0,'……あれ？',true);return}
+ if(finalT<6.9){endingCue(1,'いちごが、からだに溶けていく。',true);return}
+ if(finalT<8.8){if(finalCue!==2){endingCue(2,'吸収、完了。',true);$('endingFlash').classList.add('bang')}return}
+ if(finalT<11.2){endingCue(3,'ここまで来てくれて、ありがとう。',true);return}
+ if(finalT<13.2){endingCue(4,'もう、赤の他人じゃないね。',true);return}
+ if(finalT<15.4){endingCue(5,'これからも、よろしくお願いします。',true);$('endingNote').classList.add('show');return}
  showCredits();
 }
 $('endingSkip').addEventListener('click',showCredits);
