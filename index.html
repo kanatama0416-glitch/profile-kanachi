@@ -257,6 +257,156 @@ body{background:#f6ebc8}
  .hamster-stage{min-height:300px}
 }
 @media(prefers-reduced-motion:reduce){.ocular-show .broadcast-track,.ocular-show .poster-radiant,.ocular-show .poster-seal svg,.ocular-show .eye-giant{animation:none!important}}
+
+.poster-divider{background:#111;color:#f4de58;border-top:4px solid #111;border-bottom:4px solid #111;overflow:hidden;position:relative;z-index:4}
+.poster-divider.alt-blue{background:#ef4b4a;color:#111}
+.poster-divider.alt-red{background:#111;color:#ef4b4a}
+.poster-divider.alt-yellow{background:#f4de58;color:#111}
+.poster-divider-track{display:flex;width:max-content;white-space:nowrap;gap:0;animation:kanachi-marquee 17s linear infinite;font:1000 clamp(18px,3vw,38px)/1 Arial,sans-serif;letter-spacing:-.04em;text-transform:uppercase}
+.poster-divider-track span{padding:12px 18px}
+@keyframes kanachi-marquee{to{transform:translateX(-50%)}}
+@keyframes kanachi-spin{to{transform:rotate(360deg)}}
+@keyframes kanachi-float{0%,100%{transform:translateY(0) rotate(var(--rot,0deg))}50%{transform:translateY(-10px) rotate(calc(var(--rot,0deg) + 2deg))}}
+@keyframes kanachi-pulse{0%,100%{scale:1}50%{scale:1.06}}
+@keyframes kanachi-glow{0%,100%{filter:drop-shadow(0 0 0 rgba(0,0,0,0))}50%{filter:drop-shadow(0 0 24px rgba(255,229,87,.65))}}
+.hamster-section,.about,.likes,.works,.now,.footer{position:relative;overflow:hidden}
+.section-head{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(240px,.9fr);align-items:end;gap:28px;margin-bottom:36px;position:relative;z-index:2}
+.section-title{line-height:.84!important;letter-spacing:-.09em!important;margin:0;text-transform:uppercase;text-shadow:4px 4px 0 #1111}
+.section-caption{background:#fff6dd;border:4px solid #111;box-shadow:8px 8px 0 #111;padding:18px 20px;font-weight:900;line-height:1.6;transform:rotate(2deg)}
+.highlight{background:#f3e35d;padding:0 .2em}
+.eyebrow{display:inline-block;padding:7px 12px;background:#111;color:#f7ebc9;letter-spacing:.12em;font-size:11px;font-weight:1000}
+.hamster-section{background:linear-gradient(180deg,#55bdd4 0 72%,#f6ebc8 72% 100%);border-top:5px solid #111;border-bottom:5px solid #111;padding:88px 0 100px}
+.hamster-section:before{content:"";position:absolute;left:-140px;top:-110px;width:300px;height:300px;background:#ef4b4a;border:5px solid #111;border-radius:50%}
+.hamster-section:after{content:"";position:absolute;right:-120px;bottom:-150px;width:360px;height:360px;background:#f3df57;border:5px solid #111;border-radius:50%}
+.hamster-layout{display:grid;grid-template-columns:.9fr 1.1fr;gap:34px;align-items:center;position:relative;z-index:2}
+.hamster-copy{background:#f8efcf;border:4px solid #111;box-shadow:10px 10px 0 #111;padding:28px;transform:rotate(-2deg)}
+.hamster-copy h2{font:1000 clamp(54px,7.5vw,108px)/.86 Arial,sans-serif;letter-spacing:-.09em;margin:18px 0 18px;text-shadow:4px 4px 0 #ef4b4a;color:#111}
+.hamster-copy p{font-size:18px;line-height:1.75;font-weight:900;margin:0 0 18px}
+.hamster-mini-note{font-size:13px;line-height:1.7;font-weight:800;background:#111;color:#f7ebc9;padding:14px 16px;margin-top:16px}
+.hamster-stage{position:relative;display:grid;place-items:center;min-height:470px;background:#f8efcf;border:5px solid #111;box-shadow:12px 12px 0 #111;overflow:hidden}
+.hamster-stage:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 6px,rgba(0,0,0,.03) 6px 7px);pointer-events:none}
+.hamster-halo{position:absolute;width:min(76%,360px);aspect-ratio:1;border-radius:50%;background:repeating-conic-gradient(from 0deg,#ef4b4a 0 20deg,#f3dd57 20deg 40deg,#4ebcda 40deg 56deg,#ef4b4a 56deg 72deg);border:5px solid #111;box-shadow:0 0 0 10px #f8efcf,0 0 0 14px #111;animation:kanachi-spin 26s linear infinite}
+.hamster-orbit{position:absolute;border:4px dashed #111;border-radius:50%;animation:kanachi-spin 16s linear infinite}
+.hamster-orbit.orbit-a{width:74%;height:54%;transform:rotate(18deg)}
+.hamster-orbit.orbit-b{width:56%;height:74%;transform:rotate(-14deg);animation-direction:reverse;animation-duration:20s}
+.hamster-photo{position:relative;z-index:4;width:min(100%,360px)!important;max-height:none!important;animation:hamster-bob 3.6s ease-in-out infinite,kanachi-glow 3.2s ease-in-out infinite;filter:drop-shadow(12px 16px 0 #111)}
+.hamster-photo.is-peace{transform:translateY(-14px) rotate(8deg) scale(1.08)!important;filter:drop-shadow(14px 18px 0 #111) saturate(1.18) hue-rotate(-16deg)}
+.hamster-stage:has(.hamster-photo.is-peace) .hamster-halo{animation-duration:8s;filter:hue-rotate(-12deg) saturate(1.15)}
+.hamster-stage:has(.hamster-photo.is-peace) .hamster-caption{background:#ef4b4a;color:#fff;transform:rotate(-7deg) scale(1.03)}
+.hamster-stage:has(.hamster-photo.is-peace) .hamster-ticket{background:#111;color:#f3dd57}
+.hamster-caption,.hamster-ticket,.hamster-badge{position:absolute;z-index:5;border:4px solid #111;font-weight:1000;letter-spacing:.04em;box-shadow:6px 6px 0 #111}
+.hamster-caption{bottom:20px;right:20px;background:#f3dd57;padding:12px 16px;transform:rotate(-6deg);font-size:20px}
+.hamster-ticket{left:18px;bottom:26px;background:#ef4b4a;color:#fff;padding:10px 14px;transform:rotate(3deg);font-size:12px}
+.hamster-badge{padding:10px 14px;font-size:12px;background:#111;color:#f8efcf;animation:kanachi-float 4.4s ease-in-out infinite}
+.hamster-badge.badge-a{left:14px;top:16px;--rot:-4deg}
+.hamster-badge.badge-b{right:18px;top:22px;background:#f3dd57;color:#111;--rot:6deg;animation-delay:-2s}
+.hamster-star{position:absolute;z-index:3;font-size:54px;font-weight:1000;line-height:1;animation:kanachi-float 3s ease-in-out infinite}
+.hamster-star.star-a{left:7%;top:16%;color:#ef4b4a;--rot:-10deg}
+.hamster-star.star-b{right:11%;top:20%;color:#4ebcda;--rot:9deg;animation-delay:-1s}
+.hamster-star.star-c{left:12%;bottom:18%;color:#f3dd57;--rot:-5deg;animation-delay:-2s}
+.about{background:#f6ebc8;padding:100px 0 105px}
+.about:before{content:"";position:absolute;left:-170px;bottom:-170px;width:360px;height:360px;background:#4ebcda;border:5px solid #111;border-radius:50%}
+.about:after{content:"PROFILE DOSSIER";position:absolute;right:20px;top:24px;font:1000 12px/1 Arial,sans-serif;letter-spacing:.18em;transform:rotate(12deg);background:#ef4b4a;color:#fff;padding:10px 12px;border:3px solid #111;box-shadow:5px 5px 0 #111}
+.about-grid{display:grid;grid-template-columns:.88fr 1.12fr;gap:34px;align-items:start;position:relative;z-index:2}
+.about-left{background:#111;color:#f8efcf;padding:28px;border:4px solid #111;box-shadow:10px 10px 0 #ef4b4a;transform:rotate(-2deg)}
+.about-left p{font-size:20px;line-height:1.75;font-weight:900}
+.about-intro{margin-bottom:22px}
+.about-intro .small-eyeball{width:40px;height:26px;border-width:4px}
+.footnote{font-size:12px;line-height:1.7;font-weight:800;background:#f3dd57;color:#111;display:inline-block;padding:10px 12px;margin-top:12px}
+.tear-board{min-height:530px;transform:rotate(2deg)}
+.tear-back,.tear-front{border:5px solid #111;box-shadow:10px 10px 0 #111}
+.tear-back{background:#f4de58;padding:28px}
+.tear-back h3{font-size:36px;line-height:1;margin:14px 0 24px}
+.tear-back dl{display:grid;grid-template-columns:100px 1fr;gap:10px 18px;font-size:16px;font-weight:900}
+.dt,.dd{margin:0}
+.tear-front{background:#ef4b4a;color:#fff;padding:28px}
+.tear-front h3{font-size:58px;line-height:.9;text-shadow:4px 4px 0 #111}
+.tear-btn,.reset-btn,.collection-next,.work-more,.modal-link{background:#111;color:#f8efcf;border:3px solid #111;box-shadow:4px 4px 0 #111;font-weight:1000}
+.tear-btn:hover,.reset-btn:hover,.collection-next:hover,.work-more:hover,.modal-link:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 #111}
+.likes{background:#d9c3e7;padding:100px 0 110px;border-top:5px solid #111;border-bottom:5px solid #111}
+.likes:before{content:"";position:absolute;right:-90px;top:-90px;width:230px;height:230px;background:#ef4b4a;border:5px solid #111;border-radius:50%}
+.likes:after{content:"";position:absolute;left:-100px;bottom:-100px;width:260px;height:260px;background:#f3dd57;border:5px solid #111;border-radius:50%}
+.likes-grid{display:grid;grid-template-columns:1.08fr .92fr;align-items:stretch;gap:28px;position:relative;z-index:2}
+.object-space{background:#f8efcf;border:5px solid #111;border-radius:0;min-height:520px;box-shadow:12px 12px 0 #111;overflow:hidden}
+.object-space:before{content:"";position:absolute;inset:auto auto -40px -30px;width:170px;height:170px;border-radius:50%;background:#4ebcda;border:4px solid #111}
+.object-space:after{content:"";position:absolute;right:-25px;top:-25px;width:130px;height:130px;border-radius:50%;background:#f3dd57;border:4px solid #111}
+.obj-note{font-weight:1000;letter-spacing:.12em;background:#111;color:#f8efcf;padding:8px 10px}
+.object-button{filter:drop-shadow(6px 8px 0 #111);transition:transform .25s,filter .25s}
+.object-button:hover,.object-button.is-active{transform:scale(1.07) rotate(-3deg);filter:drop-shadow(10px 12px 0 #111)}
+.collection-panel{background:#111;color:#f8efcf;border:5px solid #111;box-shadow:12px 12px 0 #ef4b4a;transform:rotate(-1deg)}
+.collection-top{background:#ef4b4a;color:#111;padding:14px 18px;font-weight:1000;letter-spacing:.12em}
+.collection-body{padding:28px 24px}
+.collection-number{display:inline-block;background:#f3dd57;color:#111;padding:7px 12px;border:3px solid #111;box-shadow:4px 4px 0 #111;font-weight:1000}
+.collection-body h3{font-size:38px;line-height:1;margin:18px 0 16px;color:#f3dd57;text-shadow:3px 3px 0 #ef4b4a}
+.collection-body p{font-size:17px;line-height:1.8;font-weight:900}
+.collection-bottom{padding:0 24px 24px}
+.collection-dots .collection-dot{background:#f8efcf}.collection-dots .is-active{background:#4ebcda}
+.collection-next{background:#f3dd57;color:#111;border-color:#111;box-shadow:6px 6px 0 #ef4b4a}
+.works{background:#f3dfb3;padding:104px 0 110px}
+.works:before{content:"";position:absolute;left:-120px;top:140px;width:260px;height:260px;background:#4ebcda;border:5px solid #111;border-radius:50%}
+.works-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;position:relative;z-index:2}
+.work-card{background:#f8efcf;border:5px solid #111;box-shadow:10px 10px 0 #111;transform:rotate(var(--tilt,0deg));transition:transform .25s,box-shadow .25s}
+.work-card:nth-child(1){--tilt:-2deg}.work-card:nth-child(2){--tilt:2deg}.work-card:nth-child(3){--tilt:-1deg}
+.work-card:hover{transform:translateY(-6px) rotate(calc(var(--tilt,0deg) + 2deg));box-shadow:14px 14px 0 #ef4b4a}
+.work-art{border-bottom:5px solid #111;position:relative;overflow:hidden}
+.work-art:before{content:"";position:absolute;inset:14px;border:4px solid #111;background:repeating-conic-gradient(from 0deg,#ef4b4a 0 17deg,#f3dd57 17deg 34deg,#4ebcda 34deg 46deg);border-radius:50%;opacity:.88}
+.work-eye,.work-pot,.work-rock{position:relative;z-index:2;filter:drop-shadow(6px 7px 0 #111)}
+.work-text{padding:22px 20px 24px;background:#f8efcf}
+.work-text small{display:inline-block;background:#111;color:#f8efcf;padding:7px 10px;letter-spacing:.08em}
+.work-text h3{font-size:40px;line-height:.92;margin:16px 0 14px;text-shadow:3px 3px 0 #ef4b4a}
+.work-text p{font-size:15px;line-height:1.8;font-weight:900}
+.work-more{padding:12px 14px;background:#f3dd57;color:#111;box-shadow:5px 5px 0 #111}
+.secret-note{top:auto;left:auto;right:16px;background:#ef4b4a;color:#fff;padding:8px 10px;border:3px solid #111;box-shadow:4px 4px 0 #111;font-size:11px;font-weight:1000;letter-spacing:.08em}
+.secret-eye-btn{background:#111;border:4px solid #111;box-shadow:4px 4px 0 #ef4b4a}
+.now{background:#111;color:#f8efcf;padding:95px 0}
+.now:before{content:"CURRENT SIGNAL";position:absolute;left:24px;top:24px;background:#ef4b4a;color:#111;border:4px solid #111;padding:10px 14px;font:1000 12px/1 Arial,sans-serif;letter-spacing:.14em;box-shadow:6px 6px 0 #f3dd57;transform:rotate(-4deg)}
+.now-inner{display:grid;grid-template-columns:.88fr 1.12fr;gap:28px;align-items:start;position:relative;z-index:2}
+.now h2{font-size:clamp(70px,9vw,132px);line-height:.82;letter-spacing:-.09em;margin:16px 0 0;text-shadow:4px 4px 0 #ef4b4a}
+.now p{font-size:22px;line-height:1.75;font-weight:900;max-width:none;background:#f8efcf;color:#111;border:4px solid #111;box-shadow:8px 8px 0 #4ebcda;padding:24px;transform:rotate(2deg)}
+.now-stamps span{font-size:18px;padding:11px 14px;background:#f3dd57;color:#111;border:3px solid #111;box-shadow:5px 5px 0 #ef4b4a;font-weight:1000}
+.footer{background:#f6ebc8;color:#111;padding:86px 0 28px;border-top:5px solid #111}
+.footer-main{border-bottom:5px solid #111;padding-bottom:36px}
+.footer-title{text-shadow:4px 4px 0 #4ebcda}
+.footer-right{background:#111;color:#f8efcf;padding:22px;border:4px solid #111;box-shadow:8px 8px 0 #ef4b4a}
+.footer-right a{display:inline-block;margin-top:14px;background:#f3dd57;color:#111;padding:10px 14px;border:3px solid #111;text-decoration:none;font-weight:1000;box-shadow:4px 4px 0 #111}
+.footer-bottom{font-weight:900}
+@media (max-width:900px){
+  .section-head,.about-grid,.likes-grid,.works-grid,.now-inner,.hamster-layout{grid-template-columns:1fr}
+  .section-caption{transform:none}
+  .hamster-copy,.about-left,.collection-panel,.now p{transform:none}
+  .hamster-stage{min-height:390px}
+  .works-grid{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .poster-divider-track span{padding:10px 12px;font-size:16px}
+  .hamster-section,.about,.likes,.works,.now{padding:72px 0 80px}
+  .section-title{font-size:clamp(54px,16vw,82px)!important}
+  .hamster-copy h2{font-size:clamp(50px,14vw,80px)}
+  .hamster-stage{min-height:320px;padding:14px}
+  .hamster-halo{width:82%}
+  .hamster-caption{font-size:16px;padding:9px 12px;right:10px;bottom:10px}
+  .hamster-ticket{left:10px;bottom:12px;font-size:10px;padding:8px 10px}
+  .hamster-badge{font-size:10px;padding:7px 9px}
+  .hamster-star{font-size:38px}
+  .about-left p,.now p{font-size:18px}
+  .tear-back h3{font-size:30px}.tear-front h3{font-size:46px}
+  .collection-body h3,.work-text h3{font-size:30px}
+  .now h2{font-size:clamp(52px,15vw,80px)}
+  .footer-main{gap:24px;align-items:flex-start}
+}
+@media (prefers-reduced-motion:reduce){
+  .poster-divider-track,.hamster-halo,.hamster-orbit,.hamster-badge,.hamster-star,.hamster-photo{animation:none!important}
+}
+/* Integrated live-site fixes: retain existing flip animation and accessibility. */
+.hamster-section .hamster-stage{isolation:isolate}
+.hamster-section .hamster-flip{position:relative;z-index:4;width:min(100%,360px);height:360px;display:grid;place-items:center;cursor:pointer}
+.hamster-section .hamster-flip .hamster-photo{display:block;width:100%!important;height:100%!important;object-fit:contain;max-height:360px!important}
+.hamster-section .hamster-flip.turning .hamster-photo{animation:none!important}
+.hamster-section .hamster-orbit{pointer-events:none}
+.hamster-section .hamster-star{display:block;width:44px;height:44px;background:currentColor;clip-path:polygon(50% 0%,61% 36%,98% 50%,61% 64%,50% 100%,39% 64%,2% 50%,39% 36%)}
+.hamster-section .hamster-photo.is-peace{filter:drop-shadow(11px 13px 0 #111) saturate(1.18)!important}
+.hamster-section .hamster-hint{display:none}
+@media(max-width:640px){.hamster-section .hamster-flip{width:min(100%,280px);height:280px}.hamster-section .hamster-star{width:32px;height:32px}}
 </style>
 </head>
 <body>
@@ -280,19 +430,40 @@ body{background:#f6ebc8}
  <div class="poster-bottom-bar"><p>見えているのは、ほんの一部。</p><a href="#about">もっと、のぞく ↓</a></div>
 </section>
 <div class="tape" aria-hidden="true"><div class="tape-track"><span>COLLECT THINGS <b class="tape-dot"></b> MAKE THINGS <b class="tape-dot"></b> FOLLOW CURIOSITY <b class="tape-dot"></b> KEEP MOVING <b class="tape-dot"></b></span><span>COLLECT THINGS <b class="tape-dot"></b> MAKE THINGS <b class="tape-dot"></b> FOLLOW CURIOSITY <b class="tape-dot"></b> KEEP MOVING <b class="tape-dot"></b></span></div></div>
-<section class="hamster-section" id="hamster"><div class="wrap hamster-layout"><div class="hamster-copy"><span class="eyebrow">SPECIAL GUEST / LITTLE FRIEND</span><h2>HELLO,<br><span class="flip-word" id="flipWord">HAMSTER.</span></h2><p>かなちの小さな仲間。<br>ここにも、ひとつ好きなものを飾っておく。</p></div><div class="hamster-stage"><div class="hamster-flip" id="hamsterFlip"><img class="hamster-photo" id="hamsterToggle" src="hamster-normal.webp" alt="クリーム色のハムスター" loading="lazy" role="button" tabindex="0" aria-label="ハムスターをピースさせる"></div><span class="hamster-hint">TAP TO SAY PEACE!</span><span class="hamster-caption">LOOK AT ME!</span></div></div></section><div class="kinetic-strip" aria-hidden="true"><div class="track"><span>LOOK CLOSER <i class="dot"></i> MAKE SOMETHING <i class="dot"></i> STAY CURIOUS <i class="dot"></i></span><span>LOOK CLOSER <i class="dot"></i> MAKE SOMETHING <i class="dot"></i> STAY CURIOUS <i class="dot"></i></span></div></div><section class="about" id="about"><div class="wrap"><div class="section-head"><h2 class="section-title">01 / ABOUT<br>ME<span style="color:var(--pink)">.</span></h2><div class="section-caption">名刺みたいに整った自己紹介は、<br>ちょっと物足りない。<br><span class="highlight">めくると、もう少し見えてくる。</span></div></div><div class="about-grid"><div class="about-left"><div class="about-intro"><span class="small-eyeball" aria-hidden="true"></span><span class="eyebrow">WHAT KIND OF PERSON?</span></div><p>気になったら、まず近づいてみる。<br>観察して、調べて、ときどき形にする。<br><br>何かひとつの肩書きよりも、<br>「何を面白がっているか」で知ってほしい。</p><div class="footnote">右のピンクの紙をタップ、または<br>横にスワイプして破ってね。</div></div><div class="tear-board" id="tearBoard"><div class="tear-back"><span class="sheet-label">UNDER THE SURFACE / PROFILE</span><h3>あ、見つかった。<span class="inline-spark" aria-hidden="true"></span></h3><dl><dt>NAME</dt><dd>かなち / KANA</dd><dt>DOING</dt><dd>九谷焼に関わる企画・発信・展示づくり</dd><dt>LIKE</dt><dd>海、石、植物、小さな発見</dd><dt>MODE</dt><dd>考える / 試す / また考える</dd><dt>KEYWORD</dt><dd>好奇心 / 観察 / ものづくり</dd></dl><button id="resetTear" type="button" class="reset-btn">元にもどす</button></div><div class="tear-front" id="tearFront" tabindex="0" aria-label="タップ、または左右にスワイプしてプロフィールの紙を破る"><span class="sheet-label">PEEL HERE / A PIECE OF ME</span><h3>MEET<br><span>KANACHI.</span></h3><div class="tear-front-bottom"><p>ひとつめの<br>自己紹介は、<br>紙の下。</p><div><button id="tearBtn" type="button" class="tear-btn">ビリッと破る</button><div class="rip-hint" style="margin-top:10px">紙をタップしてもOK</div></div></div></div></div></div></div></section>
-<section class="likes" id="likes"><div class="wrap"><div class="section-head likes-header"><h2 class="section-title">02 / LITTLE<br>THINGS<span style="color:var(--pink)">.</span></h2><p class="section-caption">つい拾ってしまうもの。<br>気がつくと見入ってしまうもの。<br>好きなものをタップしてみて。</p></div><div class="likes-grid"><div class="object-space" aria-label="触って選べる好きなもののコレクション"><span class="obj-note n1">PICK ONE</span><span class="obj-note n2">MY PERSONAL ARCHIVE</span><span class="obj-note n3" aria-hidden="true"></span>
+<section class="hamster-section" id="hamster">
+ <div class="wrap hamster-layout">
+  <div class="hamster-copy"><span class="eyebrow">SPECIAL GUEST / LITTLE FRIEND</span>
+   <h2>COLORFUL<br><span class="flip-word" id="flipWord">HAMSTER.</span></h2>
+   <p>かなちの小さな仲間。<br>ここにも、ひとつ好きなものを飾っておく。</p>
+   <div class="hamster-mini-note">勝手に写真が切り替わる。タップしても、ピースしたり戻ったり。</div>
+  </div>
+  <div class="hamster-stage">
+   <div class="hamster-halo" aria-hidden="true"></div>
+   <div class="hamster-orbit orbit-a" aria-hidden="true"></div>
+   <div class="hamster-orbit orbit-b" aria-hidden="true"></div>
+   <span class="hamster-badge badge-a">SMALL SUPERSTAR</span>
+   <span class="hamster-badge badge-b">NORMAL / PEACE</span>
+   <i class="hamster-star star-a" aria-hidden="true"></i>
+   <i class="hamster-star star-b" aria-hidden="true"></i>
+   <i class="hamster-star star-c" aria-hidden="true"></i>
+   <div class="hamster-flip" id="hamsterFlip"><img class="hamster-photo" id="hamsterToggle" src="hamster-normal.webp" alt="クリーム色のハムスター" loading="lazy" role="button" tabindex="0" aria-label="ハムスターをピースさせる"></div>
+   <span class="hamster-caption">TAP TO PEACE</span>
+   <span class="hamster-ticket">LOOK CLOSER / LITTLE HERO</span>
+  </div>
+ </div>
+</section><div class="kinetic-strip" aria-hidden="true"><div class="track"><span>LOOK CLOSER <i class="dot"></i> MAKE SOMETHING <i class="dot"></i> STAY CURIOUS <i class="dot"></i></span><span>LOOK CLOSER <i class="dot"></i> MAKE SOMETHING <i class="dot"></i> STAY CURIOUS <i class="dot"></i></span></div></div><div class="poster-divider " aria-hidden="true"><div class="poster-divider-track"><span>PROFILE DECODER ・ PROFILE DECODER ・ PROFILE DECODER ・ PROFILE DECODER ・ </span><span>PROFILE DECODER ・ PROFILE DECODER ・ PROFILE DECODER ・ PROFILE DECODER ・ </span></div></div><section class="about" id="about"><div class="wrap"><div class="section-head"><h2 class="section-title">01 / ABOUT<br>ME<span style="color:var(--pink)">.</span></h2><div class="section-caption">名刺みたいに整った自己紹介は、<br>ちょっと物足りない。<br><span class="highlight">めくると、もう少し見えてくる。</span></div></div><div class="about-grid"><div class="about-left"><div class="about-intro"><span class="small-eyeball" aria-hidden="true"></span><span class="eyebrow">WHAT KIND OF PERSON?</span></div><p>気になったら、まず近づいてみる。<br>観察して、調べて、ときどき形にする。<br><br>何かひとつの肩書きよりも、<br>「何を面白がっているか」で知ってほしい。</p><div class="footnote">右のピンクの紙をタップ、または<br>横にスワイプして破ってね。</div></div><div class="tear-board" id="tearBoard"><div class="tear-back"><span class="sheet-label">UNDER THE SURFACE / PROFILE</span><h3>あ、見つかった。<span class="inline-spark" aria-hidden="true"></span></h3><dl><dt>NAME</dt><dd>かなち / KANA</dd><dt>DOING</dt><dd>九谷焼に関わる企画・発信・展示づくり</dd><dt>LIKE</dt><dd>海、石、植物、小さな発見</dd><dt>MODE</dt><dd>考える / 試す / また考える</dd><dt>KEYWORD</dt><dd>好奇心 / 観察 / ものづくり</dd></dl><button id="resetTear" type="button" class="reset-btn">元にもどす</button></div><div class="tear-front" id="tearFront" tabindex="0" aria-label="タップ、または左右にスワイプしてプロフィールの紙を破る"><span class="sheet-label">PEEL HERE / A PIECE OF ME</span><h3>MEET<br><span>KANACHI.</span></h3><div class="tear-front-bottom"><p>ひとつめの<br>自己紹介は、<br>紙の下。</p><div><button id="tearBtn" type="button" class="tear-btn">ビリッと破る</button><div class="rip-hint" style="margin-top:10px">紙をタップしてもOK</div></div></div></div></div></div></div></section>
+<div class="poster-divider alt-blue" aria-hidden="true"><div class="poster-divider-track"><span>LITTLE THINGS COLLECTION ・ LITTLE THINGS COLLECTION ・ LITTLE THINGS COLLECTION ・ </span><span>LITTLE THINGS COLLECTION ・ LITTLE THINGS COLLECTION ・ LITTLE THINGS COLLECTION ・ </span></div></div><section class="likes" id="likes"><div class="wrap"><div class="section-head likes-header"><h2 class="section-title">02 / LITTLE<br>THINGS<span style="color:var(--pink)">.</span></h2><p class="section-caption">つい拾ってしまうもの。<br>気がつくと見入ってしまうもの。<br>好きなものをタップしてみて。</p></div><div class="likes-grid"><div class="object-space" aria-label="触って選べる好きなもののコレクション"><span class="obj-note n1">PICK ONE</span><span class="obj-note n2">MY PERSONAL ARCHIVE</span><span class="obj-note n3" aria-hidden="true"></span>
 <button type="button" class="object-button obj-stone is-active" data-object="0" aria-label="石を選ぶ"><svg width="205" height="170" viewBox="0 0 205 170"><path d="M28 120Q8 80 65 29Q113 -5 163 46Q198 79 172 128Q140 169 82 155Q43 154 28 120Z" fill="#c6b3f0" stroke="#111" stroke-width="7"/><path d="M65 31L91 91L29 120M91 91L160 47M91 91L171 128" fill="none" stroke="#111" stroke-width="4"/><circle cx="111" cy="58" r="8" fill="#fff"/><circle cx="134" cy="101" r="5" fill="#fff"/></svg></button>
 <button type="button" class="object-button obj-urchin" data-object="1" aria-label="ウニを選ぶ"><svg width="190" height="190" viewBox="0 0 190 190"><g transform="translate(95 95)" stroke="#111" stroke-width="5" stroke-linecap="round"><path d="M0-87V-62M0 87V62M-87 0H-62M87 0H62M-62-62L-43-43M62 62L43 43M62-62L43-43M-62 62L-43 43M-32-80L-23-55M32-80L23-55M-32 80L-23 55M32 80L23 55M-80-32L-55-23M80-32L55-23M-80 32L-55 23M80 32L55 23"/></g><circle cx="95" cy="95" r="62" fill="#ff7a9e" stroke="#111" stroke-width="7"/><circle cx="95" cy="95" r="33" fill="#ffcedb" stroke="#111" stroke-width="5"/><circle cx="95" cy="95" r="12" fill="#111"/></svg></button>
 <button type="button" class="object-button obj-leaf" data-object="2" aria-label="植物を選ぶ"><svg width="170" height="210" viewBox="0 0 170 210"><path d="M84 183C64 119 50 69 43 28" fill="none" stroke="#111" stroke-width="7" stroke-linecap="round"/><path d="M58 93Q-1 90 18 28Q67 24 58 93Z" fill="#eaf36d" stroke="#111" stroke-width="6"/><path d="M70 134Q112 62 151 72Q145 133 70 134Z" fill="#79d8f4" stroke="#111" stroke-width="6"/><path d="M43 51Q53 16 94 13Q105 61 55 76Z" fill="#ff9ccc" stroke="#111" stroke-width="6"/><path d="M83 183L119 202" stroke="#111" stroke-width="7" stroke-linecap="round"/></svg></button>
 <button type="button" class="object-button obj-idea" data-object="3" aria-label="アイデアを選ぶ"><svg width="175" height="180" viewBox="0 0 175 180"><path d="M80 12L100 62L151 46L127 97L163 126L107 130L82 169L63 127L15 139L36 91L6 53L57 64Z" fill="#edee68" stroke="#111" stroke-width="7" stroke-linejoin="round"/><circle cx="66" cy="89" r="7" fill="#111"/><circle cx="111" cy="87" r="7" fill="#111"/><path d="M71 111Q90 127 109 109" stroke="#111" stroke-width="5" fill="none" stroke-linecap="round"/></svg></button></div>
 <div class="collection-panel" aria-live="polite"><div class="collection-top"><span>MY LITTLE COLLECTION</span><span class="panel-sticker motif-0" id="collectionSticker" aria-hidden="true"></span></div><div class="collection-body"><div class="collection-number" id="collectionNumber">COLLECTION #01</div><h3 id="collectionTitle">石を並べる。</h3><p id="collectionDesc">形も色も、同じものがひとつもない。拾って、触って、並べるだけで、しばらく楽しめる。</p></div><div class="collection-bottom"><div class="collection-dots" aria-hidden="true"><span class="collection-dot is-active"></span><span class="collection-dot"></span><span class="collection-dot"></span><span class="collection-dot"></span></div><button class="collection-next" id="collectionNext" type="button">次の「好き」を見る</button></div></div></div></div></section>
-<section class="works" id="works"><div class="wrap"><div class="section-head"><h2 class="section-title">03 / THINGS<br>I MAKE<span style="color:var(--pink)">.</span></h2><div class="section-caption">調べたり、企画したり、つくったり。<br>これまでの活動と、いま進めていること。<br><span class="highlight">カードを押すと、もう少し詳しく。</span></div></div><span class="secret-note">見つけた？</span><button class="secret-eye-btn" id="secretDoor" aria-label="隠し入口" title="この目玉、なんだろう？"></button><div class="works-grid">
+<div class="poster-divider alt-red" aria-hidden="true"><div class="poster-divider-track"><span>MADE BY KANACHI ・ MADE BY KANACHI ・ MADE BY KANACHI ・ MADE BY KANACHI ・ </span><span>MADE BY KANACHI ・ MADE BY KANACHI ・ MADE BY KANACHI ・ MADE BY KANACHI ・ </span></div></div><section class="works" id="works"><div class="wrap"><div class="section-head"><h2 class="section-title">03 / THINGS<br>I MAKE<span style="color:var(--pink)">.</span></h2><div class="section-caption">調べたり、企画したり、つくったり。<br>これまでの活動と、いま進めていること。<br><span class="highlight">カードを押すと、もう少し詳しく。</span></div></div><span class="secret-note">見つけた？</span><button class="secret-eye-btn" id="secretDoor" aria-label="隠し入口" title="この目玉、なんだろう？"></button><div class="works-grid">
 <article class="work-card"><div class="work-art art1"><div class="work-eye" aria-hidden="true"></div></div><div class="work-text"><small>01 / WEB & EXPERIENCE</small><h3>SHITEN</h3><p>ひとつのものを、いろんな視点から見てみる。ウェブで体験をつくる試み。</p><button class="work-more" data-project="0" type="button">MORE ABOUT THIS</button></div></article>
 <article class="work-card"><div class="work-art art2"><div class="work-pot" aria-hidden="true"></div></div><div class="work-text"><small>02 / CULTURE & DESIGN</small><h3>CERABO / 九谷焼</h3><p>ものづくりの背景を、もっと伝わる体験へ。展示、企画、発信に取り組む。</p><button class="work-more" data-project="1" type="button">MORE ABOUT THIS</button></div></article>
 <article class="work-card"><div class="work-art art3"><div class="work-rock" aria-hidden="true"></div></div><div class="work-text"><small>03 / SMALL EXPERIMENTS</small><h3>小さな実験</h3><p>思いついたら、まず形にしてみる。サイト、観察、アイデアの断片。</p><button class="work-more" data-project="2" type="button">MORE ABOUT THIS</button></div></article>
 </div></div></section>
-<section class="now" id="now"><div class="wrap now-inner"><div><div class="eyebrow">04 / CURRENT STATUS</div><h2>STILL<br>CURIOUS.</h2></div><div><p>いまの興味も、これからの方向も、<br>きっと変わっていく。<br>だからここは、更新され続ける場所。</p><div class="now-stamps"><span style="--tilt:-5deg"># 九谷焼</span><span style="--tilt:6deg"># 展示と体験</span><span style="--tilt:-3deg"># WEB制作</span><span style="--tilt:4deg"># 好奇心</span><span style="--tilt:-7deg"># つくってみる</span></div></div></div></section>
+<div class="poster-divider alt-yellow" aria-hidden="true"><div class="poster-divider-track"><span>STILL CURIOUS ・ STILL MOVING ・ STILL CURIOUS ・ STILL MOVING ・ </span><span>STILL CURIOUS ・ STILL MOVING ・ STILL CURIOUS ・ STILL MOVING ・ </span></div></div><section class="now" id="now"><div class="wrap now-inner"><div><div class="eyebrow">04 / CURRENT STATUS</div><h2>STILL<br>CURIOUS.</h2></div><div><p>いまの興味も、これからの方向も、<br>きっと変わっていく。<br>だからここは、更新され続ける場所。</p><div class="now-stamps"><span style="--tilt:-5deg"># 九谷焼</span><span style="--tilt:6deg"># 展示と体験</span><span style="--tilt:-3deg"># WEB制作</span><span style="--tilt:4deg"># 好奇心</span><span style="--tilt:-7deg"># つくってみる</span></div></div></div></section>
 </main><footer class="footer"><div class="wrap"><div class="footer-main"><div><div class="eyebrow">THANKS FOR LOOKING AROUND.</div><h2 class="footer-title">SEE YOU<br>AGAIN! <span class="footer-eye" aria-hidden="true"></span></h2></div><div class="footer-right">なにか一緒に、<br>面白いことができたら。<br><span class="contact-pending">CONTACT — COMING SOON</span></div></div><div class="footer-bottom"><span>© KANACHI — MADE WITH CURIOSITY</span><span>PSST… <button type="button" class="hidden-star" id="footerSecret" aria-label="秘密の入口"><span aria-hidden="true"></span></button></span></div></div></footer>
 <div class="modal secret-modal" id="secretModal" role="dialog" aria-modal="true" aria-labelledby="secretTitle"><div class="modal-panel"><button class="modal-close" data-close type="button" aria-label="閉じる">×</button><span class="eyebrow">SECRET ROOM / YOU FOUND IT!</span><div class="secret-shape" aria-hidden="true"></div><h2 id="secretTitle">まだ、<br>名前のないもの。</h2><p>やってみたいこと。途中で気が変わったこと。まだ誰にも見せていない考え。<br>完成したものだけじゃなくて、途中のものにも、けっこう惹かれる。</p><p style="font-size:13px">小さなひみつ：このサイトには、もうひとつ入口が隠れています。</p></div></div>
 <div class="modal" id="projectModal" role="dialog" aria-modal="true" aria-labelledby="projectTitle"><div class="modal-panel"><button class="modal-close" data-close type="button" aria-label="閉じる">×</button><span class="eyebrow" id="projectKicker">PROJECT / 01</span><h2 id="projectTitle">SHITEN</h2><p id="projectDesc"></p><div id="projectLink"></div></div></div>
