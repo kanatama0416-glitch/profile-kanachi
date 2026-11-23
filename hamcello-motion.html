@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ハムチェッロの大冒険 - モーション版</title>
+<style>
+:root{
+  --sky:#f6d7a9;
+  --text:#17332c;
+  --cream:#fffaf0;
+  --green:#4a9b57;
+  --deep:#204539;
+  --player-lift:0px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#f7efe2;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif}
+body{height:calc(11800px + 100svh);min-width:0}
+#stage{position:fixed;inset:0;overflow:hidden;background:linear-gradient(180deg,#ffe4bf 0%,#ffd8a8 40%,#f7f0e2 100%)}
+#hud{position:fixed;left:16px;top:14px;z-index:120;display:flex;gap:10px;align-items:center;background:rgba(255,250,240,.75);backdrop-filter:blur(8px);padding:8px 12px;border-radius:999px;border:1px solid rgba(23,51,44,.12)}
+#bar{width:min(36vw,260px);height:7px;background:rgba(23,51,44,.1);border-radius:999px;overflow:hidden}
+#fill{height:100%;width:0;background:linear-gradient(90deg,#e58f5c,#64b369)}
+#label{font-weight:900;font-size:12px;letter-spacing:.08em}
+#hint{position:fixed;right:16px;bottom:16px;z-index:120;background:rgba(255,250,240,.82);backdrop-filter:blur(8px);padding:10px 14px;border-radius:16px;max-width:min(54vw,340px);font-size:12px;line-height:1.6;border:1px solid rgba(23,51,44,.1)}
+.viewport{position:absolute;inset:0;overflow:hidden}
+#hWorld,#cloudWorld{position:absolute;left:0;top:0;height:100%;will-change:transform}
+#hWorld{width:calc(7400px + 100vw)}
+#cloudWorld{width:2300px;opacity:0;pointer-events:none;will-change:opacity,transform}
+.sectionTag{top:58px!important;position:absolute;font-size:12px;font-weight:900;letter-spacing:.18em;background:#fff7db;color:#21463a;padding:9px 12px;border-radius:999px;border:2px solid rgba(33,70,58,.15);z-index:15}
+.stageTitle{top:126px!important;position:absolute;z-index:16;max-width:min(42vw,470px);padding:20px 24px;background:rgba(255,248,232,.88);border:3px solid rgba(32,69,57,.16);box-shadow:0 14px 36px rgba(31,68,56,.08);backdrop-filter:blur(8px);border-radius:22px}
+.stageTitle h2{margin:0 0 8px;font-size:clamp(30px,4vw,56px);line-height:1.05;letter-spacing:-.04em}
+.stageTitle p{margin:0;font-size:clamp(13px,1.4vw,18px);line-height:1.8;font-weight:700}
+.ground{position:absolute;left:0;right:0;bottom:0}
+#playerWrap{position:absolute;left:clamp(26px,12vw,210px);bottom:14%;width:clamp(108px,14vw,192px);z-index:90;pointer-events:none;transform:translateY(var(--player-lift));transition:transform .18s linear, left .18s linear, bottom .18s linear, opacity .18s linear}
+#player{display:block;width:100%;filter:drop-shadow(0 12px 8px rgba(21,33,28,.32));transform:scaleX(-1)}
+#player.climb{transform:scaleX(-1) rotate(-12deg)}
+#shadow{position:absolute;left:clamp(40px,13vw,228px);bottom:13.3%;width:clamp(74px,9vw,124px);height:14px;border-radius:50%;background:rgba(18,38,31,.2);filter:blur(8px);z-index:80;transition:opacity .2s linear, transform .18s linear}
+#shadow.hide{opacity:0}
+.train{position:absolute;height:120px;width:520px;z-index:25}
+.train .body{position:absolute;left:0;right:0;bottom:0;height:82px;background:#d95a54;border:5px solid #1c3f35;border-radius:26px 26px 12px 12px;box-shadow:0 10px 0 rgba(28,63,53,.15)}
+.train .roof{position:absolute;left:54px;right:54px;bottom:75px;height:18px;background:#ffe0b0;border:4px solid #1c3f35;border-bottom:0;border-radius:18px 18px 0 0}
+.train .win{position:absolute;bottom:22px;width:72px;height:28px;background:#fff6da;border:4px solid #1c3f35;border-radius:12px}
+.train .w1{left:44px}.train .w2{left:138px}.train .w3{left:232px}.train .w4{left:326px}
+.train .door{position:absolute;right:28px;bottom:12px;width:72px;height:56px;background:#fbe5c4;border:4px solid #1c3f35;border-radius:14px}
+.train .wheel{position:absolute;bottom:-14px;width:28px;height:28px;background:#1c3f35;border-radius:50%}
+.train .wh1{left:78px}.train .wh2{left:210px}.train .wh3{left:350px}
+.train .hamRoof{position:absolute;left:110px;bottom:86px;width:78px;filter:drop-shadow(0 8px 6px rgba(0,0,0,.18));transform:scaleX(-1)}
+.train .spark{position:absolute;left:186px;bottom:100px;width:18px;height:18px;opacity:.85}
+.train .spark:before,.train .spark:after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff9cf;box-shadow:0 0 8px #fff3a2,0 0 18px #ffe49a}
+.train .spark:before{width:4px;height:18px}.train .spark:after{width:18px;height:4px}
+/* Yokohama */
+#yokohamaSky{position:absolute;left:0;top:0;width:1800px;height:100%;background:linear-gradient(180deg,#b9ebff 0%,#d9f7ff 48%,#fff4da 100%)}
+#sea{position:absolute;left:0;bottom:18%;width:1800px;height:28%;background:linear-gradient(180deg,#79cbe8 0%,#6bb4d4 100%)}
+#sea:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 18px,rgba(255,255,255,.13) 18px 20px)}
+#pier{position:absolute;left:0;bottom:14%;width:1800px;height:10%;background:linear-gradient(180deg,#c8996b 0%,#a76c4c 100%)}
+ .wheelWrap{position:absolute;left:clamp(540px,58vw,860px);bottom:24%;width:320px;height:320px;z-index:18;isolation:isolate}
+.wheelWrap:before{content:"";position:absolute;inset:-9px;border:2px solid rgba(39,72,61,.05);border-radius:50%}
+#wheel{position:absolute;inset:0;border:10px solid #27483d;border-radius:50%;background:radial-gradient(circle,#fff7ea 0 24%,transparent 24%)}
+#wheel:before,#wheel:after{content:"";position:absolute;left:50%;top:50%;width:8px;height:95%;background:#27483d;transform:translate(-50%,-50%)}
+#wheel:after{transform:translate(-50%,-50%) rotate(90deg)}
+.spoke{position:absolute;left:50%;top:50%;width:7px;height:95%;background:#27483d;transform-origin:center center}
+.gondola{position:absolute;left:50%;top:50%;width:26px;height:23px;background:#f6976a;border:3px solid #27483d;border-radius:9px;transform-origin:center center}
+.wheelStand{position:absolute;left:calc(50% - 15px);bottom:-62px;width:30px;height:76px;background:#27483d;transform:skewX(-5deg);border-radius:6px 6px 0 0}
+.portBld{position:absolute;bottom:28%;background:#fef4e2;border:5px solid #27483d;border-radius:22px 22px 0 0}
+.pb1{left:64px;width:170px;height:160px}.pb2{left:770px;width:220px;height:140px}.pb3{left:1060px;width:160px;height:190px}
+.crane{position:absolute;bottom:28%;width:16px;background:#366c56;border-radius:8px}.crane:before{content:"";position:absolute;left:-8px;top:18px;width:170px;height:14px;background:#366c56;border-radius:10px}.cr1{left:1230px;height:220px}.cr2{left:1380px;height:190px}.cr2:before{width:145px}
+.cloud{position:absolute;background:#fff;border-radius:999px;box-shadow:0 20px 30px rgba(118,164,191,.15)}
+.cloud:before,.cloud:after{content:"";position:absolute;background:inherit;border-radius:50%}
+.cloud:before{left:14%;top:-38%;width:42%;height:92%}.cloud:after{right:15%;top:-30%;width:38%;height:84%}
+.cy1{left:110px;top:70px;width:150px;height:50px}.cy2{left:930px;top:120px;width:180px;height:58px}.cy3{left:1430px;top:92px;width:120px;height:42px}
+/* transition sky */
+#transitionSky{position:absolute;left:1650px;top:0;width:1600px;height:100%;background:linear-gradient(180deg,#ffdcae 0%,#f29b73 48%,#7e5f88 100%);opacity:0}
+#sun{position:absolute;left:1750px;top:120px;width:110px;height:110px;border-radius:50%;background:#ffd675;box-shadow:0 0 40px rgba(255,214,117,.5)}
+#moon{position:absolute;left:2530px;top:110px;width:84px;height:84px;border-radius:50%;background:#fff9df;box-shadow:0 0 30px rgba(255,249,223,.45);opacity:0}
+#tokyoSky{position:absolute;left:2940px;top:0;width:1760px;height:100%;mask-image:linear-gradient(to right,transparent,black 240px);background:linear-gradient(180deg,#faaf87 0%,#ef8869 28%,#6b567f 58%,#1e2d4f 100%)}
+#tokyoStars{position:absolute;left:3000px;top:0;width:1700px;height:50%;background-image:radial-gradient(circle at 10% 20%,rgba(255,255,255,.9) 0 1px,transparent 2px),radial-gradient(circle at 23% 52%,rgba(255,255,255,.8) 0 1.5px,transparent 2.5px),radial-gradient(circle at 42% 18%,rgba(255,255,255,.85) 0 1px,transparent 2px),radial-gradient(circle at 68% 28%,rgba(255,255,255,.75) 0 1px,transparent 2px),radial-gradient(circle at 84% 14%,rgba(255,255,255,.82) 0 1.2px,transparent 2px);opacity:0}
+#tokyoGround{position:absolute;left:3000px;bottom:0;width:1700px;height:28%;background:linear-gradient(180deg,#2b3946 0%,#1e2934 100%)}
+#railTrack{position:absolute;left:1540px;bottom:17%;width:5100px;height:11px;background:#283d40;box-shadow:0 19px 0 #283d40,0 22px 0 7px rgba(207,160,115,.18);z-index:19}
+.building{position:absolute;bottom:28%;width:110px;background:#223240;border-radius:10px 10px 0 0;border:4px solid rgba(255,255,255,.06);transform-origin:bottom center;transform:scaleY(.02)}
+.building:before{content:"";position:absolute;left:14%;right:14%;top:12%;bottom:10%;background:repeating-linear-gradient(180deg,transparent 0 12px,rgba(255,243,180,.9) 12px 16px,transparent 16px 26px),repeating-linear-gradient(90deg,transparent 0 12px,rgba(255,243,180,.95) 12px 20px,transparent 20px 28px);opacity:.15}
+.night .building:before{opacity:1}
+.b1{left:3160px;height:180px}.b2{left:3290px;height:240px}.b3{left:3440px;height:130px}.b4{left:3575px;height:300px}.b5{left:3715px;height:220px}.b6{left:3865px;height:270px}.b7{left:4010px;height:150px}.b8{left:4140px;height:320px}.b9{left:4288px;height:200px}
+.b10{left:4440px;height:250px}
+/* ishikawa dawn */
+#dawnSky{position:absolute;left:4580px;top:0;width:2220px;height:100%;mask-image:linear-gradient(to right,transparent,black 430px);background:linear-gradient(180deg,#112547 0%,#30456f 30%,#f9ab78 63%,#ffdf98 100%)}
+#sunrise{position:absolute;left:5440px;top:118px;width:96px;height:96px;border-radius:50%;background:#ffe190;box-shadow:0 0 34px rgba(255,225,144,.42);opacity:0}
+.mountain{position:absolute;bottom:24%;width:0;height:0;border-left:200px solid transparent;border-right:200px solid transparent;border-bottom:330px solid #86aa79;opacity:0;transform:translateY(70px)}
+.mountain.back{border-bottom-color:#6b9070;opacity:0}
+.m1{left:4880px}.m2{left:5150px}.m3{left:5460px}.m4{left:5750px}.m5{left:6040px}
+.hill{position:absolute;bottom:22%;background:#86b172;border-radius:50% 50% 0 0}
+.h1{left:4820px;width:380px;height:120px}.h2{left:5280px;width:430px;height:140px}.h3{left:5900px;width:420px;height:126px}
+#kenroku{position:absolute;left:5540px;bottom:30%;width:300px;height:150px;opacity:0;transform:translateY(40px)}
+#kenroku .pond{position:absolute;left:10px;right:10px;bottom:0;height:68px;border-radius:999px;background:linear-gradient(180deg,#8fd8e8,#4cabbd)}
+#kenroku .stone{position:absolute;left:116px;bottom:26px;width:76px;height:30px;background:#70827a;border-radius:999px}
+#kenroku .tree{position:absolute;bottom:50px;width:70px;height:70px;background:#5ca15b;border-radius:50%}
+#kenroku .t1{left:20px}.t2{left:104px}.t3{left:196px}
+#oldTown{position:absolute;left:5950px;bottom:27%;width:360px;height:220px;opacity:0;transform:translateY(40px)}
+#oldTown .house{position:absolute;bottom:0;width:84px;height:150px;background:#6f4a38;border:4px solid #2b221d;border-bottom-width:6px}
+#oldTown .house:before{content:"";position:absolute;left:-6px;right:-6px;top:-34px;height:40px;background:#30302f;clip-path:polygon(6% 100%,50% 0,94% 100%)}
+#oldTown .hA{left:0}.hB{left:96px;height:170px}.hC{left:200px;height:160px}.hD{left:288px;height:130px}
+#ishikawaSign{position:absolute;left:5280px;bottom:40%;padding:14px 18px;background:#fff9dc;border:4px solid #21463a;border-radius:18px;font-weight:900;font-size:28px;box-shadow:0 12px 24px rgba(0,0,0,.08);opacity:0;transform:translateY(30px) rotate(-3deg)}
+#seedMountain{position:absolute;left:6640px;bottom:0;width:calc(700px + 100vw);height:100%;background:linear-gradient(180deg,#d9eef6 0%,#b9dde6 28%,#a8c8bd 46%,#8aad6f 100%)}
+#seedHill{position:absolute;left:6710px;bottom:22%;width:560px;height:220px;background:#7ea663;border-radius:50% 50% 0 0}
+#seedMark{position:absolute;left:6930px;bottom:37%;width:30px;height:44px;border-radius:60% 60% 70% 70%;background:linear-gradient(180deg,#6d462f 0%,#4b2a1c 100%);box-shadow:0 0 0 5px rgba(82,44,26,.25)}
+#seedSign{position:absolute;left:6770px;bottom:49%;padding:10px 14px;background:#fff2bd;border:4px solid #21463a;border-radius:14px;font-weight:900;opacity:.95;transform:rotate(-4deg)}
+/* climb world */
+#climbViewport{position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;pointer-events:none;will-change:opacity}
+#climbBaseSky{position:absolute;inset:0;background:linear-gradient(180deg,#dff3ff 0%,#bde4ff 34%,#f4f8ff 58%,#ffffff 100%)}
+#climbTower{position:absolute;left:0;right:0;top:0;height:240%;transform:translateY(-58%);will-change:transform}
+#baseMountains{position:absolute;left:0;right:0;bottom:0;height:26%;background:linear-gradient(180deg,#88ad73 0%,#6d9056 100%)}
+#baseMountains:before,#baseMountains:after{content:"";position:absolute;bottom:70%;width:0;height:0;border-left:160px solid transparent;border-right:160px solid transparent;border-bottom:220px solid #729a64}
+#baseMountains:before{left:18%}#baseMountains:after{left:58%}
+#climbSeed{position:absolute;left:50%;bottom:12%;width:34px;height:44px;margin-left:-17px;border-radius:60% 60% 70% 70%;background:linear-gradient(180deg,#70452d,#4a291c)}
+#vineSvg{position:absolute;left:50%;top:0;transform:translateX(-50%);width:min(48vw,560px);height:100%}
+.vineLine,.vineHi{fill:none;stroke-linecap:round;stroke-linejoin:round;pathLength:1000}.vineLine{stroke:#2f7648;stroke-width:24;stroke-dasharray:1000;stroke-dashoffset:1000}.vineHi{stroke:#7ccc63;stroke-width:8;stroke-dasharray:1000;stroke-dashoffset:1000}
+.climbLeaf,.climbFruit,.climbFlower{position:absolute;opacity:0;transform:scale(.2);transition:opacity .18s linear, transform .18s linear}
+.climbLeaf{width:120px;height:82px;border-radius:72% 12% 68% 18%;background:linear-gradient(135deg,#7acd64,#349553);border:4px solid #2e7349;box-shadow:inset -10px -10px 0 rgba(46,115,73,.22)}
+.climbLeaf:after{content:"";position:absolute;left:16%;right:14%;top:50%;height:4px;background:#2f7e47;transform:rotate(-18deg)}
+.climbFlower{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle,#f5ffb2 0 24%,#ffd46d 24% 48%,transparent 50%)}
+.climbFruit{width:34px;height:120px;border:4px solid #2d6d3b;border-radius:50% 42% 44% 52%;background:repeating-linear-gradient(90deg,#2fa059 0 9px,#83cf69 9px 15px)}
+#cloudTopSign{position:absolute;left:10%;top:17%;padding:18px 22px;max-width:min(44vw,470px);background:rgba(255,251,240,.88);border:3px solid rgba(32,69,57,.12);border-radius:24px;box-shadow:0 16px 40px rgba(29,70,60,.1)}
+#cloudTopSign h2{margin:0 0 8px;font-size:clamp(34px,5vw,62px);line-height:1.02}
+#cloudTopSign p{margin:0;font-size:clamp(13px,1.5vw,19px);line-height:1.7;font-weight:800}
+#cloudTopWorld{position:absolute;left:0;right:0;top:0;height:40%;opacity:.2}
+#cloudTopWorld .cloudFloor{position:absolute;left:4%;right:4%;bottom:8%;height:34%;background:radial-gradient(circle at 8% 64%,#fff 0 11%,transparent 12%),radial-gradient(circle at 24% 58%,#fff 0 13%,transparent 14%),radial-gradient(circle at 39% 62%,#fff 0 12%,transparent 13%),radial-gradient(circle at 56% 58%,#fff 0 13%,transparent 14%),radial-gradient(circle at 74% 63%,#fff 0 11%,transparent 12%),radial-gradient(circle at 88% 58%,#fff 0 12%,transparent 13%),linear-gradient(180deg,#fff 0%,#eef9ff 100%);border-radius:60px;box-shadow:0 20px 32px rgba(145,190,219,.26)}
+#cloudTopWorld .cukeGate{position:absolute;right:10%;bottom:32%;width:220px;height:120px;border:12px solid #2f7b55;border-bottom:0;border-radius:140px 140px 0 0}
+#cloudTopWorld .cukeGate:before,#cloudTopWorld .cukeGate:after{content:"";position:absolute;top:-26px;width:34px;height:100px;border:4px solid #2f6e3a;border-radius:50% 42% 46% 51%;background:repeating-linear-gradient(90deg,#2d9d56 0 9px,#79c962 9px 15px)}
+#cloudTopWorld .cukeGate:before{left:34px}#cloudTopWorld .cukeGate:after{right:34px}
+/* final cloud world */
+#cloudWorldBg{position:absolute;left:0;top:0;width:2300px;height:100%;background:linear-gradient(180deg,#d7f3ff 0%,#b8ecff 36%,#effcff 100%)}
+#cloudGlow{position:absolute;left:110px;top:70px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,#fff8c5 0,#fff3a8 24%,rgba(255,243,168,.15) 60%,transparent 72%)}
+.cloudFloor.back{position:absolute;left:120px;right:180px;bottom:16%;height:14%;opacity:.74;filter:blur(2px)}
+.cloudFloor.front{position:absolute;left:0;right:0;bottom:0;height:30%;background:radial-gradient(circle at 8% 50%,#fff 0 12%,transparent 13%),radial-gradient(circle at 21% 44%,#fff 0 13%,transparent 14%),radial-gradient(circle at 35% 55%,#fff 0 12%,transparent 13%),radial-gradient(circle at 51% 48%,#fff 0 13%,transparent 14%),radial-gradient(circle at 67% 54%,#fff 0 12%,transparent 13%),radial-gradient(circle at 81% 46%,#fff 0 13%,transparent 14%),radial-gradient(circle at 93% 56%,#fff 0 12%,transparent 13%),linear-gradient(180deg,#fff 0,#eefbff 100%)}
+.cloudGate{position:absolute;left:1150px;right:auto;top:49%;width:260px;height:140px;border:12px solid #2f7b55;border-bottom:0;border-radius:170px 170px 0 0}
+.cloudGate:before,.cloudGate:after{content:"";position:absolute;top:-30px;width:38px;height:116px;border:4px solid #2f6e3a;border-radius:50% 42% 46% 51%;background:repeating-linear-gradient(90deg,#2d9d56 0 9px,#79c962 9px 15px)}
+.cloudGate:before{left:38px}.cloudGate:after{right:38px}
+.floatCuke{position:absolute;width:40px;height:132px;border:4px solid #2f6e3a;border-radius:50% 42% 46% 51%;background:repeating-linear-gradient(90deg,#2d9d56 0 9px,#79c962 9px 15px)}
+.fc1{left:1030px;top:160px;transform:rotate(-8deg)}.fc2{left:1260px;top:230px}.fc3{left:1410px;top:150px;transform:rotate(11deg)}
+#cloudTitle{position:absolute;left:130px;top:120px;max-width:min(40vw,440px);padding:24px 24px;background:rgba(255,251,240,.88);border-radius:24px;border:3px solid rgba(32,69,57,.12);box-shadow:0 16px 40px rgba(29,70,60,.1)}
+#cloudTitle h2{margin:0 0 10px;font-size:clamp(34px,4.8vw,62px);line-height:1.02}
+#cloudTitle p{margin:0;font-weight:800;line-height:1.8}
+#cloudBanner{position:absolute;left:1200px;right:auto;top:115px;font-size:clamp(28px,4vw,56px);font-weight:900;letter-spacing:.06em;color:#2a6d4c;opacity:.74;transform:rotate(5deg);z-index:9}
+#cloudPhoto{position:absolute;left:800px;right:auto;bottom:12%;width:clamp(240px,34vw,460px);z-index:10;filter:drop-shadow(0 18px 12px rgba(31,76,66,.18))}
+
+/* Cloud-world structures stay visible while the camera pans horizontally. */
+.gardenGlass{position:absolute;left:540px;bottom:19%;width:460px;height:240px;border:9px solid #2f815f;border-bottom:0;border-radius:48% 48% 0 0/42% 42% 0 0;background:linear-gradient(180deg,#d6f7ff72,#eafde944);box-shadow:inset 0 0 30px #96c9a126;z-index:6}
+.gardenRoof{position:absolute;left:4%;right:4%;top:30%;height:7px;background:#2f815f;box-shadow:0 80px 0 #2f815f50}
+.gardenStem{position:absolute;top:14%;width:8px;height:66%;background:#2d8051;border-radius:10px}
+.gardenStem:before{content:'';position:absolute;left:-24px;top:20%;width:55px;height:48px;background:#6bc35e;border:3px solid #328551;border-radius:68% 14% 70% 18%;transform:rotate(-32deg)}
+.gs1{left:22%}.gs2{left:49%;height:79%}.gs3{left:75%;height:67%}
+.gardenCuke{position:absolute;top:38%;width:33px;height:94px;border:4px solid #2e7b48;border-radius:50% 42% 44% 52%;background:repeating-linear-gradient(90deg,#2f9b53 0 10px,#8aca6a 10px 16px);box-shadow:inset -5px 0 8px #22563725}
+.gc1{left:21%}.gc2{left:48%;height:108px}.gc3{left:73%}
+.gardenLabel{position:absolute;left:20%;top:-20px;display:inline-block;padding:8px 12px;border-radius:999px;background:#fff9dd;border:3px solid #326d4f;color:#285c48;font-weight:900;font-size:13px;letter-spacing:.08em;transform:rotate(-3deg)}
+.cloudIsland{position:absolute;bottom:18%;width:240px;height:80px;border-radius:50% 50% 36% 42%;background:#fff;box-shadow:0 16px 25px #8ab9d047;z-index:5}
+.cloudIsland:before,.cloudIsland:after{content:'';position:absolute;border-radius:50%;background:#fff}
+.cloudIsland:before{left:18%;bottom:34%;width:42%;height:96%}.cloudIsland:after{right:10%;bottom:22%;width:44%;height:92%}
+.cloudIsland.i1{left:440px}.cloudIsland.i2{left:1040px;width:310px;height:94px}.cloudIsland.i3{left:1480px;width:280px;height:75px}
+.cloudMarket{position:absolute;left:1510px;bottom:21%;width:310px;height:220px;background:#fff2cf;border:7px solid #245a46;border-radius:13px;box-shadow:10px 16px 0 #245a461a;z-index:8}
+.marketRoof{position:absolute;left:-18px;right:-18px;top:-45px;height:56px;background:repeating-linear-gradient(90deg,#faad79 0 34px,#fff0ca 34px 68px);border:6px solid #245a46;transform:skewX(-6deg);border-radius:10px}
+.marketText{position:absolute;left:18px;top:36px;font-size:27px;font-weight:900;line-height:1.2;color:#2c6549}
+.marketCrate{position:absolute;left:25px;bottom:20px;width:92px;height:60px;border:6px solid #8e6a44;border-radius:9px;background:repeating-linear-gradient(90deg,#318e50 0 14px,#78c965 14px 23px)}
+.marketCrate.c2{left:143px}
+.cloudFloor.front{box-shadow:0 -18px 30px #fff8,0 18px 24px #b2dfe469;border-top:6px solid #eefaff}
+
+/* helper */
+.fadeVeil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.08) 48%,rgba(255,255,255,.34) 78%,rgba(255,255,255,.72) 100%);opacity:0;z-index:14}
+@media (max-width: 820px){
+  #hud{left:10px;top:10px;padding:6px 10px}#bar{width:34vw}#hint{max-width:72vw;right:10px;bottom:10px;font-size:11px;padding:8px 10px}
+  #playerWrap{left:18px;bottom:12%;width:100px}#shadow{left:30px;bottom:11%}
+  .stageTitle{max-width:70vw;padding:14px 16px}.stageTitle h2{font-size:29px}.stageTitle p{font-size:12px;line-height:1.65}
+  .wheelWrap{left:175px;bottom:23%;width:205px;height:205px}.wheelStand{left:calc(50% - 12px);bottom:-40px;height:54px;width:24px}
+  .portBld.pb1{left:20px;width:120px;height:110px}.pb2{left:470px;width:120px;height:100px}.pb3{left:730px;width:110px;height:130px}
+  .cr1{left:840px;height:150px}.cr1:before{width:120px}.cr2{left:956px;height:126px}.cr2:before{width:102px}
+  .train{height:86px;width:330px}.train .body{height:58px;border-width:4px}.train .roof{left:38px;right:38px;bottom:54px;height:12px;border-width:3px}.train .win{bottom:14px;width:46px;height:18px;border-width:3px}.train .w1{left:28px}.train .w2{left:88px}.train .w3{left:148px}.train .w4{left:208px}.train .door{right:18px;bottom:8px;width:48px;height:38px;border-width:3px}.train .wheel{width:18px;height:18px;bottom:-10px}.train .wh1{left:46px}.train .wh2{left:136px}.train .wh3{left:226px}.train .hamRoof{left:72px;bottom:56px;width:56px}.train .spark{left:128px;bottom:66px}
+  #ishikawaSign{font-size:20px}
+  #kenroku{width:210px;height:110px}#oldTown{width:280px;height:172px}
+  #cloudPhoto{width:58vw;left:800px;right:auto;bottom:16%}#cloudBanner{left:1200px;right:auto;top:100px;font-size:32px}#cloudTitle{left:16px;top:80px;max-width:65vw}
+  #cloudTopSign{max-width:72vw;left:5%;top:14%}
+}
+</style>
+</head>
+<body>
+<div id="hud"><div id="label">00 / INTRO</div><div id="bar"><div id="fill"></div></div></div>
+<div id="hint">横スクロールで進み、途中で蔦を登って、また横へ。観覧車・電車・東京のビル・夜景・石川の朝・種→きゅうり世界まで動く版。</div>
+<div id="stage">
+  <div id="shadow"></div>
+  <div id="playerWrap"><img id="player" decoding="async" fetchpriority="high" src="hamcello-media/hamcello_08.webp" alt="ハムチェッロ"></div>
+  <div class="viewport">
+    <div id="hWorld">
+      <div id="yokohamaSky"></div>
+      <div id="sea"></div><div id="pier"></div>
+      <div class="cloud cy1"></div><div class="cloud cy2"></div><div class="cloud cy3"></div>
+      <div class="wheelWrap" aria-label="横浜の観覧車">
+        <div id="wheel">
+          <div class="spoke" style="transform:translate(-50%,-50%) rotate(30deg)"></div>
+          <div class="spoke" style="transform:translate(-50%,-50%) rotate(60deg)"></div>
+          <div class="spoke" style="transform:translate(-50%,-50%) rotate(120deg)"></div>
+          <div class="spoke" style="transform:translate(-50%,-50%) rotate(150deg)"></div>
+          <div class="gondola" style="transform:translate(-50%,-50%) rotate(0deg) translateY(-150px)"></div>
+          <div class="gondola" style="transform:translate(-50%,-50%) rotate(60deg) translateY(-150px)"></div>
+          <div class="gondola" style="transform:translate(-50%,-50%) rotate(120deg) translateY(-150px)"></div>
+          <div class="gondola" style="transform:translate(-50%,-50%) rotate(180deg) translateY(-150px)"></div>
+          <div class="gondola" style="transform:translate(-50%,-50%) rotate(240deg) translateY(-150px)"></div>
+          <div class="gondola" style="transform:translate(-50%,-50%) rotate(300deg) translateY(-150px)"></div>
+        </div>
+        <div class="wheelStand"></div>
+      </div>
+      <div class="portBld pb1"></div><div class="portBld pb2"></div><div class="portBld pb3"></div>
+      <div class="crane cr1"></div><div class="crane cr2"></div>
+      <div class="sectionTag" style="left:40px;top:24px">YOKOHAMA</div>
+      <div class="stageTitle" style="left:58px;top:88px"><h2>横浜。</h2><p>ハムチェが歩くと、観覧車がくるくる回る。海辺の港から、冒険がはじまる。</p></div>
+
+      <div id="transitionSky"></div><div id="sun"></div><div id="moon"></div><div id="railTrack"></div>
+      <div id="tokyoSky"></div><div id="tokyoStars"></div><div id="tokyoGround"></div>
+      <div class="building b1"></div><div class="building b2"></div><div class="building b3"></div><div class="building b4"></div><div class="building b5"></div><div class="building b6"></div><div class="building b7"></div><div class="building b8"></div><div class="building b9"></div><div class="building b10"></div>
+      <div class="sectionTag" style="left:3080px;top:24px">TOKYO</div>
+      <div class="stageTitle" style="left:3120px;top:90px"><h2>東京。</h2><p>電車の上にのったハムチェが進むたび、ビルがニョキニョキ伸びていく。夕日から夜景へ、街の顔も変わる。</p></div>
+
+      <div id="dawnSky"></div><div id="sunrise"></div>
+      <div class="hill h1"></div><div class="hill h2"></div><div class="hill h3"></div>
+      <div class="mountain back m1"></div><div class="mountain m2"></div><div class="mountain back m3"></div><div class="mountain m4"></div><div class="mountain back m5"></div>
+      <div id="ishikawaSign">石川県</div>
+      <div id="kenroku"><div class="tree t1"></div><div class="tree t2"></div><div class="tree t3"></div><div class="pond"></div><div class="stone"></div></div>
+      <div id="oldTown"><div class="house hA"></div><div class="house hB"></div><div class="house hC"></div><div class="house hD"></div></div>
+      <div class="sectionTag" style="left:4780px;top:24px">ISHIKAWA</div>
+      <div class="stageTitle" style="left:4850px;top:90px"><h2>石川へ。</h2><p>夜を抜けて、また朝。山並みが増え、石川県の看板、兼六園、古い町並みがだんだん見えてくる。</p></div>
+
+      <div id="seedMountain"></div><div id="seedHill"></div><div id="seedMark"></div><div id="seedSign">山に、タネがひとつ。</div>
+      <div class="sectionTag" style="left:6680px;top:24px">SEED</div>
+      <div class="stageTitle" style="left:6710px;top:90px"><h2>その先に、タネ。</h2><p>さらに山を越えると、ひとつのタネ。ここから蔦がのびて、きゅうりの世界につながっていく。</p></div>
+
+      <div id="trainA" class="train" style="left:1820px;bottom:18%"><div class="roof"></div><div class="body"></div><div class="win w1"></div><div class="win w2"></div><div class="win w3"></div><div class="win w4"></div><div class="door"></div><div class="wheel wh1"></div><div class="wheel wh2"></div><div class="wheel wh3"></div><img class="hamRoof" decoding="async" src="hamcello-media/hamcello_04.webp" alt=""><div class="spark"></div></div>
+      <div id="trainB" class="train" style="left:4760px;bottom:20%;opacity:0"><div class="roof"></div><div class="body"></div><div class="win w1"></div><div class="win w2"></div><div class="win w3"></div><div class="win w4"></div><div class="door"></div><div class="wheel wh1"></div><div class="wheel wh2"></div><div class="wheel wh3"></div><img class="hamRoof" decoding="async" src="hamcello-media/hamcello_04.webp" alt=""><div class="spark"></div></div>
+      <div class="fadeVeil" id="veil1"></div>
+    </div>
+
+    <div id="climbViewport">
+      <div id="climbBaseSky"></div>
+      <div id="climbTower">
+        <div id="baseMountains"></div>
+        <div id="climbSeed"></div>
+        <svg id="vineSvg" viewBox="0 0 1000 4000" preserveAspectRatio="none" aria-hidden="true">
+          <path class="vineLine" id="vineLine" pathLength="1000" d="M 520 3600 C 620 3340, 360 3250, 490 3050 S 690 2720, 520 2570 S 350 2260, 540 2080 S 680 1780, 490 1610 S 340 1260, 560 1050 S 680 700, 510 520 S 450 320, 520 240"></path>
+          <path class="vineHi" id="vineHi" pathLength="1000" d="M 520 3600 C 620 3340, 360 3250, 490 3050 S 690 2720, 520 2570 S 350 2260, 540 2080 S 680 1780, 490 1610 S 340 1260, 560 1050 S 680 700, 510 520 S 450 320, 520 240"></path>
+        </svg>
+        <div class="climbLeaf" data-at="0.12" style="top:80%;left:47%;transform:rotate(-22deg) scale(.2)"></div>
+        <div class="climbLeaf" data-at="0.24" style="top:69%;left:60%;transform:rotate(24deg) scale(.2)"></div>
+        <div class="climbLeaf" data-at="0.36" style="top:56%;left:38%;transform:rotate(-30deg) scale(.2)"></div>
+        <div class="climbLeaf" data-at="0.49" style="top:45%;left:61%;transform:rotate(18deg) scale(.2)"></div>
+        <div class="climbLeaf" data-at="0.63" style="top:31%;left:36%;transform:rotate(-15deg) scale(.2)"></div>
+        <div class="climbLeaf" data-at="0.77" style="top:17%;left:58%;transform:rotate(20deg) scale(.2)"></div>
+        <div class="climbFlower" data-at="0.26" style="top:72%;left:56%"></div>
+        <div class="climbFlower" data-at="0.42" style="top:58%;left:40%"></div>
+        <div class="climbFlower" data-at="0.58" style="top:40%;left:60%"></div>
+        <div class="climbFlower" data-at="0.78" style="top:22%;left:42%"></div>
+        <div class="climbFruit" data-at="0.38" style="top:64%;left:58%"></div>
+        <div class="climbFruit" data-at="0.57" style="top:47%;left:38%"></div>
+        <div class="climbFruit" data-at="0.79" style="top:25%;left:60%"></div>
+        <div id="cloudTopWorld"><div class="cloudFloor"></div><div class="cukeGate"></div></div>
+        <div id="cloudTopSign"><h2>雲の上に、<br>きゅうりの世界。</h2><p>山のタネから、つたがのびる。葉っぱ、花、きゅうりが順番に現れて、その先は雲の上。</p></div>
+      </div>
+    </div>
+
+    <div id="cloudWorld">
+      <div id="cloudWorldBg"></div><div id="cloudGlow"></div>
+      <div class="cloudFloor back"></div><div class="cloudFloor front"></div>
+      <div class="floatCuke fc1"></div><div class="floatCuke fc2"></div><div class="floatCuke fc3"></div>
+      <div class="cloudGate"></div>
+      <div class="gardenGlass"><div class="gardenRoof"></div><div class="gardenStem gs1"></div><div class="gardenStem gs2"></div><div class="gardenStem gs3"></div><div class="gardenCuke gc1"></div><div class="gardenCuke gc2"></div><div class="gardenCuke gc3"></div><div class="gardenLabel">CUCUMBER GARDEN</div></div>
+      <div class="cloudIsland i1"></div><div class="cloudIsland i2"></div><div class="cloudIsland i3"></div>
+      <div class="cloudMarket"><div class="marketRoof"></div><div class="marketText">きゅうり直売所</div><div class="marketCrate"></div><div class="marketCrate c2"></div></div>
+      <div id="cloudTitle"><h2>きゅうり<br>天国。</h2><p>ここでは、きゅうりがぜんぶ。<br>雲の床、きゅうりの門、空に浮かぶ実。これまでと同じ感じで、最後はきゅうり世界へ。</p></div>
+      <div id="cloudBanner">CUCUMBER SKY</div>
+      <img id="cloudPhoto" decoding="async" src="hamcello-media/hamcello_05.webp" alt="ハムチェッロ">
+    </div>
+  </div>
+</div>
+<script>
+(()=>{
+  const sections=[
+    {label:'01 / YOKOHAMA',hint:'観覧車が回る横浜。'},
+    {label:'02 / TOKYO TRAIN',hint:'電車に乗って東京へ。'},
+    {label:'03 / TOKYO NIGHT',hint:'ビルが生えて、夜景に変わる。'},
+    {label:'04 / ISHIKAWA',hint:'朝日と山、石川県へ。'},
+    {label:'05 / SEED',hint:'山の先のタネへ。'},
+    {label:'06 / CLIMB',hint:'蔦をのぼって雲の上へ。'},
+    {label:'07 / CUCUMBER SKY',hint:'きゅうり世界を横に進む。'}
+  ];
+  const STOPS={
+    yoko: 0,
+    train1: 1500,
+    tokyo: 3000,
+    ishikawa: 4700,
+    seed: 6650,
+    climb: 7550,
+    cloud: 10050,
+    end: 11800
+  };
+  const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+  const mix=(a,b,t)=>a+(b-a)*t;
+  const smooth=t=>t*t*(3-2*t);
+  const bodyMax=document.body.scrollHeight-innerHeight;
+  const wheelGondolas=[...document.querySelectorAll('.gondola')];
+  const railTrack=document.getElementById('railTrack');
+  const hWorld=document.getElementById('hWorld');
+  const cloudWorld=document.getElementById('cloudWorld');
+  const climbViewport=document.getElementById('climbViewport');
+  const playerWrap=document.getElementById('playerWrap');
+  const player=document.getElementById('player');
+  const shadow=document.getElementById('shadow');
+  const wheel=document.getElementById('wheel');
+  const trainA=document.getElementById('trainA');
+  const trainB=document.getElementById('trainB');
+  const fill=document.getElementById('fill');
+  const label=document.getElementById('label');
+  const hint=document.getElementById('hint');
+  const transitionSky=document.getElementById('transitionSky');
+  const moon=document.getElementById('moon');
+  const tokyoStars=document.getElementById('tokyoStars');
+  const tokyoGround=document.getElementById('tokyoGround');
+  const buildings=[...document.querySelectorAll('.building')];
+  const sunrise=document.getElementById('sunrise');
+  const mountains=[...document.querySelectorAll('.mountain')];
+  const kenroku=document.getElementById('kenroku');
+  const oldTown=document.getElementById('oldTown');
+  const ishikawaSign=document.getElementById('ishikawaSign');
+  const seedMark=document.getElementById('seedMark');
+  const veil1=document.getElementById('veil1');
+  const climbTower=document.getElementById('climbTower');
+  const vineSvg=document.getElementById('vineSvg');
+  const vineLine=document.getElementById('vineLine');
+  const vineHi=document.getElementById('vineHi');
+  const reveals=[...document.querySelectorAll('.climbLeaf,.climbFlower,.climbFruit')];
+  const cloudTopWorld=document.getElementById('cloudTopWorld');
+  const cloudTopSign=document.getElementById('cloudTopSign');
+
+  function setText(i){label.textContent=sections[i].label;hint.textContent=sections[i].hint;}
+
+  function render(){
+    const y=window.scrollY||0;
+    const p=clamp(y/STOPS.end);
+    fill.style.width=(p*100)+'%';
+    let stage=0;
+
+    // Horizontal world movement before climb
+    let hx=0;
+    if(y<STOPS.climb){ hx=Math.min(y,STOPS.seed); }
+    else { hx=STOPS.seed; }
+    hWorld.style.transform=`translateX(${-hx}px)`;
+
+    // player defaults
+    playerWrap.style.opacity='1';
+    playerWrap.style.left=(innerWidth<820?18:Math.max(26,Math.min(innerWidth*.12,210)))+'px';
+    playerWrap.style.bottom=(innerWidth<820?12:14)+'%';
+    playerWrap.style.setProperty('--player-lift','0px');
+    player.classList.remove('climb');
+    shadow.classList.remove('hide');
+    shadow.style.transform='translateY(0)';
+
+    // Yokohama 0-1500
+    const py=clamp(y/STOPS.train1);
+    wheel.style.transform=`rotate(${py*540}deg)`;
+    // Every spoke and carriage stays inside the responsive wheel bounds.
+    const wheelSize=wheel.offsetWidth;
+    const radius=Math.max(42,wheelSize*.44);
+    wheelGondolas.forEach((g,i)=>{
+      const angle=(i*60*Math.PI/180);
+      const cx=wheelSize/2+Math.sin(angle)*radius;
+      const cy=wheelSize/2-Math.cos(angle)*radius;
+      g.style.left=cx+'px'; g.style.top=cy+'px';
+      g.style.transform=`translate(-50%,-50%) rotate(${-py*540}deg)`;
+    });
+    if(y<STOPS.train1*.9) stage=0;
+
+    // The same train continues from sunset in Yokohama, through Tokyo, into Ishikawa.
+    const board=smooth(clamp((y-1300)/350));
+    const trainRelative=innerWidth<=820?28:Math.max(66,innerWidth*.22);
+    const trainStartAbs=1820;
+    const trackTrainAbs=mix(trainStartAbs,hx+trainRelative,board);
+    const leave=smooth(clamp((y-(STOPS.seed-300))/300));
+    const aboard=board*(1-leave);
+    trainA.style.left=trackTrainAbs.toFixed(1)+'px';
+    trainA.style.transform=`translateY(${-Math.sin((y-1300)/45)*2*aboard}px)`;
+    trainA.style.bottom=(innerWidth<=820?18:20)+'%';
+    trainA.style.opacity=aboard.toFixed(3);
+    trainB.style.opacity='0';
+    if(aboard>.03){
+      playerWrap.style.opacity=(1-board+leave*board).toFixed(3);
+      shadow.classList.toggle('hide',aboard>.12);
+      if(y<STOPS.tokyo) stage=1;
+    }
+    // Sunset across the outskirts, night in Tokyo.
+    const t1=clamp((y-STOPS.train1)/(STOPS.tokyo-STOPS.train1));
+    transitionSky.style.opacity=smooth(t1);
+    moon.style.opacity=clamp((y-2550)/350);
+
+    // Tokyo 3000-4700
+    const tTokyo=clamp((y-STOPS.tokyo)/(STOPS.ishikawa-STOPS.tokyo));
+    if(y>=STOPS.tokyo-80 && y<STOPS.ishikawa) stage=2;
+    const grow=smooth(clamp((y-3180)/780));
+    buildings.forEach((b,i)=>{
+      const local=clamp(grow*(1.12 + i*0.03) - i*0.06);
+      b.style.transform=`scaleY(${Math.max(.02,local)})`;
+    });
+    const night=clamp((y-3850)/650);
+    tokyoStars.style.opacity=night;
+    tokyoGround.classList.toggle('night',night>.45);
+    buildings.forEach(b=>b.parentElement.classList.toggle('night',night>.45));
+
+    // Ishikawa dawn 4700-6500
+    const tIshi=clamp((y-STOPS.ishikawa)/(STOPS.seed-STOPS.ishikawa));
+    if(y>=STOPS.ishikawa-50 && y<STOPS.seed) stage=3;
+    sunrise.style.opacity=smooth(clamp((y-5000)/700));
+    mountains.forEach((m,i)=>{
+      const local=clamp((y-(5040+i*170))/620);
+      m.style.opacity=(m.classList.contains('back')?local*.72:local).toFixed(3);
+      m.style.transform=`translateY(${(1-local)*70}px)`;
+    });
+    const revealI=smooth(clamp((y-5400)/750));
+    ishikawaSign.style.opacity=revealI; ishikawaSign.style.transform=`translateY(${(1-revealI)*30}px) rotate(-3deg)`;
+    kenroku.style.opacity=revealI; kenroku.style.transform=`translateY(${(1-revealI)*40}px)`;
+    const revealTown=smooth(clamp((y-5750)/700));
+    oldTown.style.opacity=revealTown; oldTown.style.transform=`translateY(${(1-revealTown)*40}px)`;
+
+    // seed 6500-7400
+    const tSeed=clamp((y-STOPS.seed)/(STOPS.climb-STOPS.seed));
+    if(y>=STOPS.seed && y<STOPS.climb){
+      playerWrap.style.opacity='1';
+      playerWrap.style.left=(innerWidth<820?24:90)+'px';
+      playerWrap.style.bottom=(13 + Math.sin(tSeed*3.14)*2.2)+'%';
+      stage=4;
+      trainB.style.opacity='0';
+    }
+    seedMark.style.transform=`scale(${1+Math.sin(tSeed*10)*0.05})`;
+    veil1.style.opacity=clamp((y-7000)/420)*0.35;
+
+    // climb 7400-9800
+    const tClimb=clamp((y-STOPS.climb)/(STOPS.cloud-STOPS.climb));
+    if(y>=STOPS.climb && y<STOPS.cloud){
+      stage=5;
+      // The camera starts at the mountain base and rises along the vine.
+      const fadeIn=smooth(clamp((y-(STOPS.climb-240))/420));
+      climbViewport.style.opacity=fadeIn.toFixed(3); climbViewport.style.pointerEvents='auto';
+      const towerHeight=climbTower.offsetHeight;
+      const towerShift=mix(-(towerHeight-innerHeight),0,tClimb);
+      climbTower.style.transform=`translateY(${towerShift.toFixed(1)}px)`;
+      vineLine.style.strokeDashoffset=(1000-(tClimb*1000)).toFixed(1);
+      vineHi.style.strokeDashoffset=(1000-(tClimb*1000)).toFixed(1);
+      reveals.forEach(el=>{
+        const at=parseFloat(el.dataset.at||'0');
+        const r=clamp((tClimb-at)*7);
+        el.style.opacity=r.toFixed(3);
+        const base=el.classList.contains('climbLeaf') ? el.style.transform.replace(/scale\([^)]*\)/,'').trim() : '';
+        if(el.classList.contains('climbLeaf')) el.style.transform=`${base} scale(${Math.max(.2,r)})`;
+        else el.style.transform=`scale(${Math.max(.2,r)})`;
+      });
+      cloudTopWorld.style.opacity=0.18 + clamp((tClimb-.64)/.28)*0.82;
+      cloudTopSign.style.opacity=0.24 + clamp((tClimb-.66)/.26)*0.76;
+      // Keep the hamster next to the growing tip of the vine rather than floating away from it.
+      const point=vineLine.getPointAtLength(Math.max(0,tClimb-.045)*vineLine.getTotalLength());
+      const bounds=vineSvg.getBoundingClientRect();
+      const pointX=bounds.left+(point.x/1000)*bounds.width;
+      const pointY=bounds.top+(point.y/4000)*bounds.height;
+      const landing=smooth(clamp((tClimb-.84)/.16));
+      const hamsterWidth=playerWrap.offsetWidth;
+      const adjustedX=mix(pointX-hamsterWidth*.52,innerWidth<=820?20:80,landing);
+      const adjustedY=mix(pointY,innerHeight*.73,landing);
+      playerWrap.style.left=Math.max(4,Math.min(innerWidth-hamsterWidth-4,adjustedX)).toFixed(1)+'px';
+      playerWrap.style.bottom=(100*clamp((innerHeight-adjustedY-25)/innerHeight)).toFixed(2)+'%';
+      playerWrap.style.setProperty('--player-lift','0px');
+      player.classList.add('climb');
+      shadow.classList.add('hide');
+    } else if(y<STOPS.climb){
+      const fadeIn=smooth(clamp((y-(STOPS.climb-240))/420));
+      climbViewport.style.opacity=fadeIn.toFixed(3); climbViewport.style.pointerEvents='none';
+      climbTower.style.transform=`translateY(${-(climbTower.offsetHeight-innerHeight)}px)`;
+      vineLine.style.strokeDashoffset='1000'; vineHi.style.strokeDashoffset='1000';
+    }
+
+    // cloud world 9800-end
+    const tCloud=clamp((y-STOPS.cloud)/(STOPS.end-STOPS.cloud));
+    if(y>=STOPS.cloud){
+      stage=6;
+      const arrival=smooth(clamp(tCloud/.24));
+      climbViewport.style.opacity=(1-arrival).toFixed(3);
+      cloudWorld.style.opacity=arrival.toFixed(3); cloudWorld.style.pointerEvents='auto';
+      cloudWorld.style.transform=`translateX(${-mix(0,1150,tCloud)}px)`;
+      playerWrap.style.left=(innerWidth<820?20:80)+'px';
+      playerWrap.style.bottom='14%';
+      playerWrap.style.setProperty('--player-lift','0px');
+      player.classList.remove('climb');
+      shadow.classList.remove('hide');
+      shadow.style.transform='translateY(0)';
+    } else {
+      cloudWorld.style.opacity='0'; cloudWorld.style.pointerEvents='none'; cloudWorld.style.transform='translateX(0px)';
+    }
+
+    setText(stage);
+  }
+  let pending=false;
+  function schedule(){if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;render();});}
+  render();
+  addEventListener('scroll',schedule,{passive:true});
+  addEventListener('resize',schedule);
+})();
+</script>
+</body>
+</html>
