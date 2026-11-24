@@ -598,10 +598,12 @@ function trainScene(p,now){
    ctx.save();ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
    ctx.drawImage(train,Math.round(trainX),Math.round(trainTop),Math.round(trainW),Math.round(trainH));ctx.restore();
  }
- // Every action uses a genuinely different image. Hamcello appears only once.
+ // The same six action sprites and timing are shared by both train journeys.
+ drawTrainRider(q,g,roofXForTrain(trainX,trainW),trainTop+4,90*ts,gT);
+}
+function roofXForTrain(x,w){return x+w*.43}
+function drawTrainRider(q,g,roofX,roofBase,landingX,landingBase){
  let key='run',cx=W*.30,base=g;
- const roofX=trainX+trainW*.43;
- const roofBase=trainTop+4;
  if(q<.18){
   key='run';cx=W*.30+W*.04*smooth(q/.18);
  }else if(q<.40){
@@ -614,10 +616,10 @@ function trainScene(p,now){
  }else if(q<.95){
   const j=smooth((q-.75)/.20);
   key=j<.32?'jump':j<.79?'airborne':'land';
-  cx=roofX*(1-j)+(90*ts)*j;
-  base=roofBase+(gT-roofBase)*j-Math.sin(Math.PI*j)*Math.min(H*.075,55);
+  cx=roofX*(1-j)+(landingX)*j;
+  base=roofBase+(landingBase-roofBase)*j-Math.sin(Math.PI*j)*Math.min(H*.075,55);
  }else{
-  key='run';cx=90*ts;base=gT;
+  key='run';cx=landingX;base=landingBase;
  }
  let hamster=IA[key]||IA.run;
  if(valid(hamster)){
@@ -628,6 +630,7 @@ function trainScene(p,now){
   ctx.fillStyle='rgba(32,49,53,.2)';ctx.beginPath();ctx.ellipse(cx,base+2,Math.max(14,width*.3),3,0,0,Math.PI*2);ctx.fill();
   ctx.drawImage(hamster,Math.round(cx-width/2),Math.round(base-height),Math.round(width),Math.round(height));ctx.restore();
  }
+
 }
 
 let T_END=.73,I_START=.81;
@@ -718,8 +721,7 @@ function ishikawaTrain(q,now){
  for(let k=-1;k<Math.ceil(v/155)+2;k++){const x=k*155-(off%155);fRect(x,29,27,H/s,'#91a4b0');fRect(x+20,29,7,H/s,'#677f91')}ctx.restore();
  const tx=W*(.70+.45*smooth(q/.18)-.44*smooth((q-.12)/.16)+.45*smooth((q-.82)/.18));
  bulletTrain(tx,rail-69*s,s);
- if(q<.20||q>.79){const a=q<.20?smooth(q/.20):smooth((q-.79)/.21);const cx=q<.20?W*.24+(tx-W*.24)*a:tx-35*s+(W*.20-tx+35*s)*a;
- const jump=Math.sin(Math.PI*a)*40*s,w=70*s*.78,h=68*s*.78;ctx.save();ctx.translate(cx,0);ctx.scale(-1,1);image(jump>4?'ham_jump':'ham_run',-w/2,rail-h-jump,w,h,true);ctx.restore()}
+ drawTrainRider(q,rail,tx-180*s,rail-69*s+3,90*tokyoScale(),g);
 }
 
 
@@ -757,17 +759,70 @@ function hdHam(scene,x,frame,raise=0){
  ctx.save();ctx.translate((x-frame.pan)*frame.s,0);ctx.scale(reverse?1:-1,1);image(pose,-w/2,frame.g-h-raise*frame.s,w,h,true);ctx.restore();
 }
 function hop(x,a,b,h){return x>a&&x<b?Math.sin(Math.PI*(x-a)/(b-a))*h:0}
-function hdTravel(q,now){
- // Use the original 1536 x 512 pixel illustration; no stretch of a low resolution substitute.
- const f=panoFrame(HD.train,q,432,true);
- // The original train occupies the left of the illustration. After it is out of the view,
- // draw the extracted original train sprite on the same railway.
- if(f.pan>665&&valid(HD.trainSprite)){
-  const s=f.s,tx=W*(.67+.34*smooth((q-.83)/.17)),tw=HD.trainSprite.width*s,th=HD.trainSprite.height*s;
-  ctx.drawImage(HD.trainSprite,Math.round(tx-tw*.9),Math.round(f.g-th),Math.round(tw),Math.round(th));
+// Build a reusable railway panorama without the baked-in train. The original sky,
+// mountains, railway and foreground are retained at their native proportions.
+let hdRailBackdrop=null,hdRailSource=null;
+function railwayBackdrop(){
+ if(hdRailBackdrop&&hdRailSource===HD.train)return hdRailBackdrop;
+ const im=HD.train,cv=document.createElement('canvas');cv.width=im.naturalWidth;cv.height=im.naturalHeight;
+ const g=cv.getContext('2d');g.imageSmoothingEnabled=false;g.drawImage(im,0,0);
+ // Replace only the occupied train band with the unobstructed landscape beside it.
+ g.drawImage(im,670,322,670,111,0,322,670,111);
+ // Preserve the original overhead catenary poles over the replacement.
+ g.drawImage(im,350,322,21,111,350,322,21,111);
+ hdRailSource=im;hdRailBackdrop=cv;return cv;
+}
+function railPanorama(q){
+ const im=railwayBackdrop(),s=panoScale(true),range=Math.max(0,im.width-W/s),pan=smooth(q)*range;
+ const top=H*.72-432*s,bottom=top+im.height*s;
+ ctx.imageSmoothingEnabled=false;
+ // Sky is a flat gradient; the scenery itself is never stretched.
+ const sky=ctx.createLinearGradient(0,0,0,Math.max(1,top));sky.addColorStop(0,'#18aee8');sky.addColorStop(1,'#20afea');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+ // Continue below the image with shaded ground and actual-scale pixel foliage.
+ // No one-pixel source row is enlarged to fill the viewport.
+ const lower=ctx.createLinearGradient(0,Math.min(H-1,bottom),0,H);lower.addColorStop(0,'#285b50');lower.addColorStop(1,'#183e3e');
+ ctx.fillStyle=lower;ctx.fillRect(0,Math.max(0,bottom-1),W,H);
+ if(bottom<H){
+  const px=Math.max(2,Math.round(s*4)),step=px*5;
+  for(let row=0;row<Math.ceil((H-bottom)/step)+1;row++){
+   for(let i=-2;i<Math.ceil(W/step)+3;i++){
+    const world=i+Math.floor(pan*s/step),seed=Math.abs(Math.sin(world*17.13+row*38.71)*43758.5453)%1;
+    const x=i*step-(pan*s%step),y=bottom+row*step;
+    ctx.fillStyle=['#245448','#306749','#39794c','#21483f'][Math.floor(seed*4)];
+    ctx.fillRect(Math.round(x),Math.round(y+px*(seed>.5?1:0)),step+1,step+px);
+   }
+  }
+  // Railway supports continue vertically at their original width.
+  for(const col of [255,548,993,1252]){
+   const x=(col-pan)*s,w=43*s;if(x+w<0||x>W)continue;
+   ctx.fillStyle='#526b80';ctx.fillRect(x,bottom,w,H-bottom);
+   ctx.fillStyle='#8b9bac';ctx.fillRect(x+5*s,bottom,29*s,H-bottom);
+  }
  }
- if(q<.10){hdHam('train-start',90+q*1800,f,hop(q,0,.10,35))}
- if(q>.92){hdHam('train-end',Math.min(1460,1390+(q-.92)*700),f,hop(q,.92,1,36))}
+ ctx.drawImage(im,Math.round(-pan*s),Math.round(top),Math.ceil(im.width*s),Math.ceil(im.height*s));
+ return {s,pan,top,g:top+432*s};
+}
+function drawBulletSprite(x,y,w,h){
+ const im=HD.trainSprite;
+ if(!valid(im)){bulletTrain(x+w*.8,y,w/470);return}
+ // Clip the extracted sprite to the actual train silhouette, excluding old scenery.
+ ctx.save();ctx.translate(x,y);ctx.scale(w/im.naturalWidth,h/im.naturalHeight);
+ const kx=im.naturalWidth/619,ky=im.naturalHeight/114;
+ ctx.beginPath();[[0,10],[425,8],[470,12],[505,22],[542,39],[580,60],[606,79],[619,96],[617,104],[607,112],[0,114]].forEach(([a,b],i)=>i?ctx.lineTo(a*kx,b*ky):ctx.moveTo(a*kx,b*ky));ctx.closePath();ctx.clip();
+ ctx.imageSmoothingEnabled=false;ctx.drawImage(im,0,0);ctx.restore();
+}
+function hdTravel(q,now){
+ const f=railPanorama(q),s=f.s,g=f.g;
+ const trainW=619*s,trainH=114*s;
+ const approach=smooth(q/.18),depart=smooth((q-.77)/.20);
+ const trainX=-trainW+(trainW+W*.06)*approach+depart*(W+trainW*.15);
+ const trainTop=g-trainH;
+ // Blend the end of the railway into the actual Ishikawa arrival panorama.
+ const arrival=smooth((q-.88)/.12),landingBase=g+(H*.74-g)*arrival;
+ if(arrival>0){ctx.save();ctx.globalAlpha=arrival;panoFrame(HD.city,0,450);ctx.restore()}
+ if(q<.97){ctx.save();ctx.globalAlpha=1-smooth((q-.94)/.03);drawBulletSprite(trainX,trainTop,trainW,trainH);ctx.restore()}
+ // Same run, takeoff, jump, airborne, land and roof sprites as Yokohama–Tokyo.
+ drawTrainRider(q,g,roofXForTrain(trainX,trainW),trainTop+5*s,90*panoScale(),landingBase);
 }
 function cityScene(q,now){
  const f=panoFrame(HD.city,q,450),x=90+q*1370;
