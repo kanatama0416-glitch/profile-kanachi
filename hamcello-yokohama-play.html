@@ -141,12 +141,20 @@ function sea(){
 }
 function backgrounds(){
  // Four original reference-matched pixel landscapes share one continuous horizon.
+ // Keep each background image at its native aspect ratio so buildings do not stretch horizontally.
  const panels=[['bg_port',-320],['bg_ferris',980],['bg_brick',2570],['bg_china',3990],['bg_china',5290]];
- const pn=1490;const h=480*scale;
+ const h=480*scale;
  for(let n=0;n<panels.length;n++){
-  const [key,x]=panels[n];const xx=atX(x),ww=pn*scale;
+  const [key,x]=panels[n];
+  const im=I[key];
+  const ratio=vis(im)?(im.naturalWidth/im.naturalHeight):(16/9);
+  const ww=h*ratio;
+  const xx=atX(x);
   if(xx>W+200||xx+ww<-200)continue;
-  ctx.save();ctx.beginPath();ctx.rect(Math.max(0,xx),0,Math.min(W,ww),H);ctx.clip();
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(Math.max(0,xx),0,Math.min(W,Math.max(0,xx+ww)-Math.max(0,xx)),H);
+  ctx.clip();
   ctx.globalAlpha=.96;
   asset(key,xx,ground-h,ww,h);
   ctx.restore();
@@ -285,9 +293,9 @@ function hamster(){
  const jump=riding?0:jumpHeight(path.wx);
  const cy=ground-(riding?path.lift:jump)*scale;
  const moving=Math.abs(raw-current)>1 || (current>0&&current<TOTAL-20);
- let pose='ham_idle',ww=86,hh=100;
+ let pose='ham_idle',ww=86,hh=100,flip=false;
  if(riding){pose='ham_notice';ww=62;hh=91;}
- else if(jump>29){pose='ham_jump';ww=113;hh=78;}
+ else if(jump>29){pose='ham_jump';ww=113;hh=78;flip=true;}
  else if(current>4900&&current<5400){pose='ham_eat';ww=87;hh=100;}
  else if(moving){
    const step=Math.floor(current/53)%3;
@@ -299,9 +307,9 @@ function hamster(){
  ctx.beginPath();ctx.ellipse(sx,ground+5*scale,52*scale*(1-jump/220),9*scale,0,0,Math.PI*2);ctx.fill();ctx.restore();
  if(riding){
    // Put the hamster inside the gondola rather than rotating a single photograph.
-   asset(pose,sx-w/2,cy-88*scale,w,h);
+   asset(pose,sx-w/2,cy-88*scale,w,h,false);
    asset('ferris_coral',sx-24*scale,cy-28*scale,48*scale,37*scale);
- }else asset(pose,sx-w/2,cy-h,w,h);
+ }else asset(pose,sx-w/2,cy-h,w,h,flip);
  // At specific events a tiny exclamation appears, no pop-up interruption.
  if(current>4750&&current<4900){
    ctx.font=`900 ${Math.round(26*scale)}px sans-serif`;
