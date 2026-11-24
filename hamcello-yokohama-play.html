@@ -69,10 +69,10 @@ for(const [key,uri] of Object.entries(assets)){
 const STAGES=[
  {label:'01 / 港のコンテナ',from:0,to:1460},
  {label:'02 / 観覧車',from:1460,to:2700},
- {label:'03 / 赤レンガ倉庫',from:2700,to:4190},
- {label:'04 / 中華街',from:4190,to:5800}
+ {label:'03 / 赤レンガ倉庫',from:2700,to:3830},
+ {label:'04 / 中華街',from:3830,to:5000}
 ];
-const TOTAL=6300;
+const TOTAL=5000;
 let W=0,H=0,dpr=1,scale=1,ground=0,view=0,maxScroll=1;
 let raw=0,current=0,camera=0,cameraY=0,requested=false,lastDraw=0,elapsed=0,mobile=false;
 let lastStage=-1,ready=false;
@@ -89,7 +89,7 @@ function resize(){
  scale=Math.max(.48,Math.min(1.55,scale));
  ground=H*(mobile?.76:.805);
  view=W/scale;
- maxScroll=Math.max(1000,Math.round(6600*(mobile?1.32:1)));
+ maxScroll=Math.max(1000,Math.round(5000*(mobile?1.18:1.08)));
  track.style.height=(maxScroll+H)+'px';
  raw=clamp(window.scrollY/maxScroll)*TOTAL;
  current=raw;
@@ -140,32 +140,29 @@ function sea(){
  rect(0,ground-8*scale,W,8*scale,'#0cbbd4');
 }
 function backgrounds(){
- // Four original reference-matched pixel landscapes share one continuous horizon.
- // Keep each background image at its native aspect ratio so buildings do not stretch horizontally.
- const panels=[['bg_port',-320],['bg_ferris',980],['bg_brick',2570],['bg_china',3990],['bg_china',5290]];
+ // Short, overlapping scenic bands: no long gaps of empty sea between scenes.
+ // Every panel keeps its original 16:9 ratio.
+ const panels=[['bg_port',-300],['bg_ferris',535],['bg_ferris',1370],
+               ['bg_brick',2205],['bg_china',3040]];
  const h=480*scale;
- for(let n=0;n<panels.length;n++){
-  const [key,x]=panels[n];
-  const im=I[key];
-  const ratio=vis(im)?(im.naturalWidth/im.naturalHeight):(16/9);
-  const ww=h*ratio;
-  const xx=atX(x);
-  if(xx>W+200||xx+ww<-200)continue;
-  ctx.save();
-  ctx.beginPath();
-  ctx.rect(Math.max(0,xx),0,Math.min(W,Math.max(0,xx+ww)-Math.max(0,xx)),H);
-  ctx.clip();
-  ctx.globalAlpha=.96;
-  asset(key,xx,ground-h,ww,h);
-  ctx.restore();
+ for(const [key,x] of panels){
+  const im=I[key], ratio=vis(im)?im.naturalWidth/im.naturalHeight:16/9;
+  const xx=atX(x),ww=h*ratio;
+  if(xx>W+4 || xx+ww<-4)continue;
+  ctx.save();ctx.beginPath();ctx.rect(Math.max(0,xx),0,Math.min(W,Math.max(0,xx+ww)-Math.max(0,xx)),H);ctx.clip();
+  asset(key,xx,ground-h,ww,h);ctx.restore();
  }
- // A quiet skyline bridge fills the long walk between distinct landmarks.
- for(let x=520;x<5600;x+=121){
-   const a=atX(x),w=23*scale,h=(37+(Math.sin(x*1.7)*.5+.5)*37)*scale;
-   if(a>W||a+w<0)continue;
-   if((x>1550&&x<2510)||(x>2990&&x<3750)||(x>4250&&x<5210))continue;
-   rect(a,ground-75*scale-h,w,h,'#c4eaf0');
-   for(let k=1;k<4;k++)rect(a+5*scale,ground-75*scale-h+(k*15)*scale,12*scale,5*scale,'#6ec1d9');
+ // A varied pixel skyline continues behind the closer Chinatown buildings.
+ for(let x=3760;x<5560;x+=58){
+  const h=95+(((x*7+13)%97));
+  const colors=['#96d7f0','#a8e1f3','#85cae8','#b9e6ee'];
+  const c=colors[Math.floor(x/58)%colors.length];
+  pix(x,h+72,54,h,c);
+  for(let yy=0;yy<h-17;yy+=21){
+   for(let xx=0;xx<39;xx+=15){
+    pix(x+7+xx,h+55-yy,8,10,'#e7f8fd');
+   }
+  }
  }
 }
 function groundLayer(){
@@ -196,6 +193,76 @@ function pixelSign(wx,base,textTop,textBottom,accent='#fff3cf'){
  ctx.save();ctx.textAlign='center';ctx.fillStyle='#254b4e';ctx.font=`bold ${Math.round(11*scale)}px sans-serif`;
  ctx.fillText(textTop,x+w/2,y+19*scale);ctx.font=`900 ${Math.round(17*scale)}px sans-serif`;
  ctx.fillText(textBottom,x+w/2,y+43*scale);ctx.restore();
+}
+// Street scenery is made from separate foreground objects, not stretched backgrounds.
+// The denser streets fill the former empty walk between red brick and Chinatown.
+function house(wx,w,h,kind){
+ const pal=[
+  {wall:'#b9574a',shade:'#903f40',roof:'#2c5364',tile:'#497f86',glass:'#e8f9ee',light:'#f3c76f'},
+  {wall:'#e2b572',shade:'#bf7650',roof:'#217a79',tile:'#399996',glass:'#d8f4ff',light:'#fff0ba'},
+  {wall:'#b83e42',shade:'#842c42',roof:'#e1a52a',tile:'#ffd160',glass:'#c8f3ef',light:'#f9d19c'},
+  {wall:'#b67b61',shade:'#835b60',roof:'#375579',tile:'#58819e',glass:'#f2e7c6',light:'#ffcf89'}
+ ][kind%4];
+ pix(wx,h,w,h,pal.wall);pix(wx+8,h-10,w-16,h-16,pal.shade);
+ // Traditional cornice, step roof, dark-blue or jade roof tiles.
+ pix(wx-10,h+12,w+20,20,pal.roof);
+ pix(wx+5,h+25,w-10,12,pal.tile);
+ for(let xx=wx+10;xx<wx+w-18;xx+=25)pix(xx,h+30,12,7,pal.roof);
+ for(let y=60;y<h-30;y+=61){
+  for(let x=wx+23;x<wx+w-36;x+=59){
+   pix(x,y+32,32,43,pal.roof);pix(x+5,y+25,22,31,pal.glass);
+   pix(x+14,y+25,4,31,pal.shade);pix(x-3,y-10,38,6,pal.light);
+  }
+ }
+ // An awning and open storefront below each house.
+ pix(wx+12,72,w-24,15,pal.roof);
+ for(let i=0;i<Math.floor((w-24)/24);i++)pix(wx+12+i*24,63,24,9,i%2?'#fff1d2':'#cf6651');
+ pix(wx+32,50,52,44,'#283d59');pix(wx+39,42,38,29,pal.glass);
+ pix(wx+w-73,49,42,40,'#283d59');pix(wx+w-65,43,26,27,pal.light);
+}
+function shrub(wx){
+ pix(wx+14,33,14,40,'#745c42');
+ for(const [dx,dy,c] of [[0,55,'#377d51'],[12,71,'#5cad56'],[30,50,'#298d59'],[19,82,'#87c956'],[-9,45,'#398652']])pix(wx+dx,dy,37,28,c);
+ for(const dx of [7,32])pix(wx+dx,64,7,7,'#b3ea7e');
+}
+function streetLamp(wx){
+ pix(wx+17,139,8,139,'#203c54');pix(wx+8,153,27,13,'#203c54');
+ pix(wx+12,150,19,25,'#ffd86c');pix(wx+16,154,11,14,'#fff3b9');
+ pix(wx+5,161,34,6,'#203c54');pix(wx+12,168,20,6,'#203c54');
+ pix(wx+12,17,20,10,'#203c54');
+}
+function waterfrontDetails(){
+ // Brick warehouse ends at 3680, and Chinatown begins immediately after.
+ for(const x of [2830,3690])streetLamp(x);
+ shrub(3745);shrub(3900);
+ // Low stone planters and flower boxes give texture to the harbor promenade.
+ for(const x of [2745,2830,3750,3890]){
+  pix(x,24,58,17,'#d9d7b5');pix(x+3,26,52,11,'#9caaa0');
+  for(let j=0;j<3;j++){
+   pix(x+8+j*17,42,14,15,j===1?'#62ad4e':'#2f8b50');
+   pix(x+12+j*17,47,5,5,'#ffd676');
+  }
+ }
+}
+function chinaStreet(){
+ // Actual streets follow the red brick facade, rather than a long patch of sky.
+ house(3768,210,255,0);
+ house(4438,264,285,2);
+ house(4720,262,268,1);
+ house(5000,338,262,3);
+ // Shaded top-floor verandas and street details on the shops.
+ for(const x of [4505,4630,4785,4890,5090,5220]){
+  pix(x,174,32,8,'#ffd177');pix(x+4,169,24,23,'#234c62');
+  pix(x+9,163,14,11,'#ffe7a0');
+ }
+ for(const x of [3895,4460,4730,5030])shrub(x);
+ for(const x of [4420,4990,5300])streetLamp(x);
+ // Railings and benches on the station approach, with clear passage for Hamcello.
+ for(const x of [4950,5012,5074,5136]){
+  pix(x,30,9,28,'#e5ddd0');pix(x+8,31,54,6,'#345a66');
+ }
+ // Direction board, station steps and a tram waiting beyond the food stalls.
+ pix(5285,42,115,14,'#c7b69a');pix(5285,47,115,5,'#d9d6bc');
 }
 function portObstacles(){
  // Platform objects have fixed world positions and are used for the jump path.
@@ -229,38 +296,35 @@ function ferrisProps(){
 }
 function brickProps(){
  worldSprite('brick',2920,345,760,330);
- const open=smooth(clamp((current-3180)/490));
+ const open=smooth(clamp((current-3050)/360));
  const dx=atX(3336),dy=ground-137*scale;
- // Two hinged doors reveal a dark passage rather than an inert screenshot.
  rect(dx-5*scale,dy,124*scale,137*scale,'#49252c');
  if(vis(I.door)){
   ctx.save();ctx.translate(dx,dy);ctx.transform(1,-.05*open,0,1,0,0);
   asset('door',0,0,120*scale*(1-open*.83),137*scale);ctx.restore();
  }
- worldSprite('crate',3640,70,75,70);
- worldSprite('crate',3720,141,75,70);
- pixelSign(2760,175,'WORLD 1-3','赤レンガ');
- // A small poster foreshadows the later WANTED world.
- pixelSign(3875,170,'HAMCELLO','WANTED', '#f7cc8b');
+ worldSprite('crate',3520,70,72,70);
+ worldSprite('crate',3592,141,72,70);
+ pixelSign(2750,175,'WORLD 1-3','赤レンガ');
+ // A directional sign replaces the unrelated long WANTED detour.
+ pixelSign(3650,173,'NEXT AREA','中華街 →','#f8d590');
 }
 function chinatownProps(){
- // Small street lanterns and food stalls are each controlled independently.
  for(let i=0;i<7;i++){
-  const x=4180+i*210;
-  const swing=Math.sin(current*.006+i)*.12;
-  const px=atX(x), py=ground-(260-(i%2)*25)*scale;
+  const x=3900+i*190, swing=Math.sin(current*.006+i)*.09;
+  const px=atX(x),py=ground-(275-(i%2)*18)*scale;
   ctx.save();ctx.translate(px+18*scale,py);ctx.rotate(swing);
   asset('lantern',-18*scale,0,36*scale,62*scale);ctx.restore();
  }
- worldSprite('china_gate',4570,335,405,335);
- worldSprite('stall',5130,192,235,180);
- worldSprite('stall',5520,192,235,180,true);
- worldSprite('tram',5740,175,310,170);
- worldSprite('crate',4330,72,71,72);
- pixelSign(4140,170,'WORLD 1-4','中華街');
- pixelSign(5490,260,'NEXT WORLD','TOKYO →');
+ worldSprite('china_gate',4025,338,395,335);
+ worldSprite('stall',4440,192,235,180);
+ worldSprite('stall',4720,192,235,180,true);
+ worldSprite('tram',5050,175,310,170);
+ worldSprite('crate',3900,68,69,68);
+ pixelSign(3800,170,'WORLD 1-4','中華街');
+ pixelSign(5170,250,'NEXT WORLD','TOKYO →');
 }
-function obstacles(){portObstacles();ferrisProps();brickProps();chinatownProps()}
+function obstacles(){waterfrontDetails();chinaStreet();portObstacles();ferrisProps();brickProps();chinatownProps()}
 function hamPath(s){
  // Cinematic ride section: gondola is at ground level at entry and exit.
  const rideStart=1800,rideEnd=2560;
@@ -270,11 +334,11 @@ function hamPath(s){
   const rad=165;
   return {wx:2090+rad*Math.cos(theta),lift:230-rad*Math.sin(theta)+11,mode:'ride',p:t};
  }
- if(s>rideEnd)return {wx:2090+(s-rideEnd)*.97,lift:0,mode:'walk'};
+ if(s>rideEnd)return {wx:2090+(s-rideEnd)*1.38,lift:0,mode:'walk'};
  return {wx:92+s*1.11,lift:0,mode:'walk'};
 }
 const boxes=[{x:365,h:70},{x:580,h:84},{x:780,h:70},{x:950,h:77},
- {x:1310,h:70},{x:1570,h:74},{x:3640,h:70},{x:3720,h:140},{x:4330,h:70}];
+ {x:1310,h:70},{x:1570,h:74},{x:3520,h:70},{x:3592,h:140},{x:3900,h:68}];
 function jumpHeight(wx){
  let best=0;
  for(const b of boxes){
@@ -296,7 +360,7 @@ function hamster(){
  let pose='ham_idle',ww=86,hh=100,flip=false;
  if(riding){pose='ham_notice';ww=62;hh=91;}
  else if(jump>29){pose='ham_jump';ww=113;hh=78;flip=true;}
- else if(current>4900&&current<5400){pose='ham_eat';ww=87;hh=100;}
+ else if(current>4150&&current<4570){pose='ham_eat';ww=87;hh=100;}
  else if(moving){
    const step=Math.floor(current/53)%3;
    pose=step===0?'ham_walk':step===1?'ham_run':'ham_walk';
@@ -311,21 +375,21 @@ function hamster(){
    asset('ferris_coral',sx-24*scale,cy-28*scale,48*scale,37*scale);
  }else asset(pose,sx-w/2,cy-h,w,h,flip);
  // At specific events a tiny exclamation appears, no pop-up interruption.
- if(current>4750&&current<4900){
+ if(current>3890&&current<4070){
    ctx.font=`900 ${Math.round(26*scale)}px sans-serif`;
    ctx.fillStyle='#fff';ctx.fillText('!',sx+32*scale,cy-h-13*scale);
  }
 }
 function sceneInfo(){
  const wx=hamPath(current).wx;
- const index=wx<1480?0:wx<2680?1:wx<4100?2:3;
+ const index=wx<1480?0:wx<2680?1:wx<3850?2:3;
  if(index!==lastStage){
   lastStage=index;
   sceneLabel.textContent=STAGES[index].label;
   for(const p of document.querySelectorAll('[data-stage-dot]'))p.classList.toggle('active',Number(p.dataset.stageDot)===index);
  }
  progressFill.style.width=(clamp(current/TOTAL)*100).toFixed(1)+'%';
- if(Math.max(current,raw)>TOTAL-180){status.textContent='YOKOHAMA CLEAR · 東京ワールドへ';next.textContent='東京へ ›'}
+ if(Math.max(current,raw)>TOTAL-90){status.textContent='YOKOHAMA CLEAR · 東京ワールドへ';next.textContent='東京へ ›'}
  else if(current>1800&&current<2560){status.textContent='観覧車に乗って空へ';next.textContent='次へ ›'}
  else {status.textContent=mobile?'上にスワイプして進む':'スクロールして進む';next.textContent=lastStage===3?'終点へ ›':'次へ ›'}
 }
@@ -351,20 +415,25 @@ function frame(ts){requested=false;
  render();
  if(Math.abs(current-raw)>.1||Math.abs(camera-center)>.1||Math.abs(cameraY-newCameraY)>.1){requestFrame();return}
 }
-function worldToCamera(wx){return clamp(wx-view*(mobile?.30:.32),0,Math.max(0,6050-view))}
+function worldToCamera(wx){return clamp(wx-view*(mobile?.30:.32),0,Math.max(0,5500-view))}
 function onScroll(){requestFrame()}
 window.addEventListener('scroll',onScroll,{passive:true});
 window.addEventListener('resize',resize,{passive:true});
 window.addEventListener('pageshow',()=>{raw=clamp(window.scrollY/maxScroll)*TOTAL;current=raw;requestFrame()});
 next.addEventListener('click',()=>{
  const position=clamp(window.scrollY/maxScroll)*TOTAL;
- if(position>=TOTAL-100){window.location.href='hamcello-tokyo-map-design.html?from=yokohama';return}
- const stops=[1500,3350,4850,TOTAL];
- const target=stops.find(v=>v>position+75)??TOTAL;
+ if(position>=TOTAL-80){window.location.href='hamcello-tokyo-map-design.html?from=yokohama';return}
+ // Short, reliable stage checkpoints; the final tap goes directly to TOKYO.
+ const stops=[1500,3170,4070,TOTAL];
+ const target=stops.find(v=>v>position+55)??TOTAL;
  window.scrollTo({top:(target/TOTAL)*maxScroll,behavior:reduce?'auto':'smooth'});
 });
 reset.addEventListener('click',()=>window.scrollTo({top:0,behavior:reduce?'instant':'smooth'}));
 resize();requestFrame();
+if(new URLSearchParams(location.search).get('qa')==='1'){
+ window.__hamcelloQA=()=>({progress:current,total:TOTAL,stage:sceneLabel.textContent,
+  worldX:hamPath(current).wx,camera,loaded:loadCount,assets:Object.keys(assets).length});
+}
 if(new URLSearchParams(location.search).get('stage')==='end'){
  const restore=()=>{window.scrollTo({top:maxScroll,behavior:'auto'});requestFrame()};
  requestAnimationFrame(()=>requestAnimationFrame(restore));
