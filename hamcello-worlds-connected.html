@@ -856,19 +856,46 @@ function hdFarm(q,now){
 
 
 let F_END=.80,V_END=.90;
-const SKY={};let skyReady=false,skySource=null;
+const SKY={};let skyReady=false,skyFailed=false,skyClean=null;
 function installSky(d){
  if(!d||!['vine','kingdom'].every(k=>typeof d[k]==='string'&&/^data:image\/(webp|jpeg|png);base64,/.test(d[k])))return false;
- skySource=d;skyReady=false;let n=0;
- for(const k of ['vine','kingdom']){const im=new Image();SKY[k]=im;im.onload=()=>{if(SKY[k]!==im)return;if(++n===2){skyReady=true;request()}};im.src=d[k]}
+ let n=0;
+ for(const k of ['vine','kingdom']){
+  const im=new Image();SKY[k]=im;
+  im.onload=()=>{if(++n===2){skyReady=true;request()}};
+  im.onerror=()=>{skyFailed=true;request()};im.src=d[k];
+ }
  return true;
 }
-const skyInput=document.createElement('input');skyInput.type='file';skyInput.accept='.js,.json';skyInput.hidden=true;document.body.append(skyInput);
-const skyButton=document.createElement('button');skyButton.type='button';skyButton.textContent='空のイラストを読み込む';skyButton.style.cssText='position:absolute;right:12px;top:max(120px,calc(env(safe-area-inset-top) + 115px));padding:9px 10px;font-size:11px;display:none;pointer-events:auto';document.getElementById('hud').append(skyButton);
-skyButton.onclick=()=>skyInput.click();
-skyInput.onchange=async()=>{try{const file=skyInput.files[0];if(!file)return;const d=JSON.parse((await file.text()).replace(/^\s*window\.HAMCELLO_SKY_ART\s*=\s*/,'').replace(/;\s*$/,''));if(!installSky(d))throw Error('art');try{localStorage.setItem('hamcello-sky-art-v1',JSON.stringify(d))}catch(e){}skyButton.textContent='素材を読み込み中'}catch(e){skyButton.textContent='素材を選び直す'}};
-try{const saved=localStorage.getItem('hamcello-sky-art-v1');if(saved)installSky(JSON.parse(saved))}catch(e){}
-const skyScript=document.createElement('script');skyScript.src='hamcello-sky-art.js?v=1';skyScript.onload=()=>{if(!skySource&&window.HAMCELLO_SKY_ART)installSky(window.HAMCELLO_SKY_ART)};document.head.append(skyScript);
+const skyScript=document.createElement('script');skyScript.src='hamcello-sky-art.js?v=2a65fce2';
+skyScript.onload=()=>{if(!installSky(window.HAMCELLO_SKY_ART)){skyFailed=true;request()}};
+skyScript.onerror=()=>{skyFailed=true;request()};document.head.append(skyScript);
+// Reveal the actual vine in the original artwork, without replacing the landscape.
+function cleanVine(){
+ if(skyClean)return skyClean;
+ const im=SKY.vine,cv=document.createElement('canvas');cv.width=1024;cv.height=1536;
+ const g=cv.getContext('2d',{willReadFrequently:true});g.drawImage(im,0,0,1024,1536);
+ const id=g.getImageData(0,0,1024,1536),d=id.data,src=new Uint8ClampedArray(d),w=1024;
+ for(let y=165;y<1408;y++){
+  const center=vineX(y),left=Math.max(278,Math.floor(center-(y>1020?130:185))),right=Math.min(785,Math.ceil(center+(y>1020?155:205)));
+  const mask=new Uint8Array(w);
+  for(let x=left;x<=right;x++){
+   const i=(y*w+x)*4,r=src[i],gg=src[i+1],b=src[i+2];
+   if((gg>b+18&&gg>r*.80&&gg>60)||(r>b+45&&gg>b+28&&r>130))mask[x]=1;
+  }
+  // Expand slightly to remove the dark outline of the plant.
+  const m=mask.slice();for(let x=left;x<=right;x++)if(m[x])for(let j=-3;j<=3;j++)if(x+j>=0&&x+j<w)mask[x+j]=1;
+  for(let x=left;x<=right;){
+   if(!mask[x]){x++;continue}
+   const a=x;while(x<=right&&mask[x])x++;const b=x-1,L=Math.max(0,a-1),R=Math.min(w-1,b+1);
+   for(let k=a;k<=b;k++){
+    const i=(y*w+k)*4,li=(y*w+L)*4,ri=(y*w+R)*4,t=(k-L)/Math.max(1,R-L);
+    for(let z=0;z<3;z++)d[i+z]=Math.round(src[li+z]*(1-t)+src[ri+z]*t);
+   }
+  }
+ }
+ g.putImageData(id,0,0);skyClean=cv;return cv;
+}
 const vinePoints=[[500,1390],[516,1320],[493,1250],[431,1190],[394,1120],[421,1052],[510,1000],[584,948],[595,885],[534,840],[441,814],[410,760],[433,705],[505,655],[630,621],[689,570],[680,528],[626,490],[490,478],[407,437],[400,382],[465,346],[555,320],[616,273],[620,234],[587,210],[493,211],[413,190]];
 function vineX(y){for(let i=1;i<vinePoints.length;i++){const [a,b]=vinePoints[i-1],[x,z]=vinePoints[i];if(y>=z&&y<=b){const t=(b-y)/(b-z);return a+(x-a)*smooth(t)}}return y>1390?500:413}
 function pixelCloud(x,y,w,h){
@@ -911,27 +938,28 @@ function drawSkyHam(x,y,h,key='run',facing=1){
  ctx.save();ctx.translate(x,y);ctx.scale(facing,1);ctx.imageSmoothingEnabled=true;ctx.drawImage(im,-w/2,-h,w,h);ctx.restore();
 }
 function vineScene(q,now){
- const s=Math.max(W/1024,Math.min(H/850,W/460)),viewH=H/s,viewW=W/s;
- // Root first grows to the cloud; then the camera follows Hamcello upwards.
- const grow=smooth(q/.20),climb=smooth((q-.20)/.75),y=1390-1198*climb,x=vineX(y);
- const cameraY=Math.max(0,Math.min(1536-viewH,y-viewH*.56)),cameraX=Math.max(0,Math.min(1024-viewW,x-viewW*.50));
+ // Vertical camera: hold the root in view, then follow the real vine up.
+ const s=Math.max(W/1024,Math.min(H/780,W/500)),viewW=W/s;
+ const grow=smooth(q/.19),climb=smooth((q-.19)/.76);
+ const y=1390-1198*climb,x=vineX(y),screenY=H*(.74-.29*climb);
+ const cameraY=y-screenY/s,cameraX=Math.max(0,Math.min(1024-viewW,(1024-viewW)/2));
  skyFill();ctx.save();ctx.translate(-cameraX*s,-cameraY*s);ctx.scale(s,s);ctx.imageSmoothingEnabled=false;
  if(skyReady&&valid(SKY.vine)){
   const im=SKY.vine;
+  // Fill only beyond the original lower edge with earth, not a stretched pixel strip.
+  fRect(0,1535,1024,Math.max(0,H/s+cameraY-1535)+2,'#9c5e32');
   if(grow<.999){
-   // Show the actual artwork progressively from the growing tip down.
-   ctx.drawImage(im,0,1090,1024,446,0,1090,1024,446);
-   ctx.save();ctx.beginPath();ctx.rect(0,1390-1205*grow,1024,1536);ctx.clip();ctx.drawImage(im,0,0,1024,1536);ctx.restore();
-   pixelCloud(282,60,490,175);
+   ctx.drawImage(cleanVine(),0,0,1024,1536);
+   const tip=1390-1205*grow;
+   ctx.save();ctx.beginPath();ctx.rect(0,tip,1024,1536-tip);ctx.clip();ctx.drawImage(im,0,0,1024,1536);ctx.restore();
   }else ctx.drawImage(im,0,0,1024,1536);
  }else vineFallback(grow);
  ctx.restore();
- // A continuous alternating climb using the existing real Hamcello sprites.
- const pose=q<.20?'run':q>.94?'land':Math.floor(climb*42)%2?'airborne':'jump';
- const sway=q<.20?0:Math.sin(climb*Math.PI*42)*5;
- drawSkyHam((x-cameraX)*s+sway,(y-cameraY)*s+10,Math.min(68,H*.085),pose,1);
- if(q>.94){const a=smooth((q-.94)/.06);ctx.save();ctx.globalAlpha=a;pixelCloud(-W*.1,H*.48,W*1.2,H*.45);ctx.restore()}
- if(q<.055){ctx.save();ctx.globalAlpha=1-smooth(q/.055);if(hdReady)hdFarm(1,now);else farmScene(1,now);ctx.restore()}
+ const pose=q<.19?'run':q>.94?'land':Math.floor(climb*44)%2?'airborne':'jump';
+ drawSkyHam((x-cameraX)*s,(y-cameraY)*s+8,Math.min(70,Math.max(40,76*s*.78)),pose,1);
+ // Crossfade directly into the next full-resolution world at the cloud summit.
+ if(q>.95){ctx.save();ctx.globalAlpha=smooth((q-.95)/.05);kingdomScene(0,now);ctx.restore()}
+ if(q<.065){ctx.save();ctx.globalAlpha=1-smooth(q/.065);if(hdReady)hdFarm(1,now);else farmScene(1,now);ctx.restore()}
 }
 function cucumberDisc(x,y,r){ctx.save();ctx.translate(x,y);ctx.scale(r/20,r/20);fPoly([[-14,-15],[8,-19],[18,-9],[20,8],[10,19],[-9,19],[-20,8],[-20,-7]],'#3f8b36');fPoly([[-12,-12],[7,-15],[15,-7],[15,7],[7,15],[-7,15],[-15,7],[-15,-7]],'#cce87a');for(let i=0;i<6;i++){ctx.save();ctx.rotate(i*Math.PI/3);fRect(-2,-11,4,7,'#f4f6bb');ctx.restore()}ctx.restore()}
 function skyPlatform(x,y,w,h=70){fRect(x,y+9,w,h,'#96613c');fRect(x,y+9,w,12,'#c3864c');for(let i=0;i<w;i+=26)fRect(x+i,y+17+(i%3)*5,13,10,'#aa6d3f');fRect(x,y,w,8,'#76c73c');fRect(x,y,w,3,'#b9ee60')}
@@ -953,17 +981,16 @@ function kingdomFallback(){
  skyPlatform(0,446,448);skyPlatform(606,446,930);
 }
 function kingdomScene(q,now){
- const s=Math.max(W/1536,Math.min(H*.80/460,W/440)),view=W/s,pan=q*Math.max(0,1536-view),top=H*.75-446*s;
+ // Identical horizontal camera scale and ground line to the Ishikawa city scene.
+ const s=panoScale(),view=W/s,pan=q*Math.max(0,1536-view),top=H*.74-446*s;
  skyFill();ctx.save();ctx.translate(-pan*s,top);ctx.scale(s,s);ctx.imageSmoothingEnabled=false;
  if(skyReady&&valid(SKY.kingdom))ctx.drawImage(SKY.kingdom,0,0,1536,512);else kingdomFallback();
- // Below the platform use cloud banks rather than stretched edge pixels.
- for(let x=-100;x<1700;x+=150)pixelCloud(x,515,220,115);
- for(let x=-50;x<1700;x+=230)pixelCloud(x,615,310,130);
+ // Fill only the area outside the actual artwork, without stretching it.
+ fRect(0,512,1536,Math.max(0,(H-top)/s-512)+1,'#e2f3ff');
  ctx.restore();
  const wx=90+q*1370,base=top+446*s;
- const lift=Math.max(hop(wx,386,636,90),hop(wx,638,784,70),hop(wx,882,1090,100),hop(wx,1210,1470,100));
- const x=(wx-pan)*s;drawSkyHam(x,base-lift*s,Math.min(64,H*.085),lift>8?'jump':Math.floor(wx/27)%2?'run':'land');
- if(q<.075){const a=1-smooth(q/.075);ctx.save();ctx.globalAlpha=a;pixelCloud(-W*.12,H*.46,W*1.25,H*.54);ctx.restore()}
+ const lift=Math.max(hop(wx,375,643,100),hop(wx,640,789,120),hop(wx,880,1095,130),hop(wx,1210,1470,102));
+ hdHam('kingdom',wx,{s,pan,g:base},lift);
 }
 
 function setUI(p){
@@ -977,7 +1004,7 @@ function setUI(p){
  title.textContent=st;world.textContent=section;bar.style.width=(p*100).toFixed(1)+'%';
  hint.textContent=p<Y_END?'スクロールで横浜を冒険':p<T_START?'屋根に飛び乗って東京へ':p<T_END?'スクロールで東京を冒険':p<I_START?'新幹線で石川へ':p<C_END?'スクロールで石川の街を冒険':p<F_END?'歩くときゅうりが育つ':p<V_END?'上へ登ろう：スクロールで進む':p<.999?'雲の上を横に冒険':'CUCUMBER KINGDOM CLEAR';
  hdButton.style.display=p>=T_END&&p<F_END&&!hdReady?'block':'none';
- skyButton.style.display=p>=F_END&&!skyReady?'block':'none';
+ if(p>=F_END&&!skyReady)hint.textContent=skyFailed?'空の背景素材の読み込みに失敗しました':'空の背景素材を読み込み中';
  if(p>=I_START&&p<C_END&&!hdReady)hint.textContent='石川の街：高画質素材を読み込んでください';
  next.textContent=p>=.999?'最初へ ↺':'次へ ›';
  const tq=clamp((p-Y_END)/(T_START-Y_END));
@@ -1017,7 +1044,7 @@ function resize(){
  const travelFraction=.055,ishikawaTravel=.075;
  const iCameraPixels=Math.max(W*.35,(1536-W/panoScale())*panoScale());
  const fCameraPixels=hdReady?iCameraPixels:Math.max(W*.6,(FARM_LENGTH-W/farmScale())*farmScale());
- const vinePixels=Math.max(H*1.65,1000),kingdomPixels=Math.max(W*.8,(1536-W/panoScale())*panoScale());
+ const vinePixels=Math.max(H*2.25,1400),kingdomPixels=Math.max(W*.8,(1536-W/panoScale())*panoScale());
  const total=yCameraPixels+tCameraPixels+iCameraPixels+fCameraPixels+vinePixels+kingdomPixels,walkFraction=1-travelFraction-ishikawaTravel;
  Y_END=walkFraction*yCameraPixels/Math.max(1,total);
  T_START=Y_END+travelFraction;
@@ -1053,6 +1080,6 @@ window.addEventListener('pageshow',()=>{resize();onScroll()});
 resize();request();
 // Minimal fallback: never cover a functioning screen behind a persistent loader.
 setTimeout(()=>{loader.style.opacity='0';loader.hidden=true},1600);
-window.__hamcelloQA=()=>({progress,target,scrollY,maxScroll,loadedY,loadedT,tStarted,stage:title.textContent,world:world.textContent,transition:progress>=Y_END&&progress<T_START,hasEndY,hasEndT,loadedTrain:loadedA,tokyoScale:tokyoScale(),tokyoView:W/tokyoScale(),tokyoStops:tokyoStops(),Y_END,T_START,T_END,I_START,C_END,F_END,V_END,skyReady,hdReady,hdLoaded,farmCount:hdReady?hdFarmCount(clamp((progress-C_END)/(F_END-C_END))):farmCount(clamp((progress-C_END)/(F_END-C_END))),farmBackdropLoaded:valid(farmPhoto)});
+window.__hamcelloQA=()=>({progress,target,scrollY,maxScroll,loadedY,loadedT,tStarted,stage:title.textContent,world:world.textContent,transition:progress>=Y_END&&progress<T_START,hasEndY,hasEndT,loadedTrain:loadedA,tokyoScale:tokyoScale(),tokyoView:W/tokyoScale(),tokyoStops:tokyoStops(),Y_END,T_START,T_END,I_START,C_END,F_END,V_END,skyReady,skyFailed,hdReady,hdLoaded,farmCount:hdReady?hdFarmCount(clamp((progress-C_END)/(F_END-C_END))):farmCount(clamp((progress-C_END)/(F_END-C_END))),farmBackdropLoaded:valid(farmPhoto)});
 })();
 </script></body></html>
