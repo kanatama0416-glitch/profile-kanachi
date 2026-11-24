@@ -200,7 +200,7 @@ function sceneInfo(){
 }
 function render(){ctx.setTransform(dpr,0,0,dpr,0,0);ctx.imageSmoothingEnabled=false;sky();skyline();groundLayer();obstacles();hamster();sceneInfo();if(loadCount===Object.keys(assets).length&&!ready){ready=true;document.body.classList.add('loaded')}}
 function frame(ts){requested=false;if(!lastDraw)lastDraw=ts;const dt=Math.min(50,ts-lastDraw);lastDraw=ts;elapsed+=dt;raw=clamp(window.scrollY/maxScroll)*TOTAL;const diff=raw-current;current+=diff*(Math.abs(diff)>1?.28:.5);if(Math.abs(raw-current)<.08)current=raw;const wx=hamPath(current).wx;const center=worldToCamera(wx);camera+=(center-camera)*.22;render();if(Math.abs(current-raw)>.1||Math.abs(camera-center)>.1)requestFrame();}
-function worldToCamera(wx){return clamp(wx-view*(mobile?.30:.32),0,Math.max(0,6050-view))}
+function worldToCamera(wx){return clamp(wx-view*(mobile?.30:.32),0,Math.max(0,6300-view))}
 window.addEventListener('scroll',()=>requestFrame(),{passive:true});window.addEventListener('resize',resize,{passive:true});window.addEventListener('pageshow',()=>{raw=clamp(window.scrollY/maxScroll)*TOTAL;current=raw;requestFrame()});
 next.addEventListener('click',()=>{ if(current>TOTAL-240){window.scrollTo({top:0,behavior:reduce?'instant':'smooth'});return} const currentStage=lastStage; const targets=[0,1600,3200,4740,6150]; const target=targets[Math.min(4,Math.max(0,currentStage+1))]; window.scrollTo({top:(target/TOTAL)*maxScroll,behavior:reduce?'instant':'smooth'}); });
 reset.addEventListener('click',()=>window.scrollTo({top:0,behavior:reduce?'instant':'smooth'}));
