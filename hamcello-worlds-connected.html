@@ -386,28 +386,30 @@ for(const [name,uri] of Object.entries(TRAIN_ASSETS)){
 const valid=im=>im&&im.complete&&im.naturalWidth>0;
 function image(key,x,y,w,h,photo=false){const im=IT[key];if(!valid(im))return;ctx.save();ctx.imageSmoothingEnabled=photo;if(photo)ctx.imageSmoothingQuality='high';ctx.drawImage(im,x,y,w,h);ctx.restore();}
 // The original 1536x512 Tokyo panorama is kept unchanged.
-const TOKYO_VIEW_END=1550;
+const TOKYO_VIEW_END=1536;
 function tokyoScale(){
- const ideal=(H*.77)/460;
- const fit=(W-12)/326; // show the whole Asakusa gate in portrait
- return W<730?Math.max(.84,Math.min(ideal,fit)):ideal;
+ return Math.max(W/TOKYO_VIEW_END,Math.min(H*.77/460,W/440));
+}
+function tokyoCameraRange(){return Math.max(0,TOKYO_VIEW_END-W/tokyoScale());}
+function tokyoStops(){
+ const view=W/tokyoScale(),range=tokyoCameraRange();
+ if(range<1)return [0,.40,.70,1];
+ const station=clamp((785-view/2)/range,.16,.69);
+ const tower=clamp((1009-view/2)/range,station+.08,.88);
+ return [0,station,tower,1];
 }
 function paintTokyo(p,now,noHam=false){
  const im=IT.tokyo_reference_clean;
  const scale=tokyoScale();
  // Framing ends after Shibuya, with only a very short edge continuation.
  const fullWidth=1536*scale;
- const pan=clamp(p)*Math.max(0,TOKYO_VIEW_END*scale-W);
+ const pan=clamp(p)*tokyoCameraRange()*scale;
  const top=H*.74-450*scale, soilTop=top+512*scale,ground=top+453*scale;
  ctx.setTransform(dpr,0,0,dpr,0,0);ctx.imageSmoothingEnabled=false;
  ctx.fillStyle='#23b7f4';ctx.fillRect(0,0,W,H);
  if(valid(im)){
   ctx.drawImage(im,Math.round(-pan),Math.round(top),Math.ceil(fullWidth),Math.ceil(512*scale));
-  // Continue the original rightmost 14px so the map does not end in a cut building.
-  const extra=14;
-  ctx.save();ctx.translate((1536+extra)*scale-pan,top);ctx.scale(-1,1);
-  ctx.drawImage(im,1536-extra,0,extra,512,0,0,extra*scale,512*scale);
-  ctx.restore();
+  // Preserve both original panorama edges.
  }
  if(soilTop<H){
   ctx.fillStyle='#a56e45';ctx.fillRect(0,soilTop,W,H-soilTop);
@@ -421,7 +423,7 @@ function paintTokyo(p,now,noHam=false){
  const sx=1420*scale-pan,sy=top+327*scale;
  image('traffic_signal',sx,sy,63*scale,126*scale);
  if(sx>-80&&sx<W){ctx.fillStyle=(Math.floor(now/1500)%2===0)?'#62f06d':'#f5b35b';ctx.fillRect(sx+25*scale,sy+28*scale,9*scale,10*scale)}
- if(!noHam){const hw=90+p*1330, xx=hw*scale-pan;
+ if(!noHam){const hw=90+clamp(p)*1370, xx=hw*scale-pan;
  let jump=0;
  for(const [center,height] of [[355,58],[580,75],[817,85],[916,72],[1165,82]]){
   const st=center-100,en=center+105;if(hw>st&&hw<en)jump=Math.max(jump,Math.sin(Math.PI*(hw-st)/(en-st))*height);
@@ -604,10 +606,10 @@ function trainScene(p,now){
  }else if(q<.95){
   const j=smooth((q-.75)/.20);
   key=j<.32?'jump':j<.79?'airborne':'land';
-  cx=roofX*(1-j)+(W*.346)*j;
+  cx=roofX*(1-j)+(90*ts)*j;
   base=roofBase+(gT-roofBase)*j-Math.sin(Math.PI*j)*Math.min(H*.075,55);
  }else{
-  key='run';cx=W*.346;base=gT;
+  key='run';cx=90*ts;base=gT;
  }
  let hamster=IA[key]||IA.run;
  if(valid(hamster)){
@@ -625,10 +627,10 @@ function setUI(p){
   section='WORLD 01 / YOKOHAMA';const q=p/Y_END;
   st=q<.23?'01 / 横浜港':q<.47?'02 / 観覧車':q<.72?'03 / 赤レンガ':'04 / 中華街';
  }else if(p<T_START){st='列車で東京へ';section='YOKOHAMA → TOKYO'}
- else{section='WORLD 02 / TOKYO';const q=clamp((p-T_START)/(1-T_START));st=q<.24?'01 / 浅草':q<.51?'02 / 東京駅':q<.77?'03 / 東京タワー':'04 / 渋谷'}
+ else{section='WORLD 02 / TOKYO';const q=clamp((p-T_START)/(1-T_START));const a=tokyoStops();st=q<(a[0]+a[1])/2?'01 / 浅草':q<(a[1]+a[2])/2?'02 / 東京駅':q<(a[2]+a[3])/2?'03 / 東京タワー':'04 / 渋谷'}
  title.textContent=st;world.textContent=section;bar.style.width=(p*100).toFixed(1)+'%';
- hint.textContent=p<Y_END?'スクロールで横浜を冒険':p<T_START?'屋根に飛び乗って東京へ':p<.99?'スクロールで東京を冒険':'TOKYO CLEAR';
- next.textContent=p>.96?'最初へ ↺':'次へ ›';
+ hint.textContent=p<Y_END?'スクロールで横浜を冒険':p<T_START?'屋根に飛び乗って東京へ':p<.999?'スクロールで東京を冒険':'TOKYO CLEAR';
+ next.textContent=p>=.999?'最初へ ↺':'次へ ›';
  const tq=clamp((p-Y_END)/(T_START-Y_END));
  if(info)info.style.opacity='0';
 }
@@ -657,13 +659,14 @@ function resize(){
  // Match real visible pixels of camera travel per scroll pixel in both worlds.
  const yScale=Math.max(.48,Math.min(1.55,Math.min(W/(W<730?630:1130),H/650)));
  const yCameraPixels=Math.max(0,5700-W/yScale)*yScale;
- const tCameraPixels=Math.max(0,TOKYO_VIEW_END*tokyoScale()-W);
+ const tCameraPixels=Math.max(W*.35,tokyoCameraRange()*tokyoScale());
  const travelFraction=.08;
  Y_END=(1-travelFraction)*yCameraPixels/Math.max(1,yCameraPixels+tCameraPixels);
  T_START=Y_END+travelFraction;
  rebuildStops();
  track.style.height=Math.round(H*7.25)+'px';
- maxScroll=Math.max(1,track.offsetHeight-H);
+ const scroller=document.scrollingElement||document.documentElement;
+ maxScroll=Math.max(1,scroller.scrollHeight-scroller.clientHeight);
  target=clamp(window.scrollY/maxScroll);
  progress=target;request();
 }
@@ -672,10 +675,10 @@ function go(p){const top=clamp(p)*maxScroll;window.scrollTo({top,behavior:'auto'
 let stops=[];
 function rebuildStops(){
  const y=Y_END,t=T_START,r=1-t,m=t-y;
- stops=[0,.23*y,.47*y,.73*y,y,y+.33*m,y+.72*m,t,t+.25*r,t+.52*r,t+.78*r,1];
+ stops=[0,.23*y,.47*y,.73*y,y,y+.33*m,y+.72*m,...tokyoStops().map(q=>t+q*r)];
 }
-next.addEventListener('click',()=>{if(target>.975){go(0);return}go(stops.find(v=>v>target+.015)??1)});
-back.addEventListener('click',()=>go([...stops].reverse().find(v=>v<target-.015)??0));
+next.addEventListener('click',()=>{if(target>=.999){go(0);return}go(stops.find(v=>v>target+.001)??1)});
+back.addEventListener('click',()=>go([...stops].reverse().find(v=>v<target-.001)??0));
 reset.addEventListener('click',()=>go(0));
 window.addEventListener('scroll',onScroll,{passive:true});
 window.addEventListener('resize',resize,{passive:true});
@@ -684,6 +687,6 @@ window.addEventListener('pageshow',()=>{resize();onScroll()});
 resize();request();
 // Minimal fallback: never cover a functioning screen behind a persistent loader.
 setTimeout(()=>{loader.style.opacity='0';loader.hidden=true},1600);
-window.__hamcelloQA=()=>({progress,target,scrollY,maxScroll,loadedY,loadedT,tStarted,stage:title.textContent,world:world.textContent,transition:progress>=Y_END&&progress<T_START,hasEndY,hasEndT,loadedTrain:loadedA});
+window.__hamcelloQA=()=>({progress,target,scrollY,maxScroll,loadedY,loadedT,tStarted,stage:title.textContent,world:world.textContent,transition:progress>=Y_END&&progress<T_START,hasEndY,hasEndT,loadedTrain:loadedA,tokyoScale:tokyoScale(),tokyoView:W/tokyoScale(),tokyoStops:tokyoStops(),Y_END,T_START});
 })();
 </script></body></html>
