@@ -1016,7 +1016,7 @@ const kingdomBites=[
  {start:.585,end:.655,x:1160,bx:1190,by:237,r:24,rise:172,name:'きゅうりの休憩所'},
  {start:.705,end:.775,x:1270,bx:1302,by:184,r:29,rise:225,name:'きゅうり風車'}
 ];
-const dialogueLines=[['同胞たちに','なにをする…'],['みんな私たちの','大切なきゅうりだ。'],['許せない！']];
+const dialogueLines=[['同胞たちに','なにをする…'],['みんな私たちの','大切なきゅうりだ。'],['許せない！！！']];
 function kingdomState(q){
  let prevX=90,prevQ=0;
  for(const b of kingdomBites){
@@ -1066,6 +1066,37 @@ function kingdomSpeech(lines,x,y){
  ctx.save();ctx.fillStyle='#174c2c';ctx.strokeStyle='#174c2c';ctx.lineWidth=4;
  ctx.beginPath();ctx.moveTo(bx+10,by);ctx.lineTo(bx+maxW-10,by);ctx.lineTo(bx+maxW,by+10);ctx.lineTo(bx+maxW,by+h-10);ctx.lineTo(bx+maxW-10,by+h);const tail=Math.max(bx+22,Math.min(bx+maxW-20,x));ctx.lineTo(tail+9,by+h);ctx.lineTo(tail,by+h+16);ctx.lineTo(tail-8,by+h);ctx.lineTo(bx+10,by+h);ctx.lineTo(bx,by+h-10);ctx.lineTo(bx,by+10);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#fffdf6';ctx.fill();ctx.stroke();ctx.font='900 '+fs+'px sans-serif';ctx.fillStyle='#143923';ctx.textAlign='center';ctx.textBaseline='middle';lines.forEach((line,i)=>ctx.fillText(line,bx+maxW/2,by+13+lh*(i+.5)));ctx.restore();
 }
+// Final dialogue -> closing vignette -> two-character spotlight -> kung fu.
+const KUNG_FU_URL='https://kanatama0416-glitch.github.io/game/hamuche-kungfu.html?v=08-768c553&utm_source=chatgpt.com';
+const duelCut={elapsed:0,active:false,departed:false};
+const adventureHud=document.getElementById('hud');
+function resetDuelCut(){
+ duelCut.elapsed=0;duelCut.active=false;duelCut.departed=false;
+ adventureHud.style.opacity='';adventureHud.style.visibility='';
+}
+function duelPhase(t){
+ return {speech:t<1350,iris:smooth((t-1350)/1300),isolate:smooth((t-2650)/620),fade:smooth((t-4070)/650),navigate:t>=4820};
+}
+function duelFocus(frame,wx,alien,t){
+ const p=duelPhase(t);if(p.speech)return;
+ const hx=(wx-frame.pan)*frame.s,ax=alien.x,cy=frame.g-52;
+ // Close the darkness from every edge toward the two facing characters.
+ const cx=(hx+ax)/2,rx=Math.max(Math.abs(ax-hx)/2+70,100),ry=110;
+ ctx.save();ctx.translate(cx,cy);ctx.scale(rx,ry);
+ const outer=Math.max(3,Math.hypot(W/rx,H/ry)+1),radius=outer+(1.03-outer)*p.iris;
+ const grad=ctx.createRadialGradient(0,0,Math.max(0,radius-.72),0,0,radius);
+ grad.addColorStop(0,'rgba(0,0,0,0)');grad.addColorStop(1,'rgba(0,0,0,1)');
+ ctx.fillStyle=grad;ctx.fillRect(-cx/rx,-cy/ry,W/rx,H/ry);ctx.restore();
+ // When the iris has closed, dissolve the remaining scenery but retain both sprites.
+ if(p.isolate>0){
+  ctx.save();ctx.globalAlpha=p.isolate;ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);ctx.restore();
+  ctx.save();ctx.globalAlpha=p.isolate;
+  hdHam('kingdom',wx,frame,0);
+  alienSprite(1,0,frame);
+  ctx.restore();
+ }
+ if(p.fade>0){ctx.save();ctx.globalAlpha=p.fade;ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);ctx.restore()}
+}
 function kingdomScene(q,now){
  const state=kingdomState(q),wx=state.x,s=panoScale(),range=Math.max(0,1536-W/s);
  // Follow the hamster as it stops to chew; keep both characters in the final frame.
@@ -1084,7 +1115,11 @@ function kingdomScene(q,now){
   drawSkyHam(x+biteBob,base+Math.abs(biteBob),Math.max(42,Math.min(72,66*s)),'land',1);
  }else hdHam('kingdom',wx,frame,state.rise);
  const alien=alienSprite(q,now,frame);
- if(alien&&q>=.885){const n=q<.93?0:q<.975?1:2;kingdomSpeech(dialogueLines[n],alien.x,alien.y)}
+ if(alien&&q>=.885){
+  const n=q<.93?0:q<.975?1:2;
+  if(!duelCut.active||duelPhase(duelCut.elapsed).speech)kingdomSpeech(dialogueLines[n],alien.x,alien.y);
+  if(duelCut.active)duelFocus(frame,wx,alien,duelCut.elapsed);
+ }
 }
 
 function setUI(p){
@@ -1100,7 +1135,9 @@ function setUI(p){
  hdButton.style.display=p>=T_END&&p<F_END&&!hdReady?'block':'none';
  if(p>=F_END&&!skyReady)hint.textContent=skyFailed?'空の背景素材の読み込みに失敗しました':'空の背景素材を読み込み中';
  if(p>=I_START&&p<C_END&&!hdReady)hint.textContent='石川の街：高画質素材を読み込んでください';
- next.textContent=p>=.999?'最初へ ↺':p>=V_END+(1-V_END)*.885?'会話を進める ›':'次へ ›';
+ next.textContent=p>=.999?'対戦へ ›':p>=V_END+(1-V_END)*.885?'会話を進める ›':'次へ ›';
+ if(duelCut.active){const fade=smooth((duelCut.elapsed-1350)/500);adventureHud.style.opacity=String(1-fade);adventureHud.style.visibility=fade>=1?'hidden':'';}
+ else{adventureHud.style.opacity='';adventureHud.style.visibility='';}
  const tq=clamp((p-Y_END)/(T_START-Y_END));
  if(info)info.style.opacity='0';
 }
@@ -1121,10 +1158,21 @@ function frame(now){tickId=0;const dt=lastTime?Math.min(70,now-lastTime):16;last
  progress=reduce?target:progress+(target-progress)*(1-Math.exp(-dt/135));
  if(Math.abs(progress-target)<.0001)progress=target;
  if(progress>.20||loadedY>=24)startTokyo();
+ // Let the final line settle before starting an automatic cinematic.
+ if(target>=.9999&&progress>=.9999){
+  if(!duelCut.active&&!duelCut.departed){duelCut.active=true;duelCut.elapsed=0}
+  else if(duelCut.active)duelCut.elapsed+=dt;
+ }else if(duelCut.active&&!duelCut.departed)resetDuelCut();
  paint(now);
+ if(duelCut.active&&!duelCut.departed&&duelPhase(duelCut.elapsed).navigate){
+  duelCut.departed=true;duelCut.active=false;
+  // Retain the adventure in browser history, and avoid re-triggering on Back.
+  try{history.replaceState({...history.state,hamcelloDuelVisited:true},'')}catch(e){}
+  location.assign(KUNG_FU_URL);return;
+ }
  if(!ready&&loadedY>=8){ready=true;loader.style.opacity='0';loader.hidden=true}
  const trainInView=progress>=T_START&&progress<T_END;
- if(Math.abs(progress-target)>.0001||trainInView||(progress>=V_END&&progress<1))request();
+ if(Math.abs(progress-target)>.0001||trainInView||(progress>=V_END&&progress<1)||duelCut.active)request();
 }
 function resize(){
  W=innerWidth;H=innerHeight;dpr=Math.min(devicePixelRatio||1,2);
@@ -1164,16 +1212,16 @@ function rebuildStops(){
  stops=[0,.23*y,.47*y,.73*y,y,y+.33*m,y+.72*m,...tokyoStops().map(q=>t+q*r),T_END+(I_START-T_END)*.60,I_START,...[.22,.48,.75,1].map(q=>I_START+q*(C_END-I_START)),...(hdReady?[.17,.32,.45,.57,.72,.86,1]:beds.map(b=>clamp((b+35-90)/(FARM_LENGTH-180)))).map(q=>C_END+q*(F_END-C_END)),F_END,...[.20,.42,.65,.85,.96,1].map(q=>F_END+q*(V_END-F_END)),...[.125,.25,.37,.50,.63,.75,.84,.90,.95,1].map(q=>V_END+q*(1-V_END)),1];
  stops=[...new Set(stops)].sort((a,b)=>a-b);
 }
-next.addEventListener('click',()=>{if(target>=.999){go(0);return}go(stops.find(v=>v>target+.001)??1)});
+next.addEventListener('click',()=>{if(target>=.999){if(!duelCut.active&&!duelCut.departed){go(1);request()}return}go(stops.find(v=>v>target+.001)??1)});
 back.addEventListener('click',()=>go([...stops].reverse().find(v=>v<target-.001)??0));
 reset.addEventListener('click',()=>go(0));
 window.addEventListener('scroll',onScroll,{passive:true});
 window.addEventListener('resize',resize,{passive:true});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){lastTime=0;request()}});
-window.addEventListener('pageshow',()=>{resize();onScroll()});
+window.addEventListener('pageshow',()=>{resize();if(history.state&&history.state.hamcelloDuelVisited){try{history.replaceState({...history.state,hamcelloDuelVisited:false},'')}catch(e){}resetDuelCut();go(V_END+(1-V_END)*.95)}else onScroll()});
 resize();request();
 // Minimal fallback: never cover a functioning screen behind a persistent loader.
 setTimeout(()=>{loader.style.opacity='0';loader.hidden=true},1600);
-window.__hamcelloQA=()=>({progress,target,scrollY,maxScroll,loadedY,loadedT,tStarted,stage:title.textContent,world:world.textContent,transition:progress>=Y_END&&progress<T_START,hasEndY,hasEndT,loadedTrain:loadedA,tokyoScale:tokyoScale(),tokyoView:W/tokyoScale(),tokyoStops:tokyoStops(),Y_END,T_START,T_END,I_START,C_END,F_END,V_END,kingdomBitten:kingdomBites.filter(b=>clamp((progress-V_END)/(1-V_END))>=b.start+(b.end-b.start)*.48).map(b=>b.name),kingdomDialogue:progress>=V_END+(1-V_END)*.885?Math.min(2,Math.floor((clamp((progress-V_END)/(1-V_END))-.885)/.045)):-1,skyReady,skyFailed,hdReady,hdLoaded,farmCount:hdReady?hdFarmCount(clamp((progress-C_END)/(F_END-C_END))):farmCount(clamp((progress-C_END)/(F_END-C_END))),farmBackdropLoaded:valid(farmPhoto)});
+window.__hamcelloQA=()=>({progress,target,scrollY,maxScroll,loadedY,loadedT,tStarted,stage:title.textContent,world:world.textContent,transition:progress>=Y_END&&progress<T_START,hasEndY,hasEndT,loadedTrain:loadedA,tokyoScale:tokyoScale(),tokyoView:W/tokyoScale(),tokyoStops:tokyoStops(),Y_END,T_START,T_END,I_START,C_END,F_END,V_END,duelCut:{...duelCut},duelDestination:KUNG_FU_URL,kingdomBitten:kingdomBites.filter(b=>clamp((progress-V_END)/(1-V_END))>=b.start+(b.end-b.start)*.48).map(b=>b.name),kingdomDialogue:progress>=V_END+(1-V_END)*.885?Math.min(2,Math.floor((clamp((progress-V_END)/(1-V_END))-.885)/.045)):-1,skyReady,skyFailed,hdReady,hdLoaded,farmCount:hdReady?hdFarmCount(clamp((progress-C_END)/(F_END-C_END))):farmCount(clamp((progress-C_END)/(F_END-C_END))),farmBackdropLoaded:valid(farmPhoto)});
 })();
 </script></body></html>
