@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HAMCELLO QUEST | Design System v1</title>
+<style>
+:root{--sky:#64BDEC;--grass:#83C954;--soil:#936B43;--soil2:#A77E50;--red:#DA4239;--yellow:#EBA848;--ink:#20483F;--paper:#F7F2E5}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",sans-serif}
+html{scroll-behavior:smooth}body{overflow-x:hidden}
+main{max-width:1160px;margin:auto;padding:32px 36px 90px}
+.topline{border-top:5px solid var(--ink);display:flex;justify-content:space-between;align-items:center;padding-top:17px;gap:12px}
+.topline .wordmark{font-family:Georgia,serif;font-size:18px;font-weight:900;letter-spacing:-.06em}.topline span{font-size:11px;letter-spacing:.11em;font-weight:800}
+h1{font-size:clamp(45px,8vw,108px);line-height:.94;letter-spacing:-.085em;margin:65px 0 18px;font-weight:950}
+.lead{font-size:clamp(17px,2vw,23px);line-height:1.8;max-width:780px;margin:0 0 50px;font-weight:650}
+.eyebrow{display:block;font-size:11px;font-weight:900;letter-spacing:.16em;margin-bottom:12px}
+.divline{border:0;border-top:1px solid #75877866;margin:68px 0 50px}
+.headrow{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:22px}
+h2{font-size:clamp(25px,4vw,39px);line-height:1.13;margin:0;letter-spacing:-.045em}.section-note{font-size:12px;color:#5d7568;font-weight:700}
+.lead2{line-height:1.9;max-width:760px;font-size:15px;margin:18px 0 26px}
+.pill{display:inline-block;background:var(--ink);color:white;padding:7px 10px;border-radius:3px;font-size:11px;font-weight:900;letter-spacing:.09em}
+/* Continuous game world preview: deliberate visual-only blueprint, not a claimed playable game. */
+.preview-frame{position:relative;border:5px solid var(--ink);background:var(--sky);overflow:hidden;box-shadow:12px 12px 0 #21463d18}
+.preview-meta{position:absolute;z-index:30;left:13px;top:14px;background:#f8f3dfeb;padding:8px 11px;border:2px solid var(--ink);border-radius:3px;pointer-events:none}
+.preview-meta b{display:block;font-size:13px}.preview-meta small{font-size:10px;font-weight:800;color:#567065}
+.preview-scroll{height:420px;overflow-x:auto;overflow-y:hidden;scrollbar-color:#2d7362 #b7d8cf;scrollbar-width:thin;touch-action:pan-x}
+.worldstrip{height:100%;width:2930px;position:relative;background:linear-gradient(90deg,#69c4ed 0%,#69c4ed 26%,#8ad1ec 50%,#cdd9ce 75%,#f4bb82 100%)}
+.worldstrip .floor{position:absolute;bottom:0;left:0;right:0;height:20%;background:repeating-linear-gradient(135deg,#87623c 0 21px,#aa8153 21px 43px,#987044 43px 64px);border-top:17px solid #80c64a;z-index:15;box-shadow:0 -4px 0 #469b50}
+.worldstrip .farland{position:absolute;left:0;right:0;bottom:20%;height:115px;background:#8cc59c;clip-path:polygon(0 100%,0 66%,8% 72%,18% 38%,29% 72%,40% 60%,53% 25%,64% 66%,75% 54%,89% 26%,100% 61%,100% 100%);opacity:.6}
+.cloud{position:absolute;width:130px;height:33px;border-radius:30px;background:#fff;top:90px}.cloud:before,.cloud:after{content:"";position:absolute;border-radius:50%;background:inherit}.cloud:before{height:52px;width:59px;left:16px;bottom:0}.cloud:after{height:45px;width:62px;right:16px;bottom:0}
+.cloud.c1{left:195px}.cloud.c2{left:760px;top:65px;transform:scale(.7)}.cloud.c3{left:1630px;top:120px;transform:scale(.8)}.cloud.c4{left:2490px;top:80px}
+.strip-title{position:absolute;top:29px;left:425px;z-index:8;background:var(--red);color:#fff;font-family:Georgia,serif;font-style:italic;font-weight:900;font-size:29px;padding:8px 24px;white-space:nowrap;box-shadow:0 7px 0 #a53730}
+.area-mark{position:absolute;top:180px;z-index:9;background:#fff3ce;padding:7px 10px;border:3px solid var(--ink);font-size:13px;font-weight:900;white-space:nowrap}
+.container{position:absolute;bottom:20%;width:114px;height:77px;background:#df8469;border:5px solid #486966;box-shadow:inset 0 0 0 8px #efad8373;z-index:6}
+.container.a{left:100px}.container.b{left:208px;bottom:calc(20% + 72px);background:#76a8b8}.container.c{left:316px;background:#dfa85a}
+.crane{position:absolute;bottom:20%;left:350px;height:185px;width:13px;background:#386e75}.crane:before{content:"";position:absolute;left:-145px;top:22px;width:208px;height:13px;background:#386e75}.crane:after{content:"";position:absolute;left:-116px;top:35px;width:3px;height:84px;background:#386e75}
+.wheel{position:absolute;left:750px;bottom:28%;width:210px;height:210px;border:7px solid #285b64;border-radius:50%;z-index:7;background:linear-gradient(0deg,transparent 49%,#285b64 49%,#285b64 51%,transparent 51%),linear-gradient(90deg,transparent 49%,#285b64 49%,#285b64 51%,transparent 51%)}
+.wheel:before{content:"";position:absolute;left:calc(50% - 2px);top:0;width:4px;height:100%;background:#285b64;transform:rotate(45deg)}
+.wheel:after{content:"";position:absolute;left:calc(50% - 2px);top:0;width:4px;height:100%;background:#285b64;transform:rotate(-45deg)}
+.wheel .cab{position:absolute;width:26px;height:22px;border:3px solid #285b64;background:#f4ad76;border-radius:5px;z-index:2}.wheel .a{top:-14px;left:calc(50% - 13px)}.wheel .b{right:-14px;top:calc(50% - 11px)}.wheel .c{bottom:-14px;left:calc(50% - 13px)}.wheel .d{left:-14px;top:calc(50% - 11px)}
+.wheel-support{position:absolute;left:828px;bottom:20%;height:86px;width:45px;background:#285b64;clip-path:polygon(42% 0%,58% 0%,100% 100%,0 100%);z-index:4}
+.brick{position:absolute;left:1235px;bottom:20%;width:310px;height:185px;background:repeating-linear-gradient(0deg,#c27a61 0 19px,#99614f 19px 23px);border:8px solid #8b5b49;z-index:6}
+.brick:before{content:"";position:absolute;left:-8px;right:-8px;top:-21px;height:17px;background:#785149}
+.brick .windows{position:absolute;left:10%;right:10%;top:21%;height:49px;display:flex;gap:22px}.brick .windows i{flex:1;background:#6d8691;border:6px solid #e4b58e;border-radius:30px 30px 3px 3px}
+.brick .door{position:absolute;right:13%;bottom:-2px;width:76px;height:86px;background:#77503e;border:8px solid #e6b78d;border-radius:48px 48px 0 0}
+.china{position:absolute;left:1835px;bottom:20%;width:340px;height:206px;z-index:6}.china .roof{position:absolute;top:5px;left:0;right:0;height:55px;background:#39846f;clip-path:polygon(0 100%,10% 34%,30% 40%,50% 0,70% 40%,90% 34%,100% 100%);border-bottom:7px solid #225a52}.china .post{position:absolute;bottom:0;width:39px;height:150px;background:#ca574b;border:6px solid #823f39}.china .post.a{left:42px}.china .post.b{right:42px}.china .plaque{position:absolute;left:100px;right:100px;top:55px;padding:6px;background:#f3d38f;border:5px solid #a44940;text-align:center;font-size:17px;font-weight:900}
+.train{position:absolute;left:2480px;bottom:22%;width:355px;height:100px;z-index:7}.train .body{position:absolute;top:10px;bottom:14px;left:0;right:0;border-radius:18px;background:#d95a50;border:6px solid #28534f;display:flex;gap:14px;padding:10px 14px;align-items:flex-start}.train .body i{display:block;width:50px;height:28px;background:#fae4b1;border:4px solid #28534f;border-radius:7px}.train .wheels{position:absolute;left:55px;bottom:0;width:36px;height:36px;border-radius:50%;background:#29474b;box-shadow:155px 0 0 #29474b}
+.train .roof{position:absolute;left:32px;top:0;width:270px;height:15px;background:#f0c08d;border:4px solid #29544f;border-radius:20px}
+.photo-ham{position:absolute;left:65px;bottom:20%;width:102px;z-index:12;filter:drop-shadow(0 9px 4px #2d413f36)}
+.ham-placeholder{position:absolute;left:65px;bottom:20%;height:77px;width:85px;background:#ecd4a2;border:4px solid #8c7051;border-radius:47% 48% 40% 40%;z-index:11;opacity:.65}
+.map-caption{padding:12px 15px;border-top:2px solid var(--ink);font-size:12px;font-weight:750;background:#fff8e8}
+.legend{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12px;margin-top:16px;color:#5a6a5b}.legend b{color:var(--ink)}
+.palettes{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}.swatch{min-width:0}.swatch .chip{height:88px;border:2px solid #23463922}.swatch span{display:block;font-size:12px;font-weight:900;margin-top:9px}.swatch small{font-size:11px;color:#617669}
+.layout-compare{display:grid;grid-template-columns:1fr 1fr;gap:23px;margin-top:21px}.principle{border-top:3px solid var(--ink);padding-top:18px}.principle strong{font-size:17px}.principle p{font-size:13px;line-height:1.8;margin:8px 0 0}
+.world-row{display:grid;grid-template-columns:58px minmax(210px,1fr) minmax(230px,.96fr);gap:18px;align-items:center;padding:19px 0;border-bottom:1px solid #9ea89a6b}.world-num{font-family:Georgia,serif;font-size:33px;font-weight:900;color:#b94739}.world-main strong{display:block;font-size:10px;letter-spacing:.17em;color:#657d69}.world-main h3{margin:2px 0 5px;font-size:19px}.world-main p{margin:0;font-size:13px;font-weight:750;color:#566858}.world-action{font-size:13px;line-height:1.65;margin:0}
+.ruler{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#49604f;border:1px solid #49604f;margin-top:20px}.ruler div{background:#ecf0de;padding:19px 10px;text-align:center}.ruler strong{font-size:19px;display:block}.ruler small{font-size:11px}
+.spec-list{display:grid;grid-template-columns:1fr 1fr;gap:0 45px;margin-top:10px}.spec-list article{padding:16px 0;border-bottom:1px solid #9ca99780}.spec-list b{font-size:14px}.spec-list p{font-size:13px;line-height:1.75;margin:5px 0 0}
+.criteria{padding:0;list-style:none;counter-reset:check}.criteria li{counter-increment:check;display:flex;gap:14px;align-items:baseline;padding:11px 0;border-bottom:1px solid #a7b4a471;font-size:14px;line-height:1.5}.criteria li:before{content:counter(check,decimal-leading-zero);font-family:Georgia,serif;color:#b94739;font-weight:900;font-size:19px;flex:none}
+.footer{margin-top:65px;border-top:4px solid var(--ink);padding-top:16px;display:flex;justify-content:space-between;font-size:11px;gap:14px;color:#587465;font-weight:800;letter-spacing:.06em}
+@media(max-width:700px){main{padding:23px 17px 60px}.topline .wordmark{font-size:15px}.topline span{font-size:9px}h1{margin-top:46px}.lead{font-size:15px}.preview-scroll{height:360px}.palettes{grid-template-columns:repeat(2,1fr)}.layout-compare,.spec-list{grid-template-columns:1fr}.world-row{grid-template-columns:46px 1fr;gap:11px}.world-action{grid-column:2}.ruler{grid-template-columns:repeat(2,1fr)}.headrow{flex-direction:column;align-items:flex-start;gap:8px}.footer{flex-direction:column}.preview-meta{top:10px;left:8px}}
+</style>
+</head>
+<body>
+<main>
+ <div class="topline"><div class="wordmark">HAMCELLO QUEST</div><span>ART DIRECTION / DESIGN SYSTEM / VERSION 01</span></div>
+ <h1>小さなハムの、<br>長い冒険。</h1>
+ <p class="lead">19枚の背景を並べるのをやめて、ひとつながりの世界を作る。<br>動きの理由がわかる、スクロール型アドベンチャーの設計。</p>
+ <span class="pill">PHASE 01 — DESIGN / 設計</span>
+ <hr class="divline">
+ <div class="headrow"><h2>01　横浜の連続マップ</h2><div class="section-note">横スクロールで港から駅までつなぐ</div></div>
+ <p class="lead2">港の奥に観覧車が見える。進むと観覧車が大きくなり、赤レンガが現れ、中華街へ。最後に駅へたどり着き、列車に乗って夕日へ向かう。背景の山や空は一続きで、途中に画面の切り替えはない。</p>
+ <div class="preview-frame">
+   <div class="preview-meta"><b>WORLD 01 / YOKOHAMA</b><small>SCENERY BLUEPRINT — 横にスワイプ</small></div>
+   <div class="preview-scroll" id="previewScroll" aria-label="横浜の連続マップを横にスクロールして確認">
+     <div class="worldstrip">
+       <div class="farland"></div><div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div><div class="cloud c4"></div>
+       <div class="container a"></div><div class="container b"></div><div class="container c"></div><div class="crane"></div>
+       <div class="area-mark" style="left:120px">01　港とコンテナ</div>
+       <div class="wheel-support"></div><div class="wheel"><i class="cab a"></i><i class="cab b"></i><i class="cab c"></i><i class="cab d"></i></div>
+       <div class="area-mark" style="left:760px;top:248px">02　観覧車</div>
+       <div class="brick"><div class="windows"><i></i><i></i><i></i></div><div class="door"></div></div>
+       <div class="area-mark" style="left:1232px">03　赤レンガ</div>
+       <div class="china"><div class="roof"></div><div class="post a"></div><div class="post b"></div><div class="plaque">中華街</div></div>
+       <div class="area-mark" style="left:1865px;top:263px">04　中華街</div>
+       <div class="train"><div class="roof"></div><div class="body"><i></i><i></i><i></i><i></i></div><div class="wheels"></div></div>
+       <div class="area-mark" style="left:2440px">05　駅から夕焼けへ</div>
+       <div class="floor"></div>
+       <div class="ham-placeholder"></div><img class="photo-ham" src="https://kanatama0416-glitch.github.io/profile-kanachi/hamcello-media/hamcello_08.webp" alt="写真素材のハムチェッロ" loading="lazy" onerror="this.style.display='none'">
+     </div>
+   </div>
+   <div class="map-caption">これは背景・レイヤー構成を確認するための設計図。最終イラスト／プレイ可能なゲームではありません。</div>
+ </div>
+ <div class="legend"><b>設計上のルール：</b> 地平線は常に一定 ／ 主人公は画面幅の約25％の位置 ／ 背景は遠景・中景・前景の3層 ／ 移動量と仕掛けの反応位置を一致</div>
+ <hr class="divline">
+ <div class="headrow"><h2>02　ビジュアルの共通ルール</h2><div class="section-note">参考画像のゲーム感を保ち、ハムチェの実写を主役に</div></div>
+ <div class="palettes">
+   <div class="swatch"><div class="chip" style="background:#64BDEC"></div><span>青空</span><small>#64BDEC / 主背景</small></div>
+   <div class="swatch"><div class="chip" style="background:#83C954"></div><span>芝生</span><small>#83C954 / 地面上端</small></div>
+   <div class="swatch"><div class="chip" style="background:repeating-linear-gradient(135deg,#936B43 0 14px,#A77E50 14px 28px)"></div><span>土の断面</span><small>#936B43 / 連続地形</small></div>
+   <div class="swatch"><div class="chip" style="background:#DA4239"></div><span>赤いリボン</span><small>#DA4239 / 見出し</small></div>
+ </div>
+ <div class="layout-compare">
+  <div class="principle"><strong>残すもの</strong><p>広い青空と共通の地面、ハムチェの切り抜き写真、少ない文字、ステージ固有の動く仕掛け、少し不穏なユーモア。</p></div>
+  <div class="principle"><strong>作らないもの</strong><p>説明カードの大量配置、1画面ごとの背景交換、意味のない装飾、障害物の位置を無視した自動ジャンプ、別々の画風の混在。</p></div>
+ </div>
+ <hr class="divline">
+ <div class="headrow"><h2>03　全8ワールドの物語</h2><div class="section-note">移動方向を変えるのは「蔦」だけ</div></div>
+ <div class="ruler"><div><strong>横</strong><small>横浜 → 東京 → 石川</small></div><div><strong>縦</strong><small>種 → 蔦 → 雲</small></div><div><strong>横</strong><small>きゅうり → WANTED</small></div><div><strong>END</strong><small>ハムチェの生態が伝わる</small></div></div>
+ <div class="world-list"><article class="world-row"><span class="world-num">01</span><div class="world-main"><strong>YOKOHAMA</strong><h3>横浜</h3><p>港 → 観覧車 → 赤レンガ → 中華街 → 駅</p></div><p class="world-action">連続した横浜マップ。観覧車に乗り、箱を越え、列車へ</p></article>
+<article class="world-row"><span class="world-num">02</span><div class="world-main"><strong>TOKYO</strong><h3>東京</h3><p>夕日 → ビルの成長 → 屋上 → 夜景</p></div><p class="world-action">ビルに着地して登る。街の色が昼から夜へ変化</p></article>
+<article class="world-row"><span class="world-num">03</span><div class="world-main"><strong>ISHIKAWA</strong><h3>石川</h3><p>朝日 → 兼六園 → 町家 → 山の種</p></div><p class="world-action">飛び石、屋根、山道のアクションを連結</p></article>
+<article class="world-row"><span class="world-num">04</span><div class="world-main"><strong>VINE</strong><h3>天空への蔦</h3><p>種 → 芽 → 葉 → 花 → きゅうり → 雲</p></div><p class="world-action">ここだけカメラが上昇。葉や花が足場になる</p></article>
+<article class="world-row"><span class="world-num">05</span><div class="world-main"><strong>CUCUMBER</strong><h3>きゅうり王国</h3><p>雲の足場 → 滑り台 → 宮殿</p></div><p class="world-action">再び横移動。実ったきゅうりが反応する</p></article>
+<article class="world-row"><span class="world-num">06</span><div class="world-main"><strong>TASTE LAB</strong><h3>味覚研究所</h3><p>試食 → 審査 → 不合格</p></div><p class="world-action">ベルトコンベアで流れる料理を審査</p></article>
+<article class="world-row"><span class="world-num">07</span><div class="world-main"><strong>ETIQUETTE</strong><h3>礼儀検問所</h3><p>礼儀 → 割り込み → 激怒</p></div><p class="world-action">礼儀違反の出来事が舞台の動きを変える</p></article>
+<article class="world-row"><span class="world-num">08</span><div class="world-main"><strong>WANTED</strong><h3>指名手配</h3><p>事件 → 追跡 → END</p></div><p class="world-action">サーチライトと指名手配書を越えてエンディング</p></article></div>
+ <hr class="divline">
+ <div class="headrow"><h2>04　動きの設計基準</h2><div class="section-note">スクロール位置から再現可能にする</div></div>
+ <div class="spec-list">
+  <article><b>主人公の位置</b><p>横移動中は画面の左側約25％。障害物に接近したときだけジャンプし、着地先は実際の足場と一致させる。</p></article>
+  <article><b>カメラ</b><p>基本は横方向に追従。観覧車に乗ると少し上昇し、降りて元へ。石川の種からだけ本格的な縦スクロール。</p></article>
+  <article><b>演出タイミング</b><p>距離で開始・進行・終了を定義。スクロールを戻すと同じ動きを逆向きに再現できる。</p></article>
+  <article><b>場面の接続</b><p>前の風景の要素を次の風景にも残す。色・遠景・地形を徐々に変化させ、唐突な画面転換を避ける。</p></article>
+  <article><b>モバイル</b><p>390×844を基準画面として先に確認。ハムチェは幅約60–90pxを基準に、説明の吹き出しは短くする。</p></article>
+  <article><b>素材と処理</b><p>切り抜きキャラクター＋独立した景色のレイヤー。画像は圧縮して読み込み、画面外の演出は更新しない。</p></article>
+ </div>
+ <hr class="divline">
+ <div class="headrow"><h2>05　横浜の完成判定</h2><div class="section-note">この基準を通過するまで全ワールド量産をしない</div></div>
+ <ol class="criteria">
+  <li>港・観覧車・赤レンガ・中華街・駅が、一続きのマップとして自然に接続する。</li>
+  <li>木箱に接近するとジャンプし、箱の上または向こう側に着地する。</li>
+  <li>観覧車のゴンドラに乗り、上昇・下車の動きが連続して見える。</li>
+  <li>ハムチェの切り抜き写真が正常表示され、立つ／歩く／跳ぶで違いがある。</li>
+  <li>PCとスマホで各地点へ前後スクロールでき、途中で画面が真っ白にならない。</li>
+  <li>GitHubに公開後、公開URLで読み込みと操作の再現を確認できる。</li>
+ </ol>
+ <div class="footer"><span>HAMCELLO QUEST — DESIGN SYSTEM v1 / PHASE 01</span><span>次工程：素材制作 → 横浜プレイ版 → 全ワールド展開</span></div>
+</main>
+</body>
+</html>
