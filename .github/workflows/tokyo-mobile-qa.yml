@@ -1,0 +1,73 @@
+name: Tokyo mobile canvas verification
+on:
+  push:
+    branches:
+      - qa/tokyo-original-pixels-04f8332
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    container: mcr.microsoft.com/playwright:v1.51.1-noble
+    steps:
+      - name: Verify deployed mobile rendering
+        shell: bash
+        run: |
+          npm install --no-save playwright@1.51.1
+          cat > check.cjs <<'JS'
+          const {webkit}=require('playwright');
+          (async()=>{
+            const browser=await webkit.launch();
+            const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true,reducedMotion:'reduce'});
+            const errors=[];
+            page.on('pageerror',e=>errors.push(String(e)));
+            const url='https://kanatama0416-glitch.github.io/profile-kanachi/hamcello-worlds-connected.html';
+            let found=false;
+            for(let i=0;i<20;i++){
+              const res=await page.request.get(url+'?qa=04f8332-'+i);
+              if((await res.text()).includes('g.drawImage(rail,254,278);g.drawImage(signal,1395,248)')){found=true;break;}
+              await new Promise(r=>setTimeout(r,3000));
+            }
+            if(!found)throw Error('Deployment not ready');
+            await page.addInitScript(()=>{
+              const draw=CanvasRenderingContext2D.prototype.drawImage;
+              window.__sourceChecks=[];
+              CanvasRenderingContext2D.prototype.drawImage=function(im,...args){
+                const result=draw.call(this,im,...args);
+                if(this.canvas.width===1536&&this.canvas.height===512&&im instanceof HTMLImageElement&&args.length===2&&((args[0]===254&&args[1]===278)||(args[0]===1395&&args[1]===248))){
+                  const c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;
+                  const ctx=c.getContext('2d');draw.call(ctx,im,0,0);
+                  const a=ctx.getImageData(0,0,c.width,c.height).data;
+                  const b=this.getImageData(args[0],args[1],c.width,c.height).data;
+                  let diff=0;for(let i=0;i<a.length;i++)if(a[i]!==b[i])diff++;
+                  window.__sourceChecks.push({x:args[0],y:args[1],width:c.width,height:c.height,diff});
+                }
+                return result;
+              };
+            });
+            await page.goto(url+'?build=04f8332-mobile-qa',{waitUntil:'load'});
+            await page.waitForFunction(()=>typeof window.__hamcelloQA==='function');
+            await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight*.4));
+            await page.waitForFunction(()=>window.__hamcelloQA().loadedT>=7);
+            const qa=await page.evaluate(()=>window.__hamcelloQA());
+            for(const [name,p] of [['asakusa',0],['skytree',.12],['station',.45],['shibuya',1]]){
+              const position=qa.T_START+p*(qa.T_END-qa.T_START);
+              await page.evaluate(p=>window.scrollTo(0,p*window.__hamcelloQA().maxScroll),position===qa.T_END?position-.0005:position);
+              await page.waitForTimeout(800);
+              await page.screenshot({path:name+'.png'});
+              console.log(name,await page.evaluate(()=>window.__hamcelloQA()));
+            }
+            const checks=await page.evaluate(()=>window.__sourceChecks);
+            console.log('Source pixel checks',JSON.stringify(checks),'Page errors',JSON.stringify(errors));
+            if(!checks.some(c=>c.x===254&&c.diff===0)||!checks.some(c=>c.x===1395&&c.diff===0)||errors.length)throw Error('Canvas verification failed');
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node check.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tokyo-mobile-screenshots
+          path: "*.png"
+          retention-days: 1
