@@ -721,6 +721,77 @@ function ishikawaTrain(q,now){
  const jump=Math.sin(Math.PI*a)*40*s,w=70*s*.78,h=68*s*.78;ctx.save();ctx.translate(cx,0);ctx.scale(-1,1);image(jump>4?'ham_jump':'ham_run',-w/2,rail-h-jump,w,h,true);ctx.restore()}
 }
 
+
+let C_END=.90;
+const HD={}, HD_KEYS=['train','city','farm','farmClean','trainSprite'];let hdData=null,hdReady=false,hdLoaded=0;
+const hdInput=document.createElement('input');hdInput.type='file';hdInput.accept='.js,application/javascript,text/javascript';hdInput.hidden=true;document.body.append(hdInput);
+const hdButton=document.createElement('button');hdButton.textContent='高画質素材を読み込む';hdButton.type='button';hdButton.style.cssText='position:absolute;right:12px;top:max(120px,calc(env(safe-area-inset-top) + 115px));padding:9px 10px;font-size:11px;display:none;pointer-events:auto';document.getElementById('hud').append(hdButton);
+hdButton.onclick=()=>hdInput.click();
+function installHD(data){
+ if(!data||!HD_KEYS.every(k=>typeof data[k]==='string'&&data[k].startsWith('data:image/webp;base64,'))||!Array.isArray(data.plots))return false;
+ hdData=data;hdLoaded=0;hdReady=false;
+ for(const k of HD_KEYS){const im=new Image();HD[k]=im;im.onload=()=>{hdLoaded++;if(hdLoaded===HD_KEYS.length){hdReady=true;resize()}request()};im.onerror=()=>request();im.src=data[k]}
+ return true;
+}
+hdInput.onchange=async()=>{try{const f=hdInput.files[0];if(!f)return;const raw=await f.text();const data=JSON.parse(raw.replace(/^\s*window\.HAMCELLO_ISHIKAWA_ART\s*=\s*/,'').replace(/;\s*$/,''));if(!installHD(data))throw Error('invalid');try{localStorage.setItem('hamcello-ishikawa-art-v2',JSON.stringify(data))}catch(e){}hdButton.textContent='素材を読み込み中'}catch(e){hdButton.textContent='素材を選び直す'}};
+try{const saved=localStorage.getItem('hamcello-ishikawa-art-v2');if(saved)installHD(JSON.parse(saved))}catch(e){}
+if(window.HAMCELLO_ISHIKAWA_ART)installHD(window.HAMCELLO_ISHIKAWA_ART);
+const hdScript=document.createElement('script');hdScript.src='ishikawa-art.js?v=2';hdScript.onload=()=>{if(window.HAMCELLO_ISHIKAWA_ART&&!hdData)installHD(window.HAMCELLO_ISHIKAWA_ART)};document.head.append(hdScript);
+function panoScale(trainMode=false){return Math.max(W/1536,Math.min(H*.77/460,W/(trainMode?710:440)))}
+function panoFrame(im,q,groundY,trainMode=false){
+ const s=panoScale(trainMode),range=Math.max(0,1536-W/s),pan=q*range,top=H*.74-groundY*s;
+ ctx.imageSmoothingEnabled=false;
+ // Extend the exact image edge, not a different sky colour or mirrored miniature background.
+ ctx.drawImage(im,Math.round(pan),0,Math.min(im.width-Math.round(pan),Math.ceil(W/s)),1,0,0,W,Math.max(1,top));
+ ctx.drawImage(im,Math.round(pan),511,Math.min(im.width-Math.round(pan),Math.ceil(W/s)),1,0,top+512*s,W,Math.max(1,H-top-512*s));
+ ctx.drawImage(im,Math.round(-pan*s),Math.round(top),Math.ceil(1536*s),Math.ceil(512*s));
+ return {s,pan,top,g:top+groundY*s};
+}
+let hdLast=90,hdWalk=0,hdScene='';
+function hdHam(scene,x,frame,raise=0){
+ const moving=hdScene===scene&&Math.abs(x-hdLast)>.1,reverse=moving&&x<hdLast;
+ if(moving)hdWalk+=Math.abs(x-hdLast);hdLast=x;hdScene=scene;
+ const pose=raise>6?'ham_jump':moving?(Math.floor(hdWalk/27)%2===0?'ham_walk':'ham_run'):'ham_idle';
+ const w=(raise>6?92:moving?85:69)*frame.s*.78,h=(raise>6?65:moving?67:80)*frame.s*.78;
+ ctx.save();ctx.translate((x-frame.pan)*frame.s,0);ctx.scale(reverse?1:-1,1);image(pose,-w/2,frame.g-h-raise*frame.s,w,h,true);ctx.restore();
+}
+function hop(x,a,b,h){return x>a&&x<b?Math.sin(Math.PI*(x-a)/(b-a))*h:0}
+function hdTravel(q,now){
+ // Use the original 1536 x 512 pixel illustration; no stretch of a low resolution substitute.
+ const f=panoFrame(HD.train,q,432,true);
+ // The original train occupies the left of the illustration. After it is out of the view,
+ // draw the extracted original train sprite on the same railway.
+ if(f.pan>665&&valid(HD.trainSprite)){
+  const s=f.s,tx=W*(.67+.34*smooth((q-.83)/.17)),tw=HD.trainSprite.width*s,th=HD.trainSprite.height*s;
+  ctx.drawImage(HD.trainSprite,Math.round(tx-tw*.9),Math.round(f.g-th),Math.round(tw),Math.round(th));
+ }
+ if(q<.10){hdHam('train-start',90+q*1800,f,hop(q,0,.10,35))}
+ if(q>.92){hdHam('train-end',Math.min(1460,1390+(q-.92)*700),f,hop(q,.92,1,36))}
+}
+function cityScene(q,now){
+ const f=panoFrame(HD.city,q,450),x=90+q*1370;
+ const rise=Math.max(hop(x,215,414,65),hop(x,400,630,115),hop(x,630,785,58),hop(x,782,980,108),hop(x,965,1110,90),hop(x,1060,1280,112));
+ hdHam('city',x,f,rise);
+}
+function hdFarmCount(q){return (90+q*1370)>=1240?4:0}
+function hdFarm(q,now){
+ const f=panoFrame(HD.farmClean,q,446),x=90+q*1370;
+ // The original artwork supplies the seed, sprout, vine, blossom and mature fruit.
+ // Reveal each actual source patch progressively when the hamster approaches.
+ for(const [a,b,z,d] of hdData.plots){
+  const mid=(a+z)/2,stage=smooth((x-mid+190)/155),xx=Math.round((a-f.pan)*f.s),yy=Math.round(f.top+b*f.s);
+  if(stage<=0||xx>W||xx+(z-a)*f.s<0)continue;
+  ctx.save();ctx.globalAlpha=stage;
+  const topClip=d-Math.round((d-b)*Math.max(.05,stage));
+  ctx.drawImage(HD.farm,a,topClip,z-a,d-topClip,xx,Math.round(f.top+topClip*f.s),Math.ceil((z-a)*f.s),Math.ceil((d-topClip)*f.s));ctx.restore()
+ }
+ const rise=Math.max(hop(x,225,475,105),hop(x,670,845,38),hop(x,1215,1475,98));
+ hdHam('farm',x,f,rise);
+ if(x>=1240&&x<1320){
+  const t=(x-1240)/80;ctx.save();ctx.globalAlpha=1-t;ctx.font='900 '+Math.round(22*f.s)+'px sans-serif';ctx.fillStyle='#fff3a0';ctx.strokeStyle='#30683a';ctx.lineWidth=3;const px=(1180-f.pan)*f.s,py=f.g-(145+50*t)*f.s;ctx.strokeText('+4',px,py);ctx.fillText('+4',px,py);ctx.restore();
+ }
+}
+
 function setUI(p){
  let st,section;
  if(p<Y_END){
@@ -728,9 +799,11 @@ function setUI(p){
   st=q<.23?'01 / 横浜港':q<.47?'02 / 観覧車':q<.72?'03 / 赤レンガ':'04 / 中華街';
  }else if(p<T_START){st='列車で東京へ';section='YOKOHAMA → TOKYO'}
  else if(p<T_END){section='WORLD 02 / TOKYO';const q=clamp((p-T_START)/(T_END-T_START));const a=tokyoStops();st=q<(a[0]+a[1])/2?'01 / 浅草':q<(a[1]+a[2])/2?'02 / 東京駅':q<(a[2]+a[3])/2?'03 / 東京タワー':'04 / 渋谷'}
- else if(p<I_START){section='TOKYO → ISHIKAWA';st='新幹線で石川へ'}else{const q=clamp((p-I_START)/(1-I_START));section='WORLD 03 / ISHIKAWA';st=q<.10?'01 / 石川に到着':q<.999?'02 / きゅうり畑　収穫 '+farmCount(q)+' 本':'ISHIKAWA CLEAR　'+farmCount(q)+' 本'}
+ else if(p<I_START){section='TOKYO → ISHIKAWA';st='新幹線で石川へ'}else if(p<C_END){const q=clamp((p-I_START)/(C_END-I_START));section='WORLD 03 / ISHIKAWA';st=q<.28?'01 / 石川・茶屋街':q<.74?'02 / 兼六園':'03 / 金沢駅・鼓門'}else{const q=clamp((p-C_END)/(1-C_END));section='WORLD 04 / COUNTRYSIDE';const n=hdReady?hdFarmCount(q):farmCount(q);st=q<.999?'01 / きゅうり畑　収穫 '+n+' 本':'ISHIKAWA CLEAR　'+n+' 本'}
  title.textContent=st;world.textContent=section;bar.style.width=(p*100).toFixed(1)+'%';
- hint.textContent=p<Y_END?'スクロールで横浜を冒険':p<T_START?'屋根に飛び乗って東京へ':p<T_END?'スクロールで東京を冒険':p<I_START?'新幹線で石川へ':p<.999?'歩くときゅうりが育つ':'ISHIKAWA CLEAR';
+ hint.textContent=p<Y_END?'スクロールで横浜を冒険':p<T_START?'屋根に飛び乗って東京へ':p<T_END?'スクロールで東京を冒険':p<I_START?'新幹線で石川へ':p<C_END?'スクロールで石川の街を冒険':p<.999?'歩くときゅうりが育つ':'ISHIKAWA CLEAR';
+ hdButton.style.display=p>=T_END&&!hdReady?'block':'none';
+ if(p>=I_START&&p<C_END&&!hdReady)hint.textContent='石川の街：高画質素材を読み込んでください';
  next.textContent=p>=.999?'最初へ ↺':'次へ ›';
  const tq=clamp((p-Y_END)/(T_START-Y_END));
  if(info)info.style.opacity='0';
@@ -740,8 +813,9 @@ function paint(now){
  if(progress<Y_END)yRender.draw(progress/Y_END,now,W,H,dpr);
  else if(progress<T_START)trainScene(progress,now);
  else if(progress<T_END)paintTokyo(clamp((progress-T_START)/(T_END-T_START)),now);
- else if(progress<I_START)ishikawaTrain(clamp((progress-T_END)/(I_START-T_END)),now);
- else farmScene(clamp((progress-I_START)/(1-I_START)),now);
+ else if(progress<I_START){const q=clamp((progress-T_END)/(I_START-T_END));if(hdReady)hdTravel(q,now);else ishikawaTrain(q,now)}
+ else if(progress<C_END){const q=clamp((progress-I_START)/(C_END-I_START));if(hdReady)cityScene(q,now);else{farmBackdrop(farmScale(),H*.74,q*1400);farmGround(farmScale(),H*.74,q*400)}}
+ else{const q=clamp((progress-C_END)/(1-C_END));if(hdReady)hdFarm(q,now);else farmScene(q,now)}
  setUI(progress);
 }
 function request(){if(tickId||document.visibilityState==='hidden')return;tickId=requestAnimationFrame(frame)}
@@ -764,14 +838,16 @@ function resize(){
  const yCameraPixels=Math.max(0,5700-W/yScale)*yScale;
  const tCameraPixels=Math.max(W*.35,tokyoCameraRange()*tokyoScale());
  const travelFraction=.055,ishikawaTravel=.075;
- const fCameraPixels=Math.max(W*.6,(FARM_LENGTH-W/farmScale())*farmScale());
- const total=yCameraPixels+tCameraPixels+fCameraPixels,walkFraction=1-travelFraction-ishikawaTravel;
+ const iCameraPixels=Math.max(W*.35,(1536-W/panoScale())*panoScale());
+ const fCameraPixels=hdReady?iCameraPixels:Math.max(W*.6,(FARM_LENGTH-W/farmScale())*farmScale());
+ const total=yCameraPixels+tCameraPixels+iCameraPixels+fCameraPixels,walkFraction=1-travelFraction-ishikawaTravel;
  Y_END=walkFraction*yCameraPixels/Math.max(1,total);
  T_START=Y_END+travelFraction;
  T_END=T_START+walkFraction*tCameraPixels/Math.max(1,total);
  I_START=T_END+ishikawaTravel;
+ C_END=I_START+walkFraction*iCameraPixels/Math.max(1,total);
  rebuildStops();
- track.style.height=Math.round(H*7.25*(1+fCameraPixels/Math.max(1,yCameraPixels+tCameraPixels))*1.07)+'px';
+ track.style.height=Math.round(H*7.25*(1+(iCameraPixels+fCameraPixels)/Math.max(1,yCameraPixels+tCameraPixels))*1.07)+'px';
  const scroller=document.scrollingElement||document.documentElement;
  maxScroll=Math.max(1,scroller.scrollHeight-scroller.clientHeight);
  target=scrollProgress();
@@ -784,7 +860,7 @@ function go(p){const top=clamp(p)*maxScroll;window.scrollTo({top,behavior:'auto'
 let stops=[];
 function rebuildStops(){
  const y=Y_END,t=T_START,r=T_END-t,m=t-y;
- stops=[0,.23*y,.47*y,.73*y,y,y+.33*m,y+.72*m,...tokyoStops().map(q=>t+q*r),T_END+(I_START-T_END)*.45,I_START,...beds.map(b=>I_START+clamp((b+35-90)/(FARM_LENGTH-180))*(1-I_START)),1];
+ stops=[0,.23*y,.47*y,.73*y,y,y+.33*m,y+.72*m,...tokyoStops().map(q=>t+q*r),T_END+(I_START-T_END)*.45,I_START,...[.22,.48,.75,1].map(q=>I_START+q*(C_END-I_START)),...(hdReady?[.17,.32,.45,.57,.72,.86,1]:beds.map(b=>clamp((b+35-90)/(FARM_LENGTH-180)))).map(q=>C_END+q*(1-C_END)),1];
 }
 next.addEventListener('click',()=>{if(target>=.999){go(0);return}go(stops.find(v=>v>target+.001)??1)});
 back.addEventListener('click',()=>go([...stops].reverse().find(v=>v<target-.001)??0));
@@ -796,6 +872,6 @@ window.addEventListener('pageshow',()=>{resize();onScroll()});
 resize();request();
 // Minimal fallback: never cover a functioning screen behind a persistent loader.
 setTimeout(()=>{loader.style.opacity='0';loader.hidden=true},1600);
-window.__hamcelloQA=()=>({progress,target,scrollY,maxScroll,loadedY,loadedT,tStarted,stage:title.textContent,world:world.textContent,transition:progress>=Y_END&&progress<T_START,hasEndY,hasEndT,loadedTrain:loadedA,tokyoScale:tokyoScale(),tokyoView:W/tokyoScale(),tokyoStops:tokyoStops(),Y_END,T_START,T_END,I_START,farmCount:farmCount(clamp((progress-I_START)/(1-I_START))),farmBackdropLoaded:valid(farmPhoto)});
+window.__hamcelloQA=()=>({progress,target,scrollY,maxScroll,loadedY,loadedT,tStarted,stage:title.textContent,world:world.textContent,transition:progress>=Y_END&&progress<T_START,hasEndY,hasEndT,loadedTrain:loadedA,tokyoScale:tokyoScale(),tokyoView:W/tokyoScale(),tokyoStops:tokyoStops(),Y_END,T_START,T_END,I_START,C_END,hdReady,hdLoaded,farmCount:hdReady?hdFarmCount(clamp((progress-C_END)/(1-C_END))):farmCount(clamp((progress-C_END)/(1-C_END))),farmBackdropLoaded:valid(farmPhoto)});
 })();
 </script></body></html>
