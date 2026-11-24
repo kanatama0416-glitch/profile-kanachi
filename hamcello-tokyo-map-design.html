@@ -18,10 +18,10 @@ html,body{margin:0;background:#23b9fa;color:var(--ink);overflow-x:hidden}
 .progress small{font-size:9px;font-weight:900;letter-spacing:.12em}.bar{height:7px;background:#c0e7ea}.bar b{height:100%;display:block;background:var(--coral);width:0}
 #caption{background:var(--cream);border:2px solid var(--line);font-size:10px;font-weight:900;padding:9px 7px;flex:1;text-align:center;white-space:nowrap}
 button{cursor:pointer;pointer-events:auto;border:2px solid var(--line);font-family:inherit;background:#ffd768;font-weight:900;color:var(--ink);box-shadow:3px 3px 0 #14394c55}
-#next,#back{padding:9px 11px;min-height:36px}#back{background:#fff9e9}.chips{position:absolute;left:10px;right:10px;top:max(calc(env(safe-area-inset-top) + 128px),140px);display:flex;gap:5px;pointer-events:auto;flex-wrap:wrap}
+#next,#back{padding:9px 11px;min-height:44px;white-space:nowrap}#back{background:#fff9e9}.chips{position:absolute;left:10px;right:10px;top:max(calc(env(safe-area-inset-top) + 128px),140px);display:flex;gap:5px;pointer-events:auto;flex-wrap:wrap}
 .chips button{background:#fffaf0;font-size:10px;padding:7px 8px}.chips button.active{background:#f6d76b}
 #start{display:none}
-@media(max-width:600px){.hud{padding:7px 10px}.hud strong{font-size:15px}.flag{top:max(calc(env(safe-area-inset-top) + 66px),76px)}.chips{top:max(calc(env(safe-area-inset-top) + 104px),120px)}.chips button{padding:6px 7px;font-size:9px}.progress{max-width:37vw}.footer{gap:5px}.progress small{font-size:8px}}
+@media(max-width:600px){.hud{padding:7px 10px}.hud strong{font-size:15px}.flag{top:max(calc(env(safe-area-inset-top) + 66px),76px)}.chips{top:max(calc(env(safe-area-inset-top) + 104px),120px)}.chips button{padding:6px 7px;font-size:9px}.progress{max-width:32vw;min-width:86px}.footer{gap:5px}#back,#next{font-size:11px;padding:9px 8px;min-height:44px}#caption{order:3;flex-basis:100%;padding:5px 7px;font-size:10px}.progress small{font-size:8px}}
 </style></head><body>
 <canvas id="world" aria-label="浅草、東京駅、東京タワー、渋谷をスクロールで確認する東京の連続マップ"></canvas>
 <div class="overlay"><div class="hud"><small>HAMCELLO QUEST / WORLD 02</small><strong id="stage">01 / 浅草</strong></div>
@@ -141,6 +141,7 @@ function draw(t){
  bar.style.width=(progress*100).toFixed(1)+'%';
  const messages=['横浜から東京に到着。浅草から出発','高架を列車が走る','東京タワーの石段','信号を越えて渋谷へ'];
  if(caption.textContent!==messages[idx])caption.textContent=messages[idx];
+ next.textContent=idx===3?'最初から ↺':'次のエリア ›';
 }
 function frame(t){
  animId=0;
@@ -181,5 +182,8 @@ addEventListener('resize',resize,{passive:true});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){lastTime=0;request(true)}});
 addEventListener('pageshow',()=>{targetProgress=clamp(scrollY/Math.max(1,track.offsetHeight-vh),0,1);progress=targetProgress;request(true)});
 resize();request(true);
+if(new URLSearchParams(location.search).get('from')==='yokohama'){
+ requestAnimationFrame(()=>{window.scrollTo({top:0,behavior:'auto'});onScroll()});
+}
 })();
 </script></body></html>
