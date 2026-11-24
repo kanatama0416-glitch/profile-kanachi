@@ -75,6 +75,20 @@ header{height:64px;position:fixed;z-index:200;left:0;top:0;right:0;display:flex;
 }
 @media(prefers-reduced-motion:reduce){.story-caption,#yokohama .yoko-ham,#tokyo .tokyo-ham,#cucumber .food-ham,#manners .rules-ham,#incident .crime-ham,#finale .final-ham{transition:none!important}}
 
+
+/* The hamster now changes the world when interacted with, not only text. */
+@keyframes cuke-cheer{0%,100%{translate:0 0;scale:1}35%{translate:0 -28px;scale:1.08}65%{translate:0 9px;scale:.96}}
+@keyframes approval-bob{0%,100%{scale:1;rotate:0}35%{scale:1.12;rotate:-8deg}67%{scale:.98;rotate:5deg}}
+@keyframes lettering-shock{0%,100%{translate:0 0;rotate:0}25%{translate:-10px -7px;rotate:-3deg}55%{translate:12px 5px;rotate:4deg}80%{translate:-7px 8px;rotate:-2deg}}
+@keyframes dossier-rattle{0%,100%{translate:0 0;rotate:0}45%{translate:-8px -18px;rotate:-7deg}65%{translate:10px 7px;rotate:3deg}}
+.food.is-fed .cucumber{animation:cuke-cheer .85s ease-out}
+.food.is-fed .food-ham{animation:approval-bob .85s ease-out}
+.rules.is-angry .rules-word{animation:lettering-shock .35s ease-in-out 3}
+.rules.is-angry .backdrop{background:#f56e69;transition:background .15s}
+.crime.is-open .newspaper{animation:dossier-rattle .76s ease-out}
+.teeth.is-friend .tooth-ham{animation:approval-bob .8s ease-in-out}
+@media(prefers-reduced-motion:reduce){.food.is-fed .cucumber,.food.is-fed .food-ham,.rules.is-angry .rules-word,.crime.is-open .newspaper,.teeth.is-friend .tooth-ham{animation:none!important}}
+
 </style>
 </head>
 <body>
@@ -288,6 +302,20 @@ const rules=$('#rulesViewport'),reaction=$('#rulesReaction');let reactionTimeout
 $('#rudeBtn').addEventListener('click',()=>ruleResult(true));$('#respectBtn').addEventListener('click',()=>ruleResult(false));
 $('#fileBtn').addEventListener('click',()=>openModal('<span class="gallery-kicker">CONFIDENTIAL / CASE FILE 006</span><h2>ハムチェッロ<br>事件記録</h2><p><b>生い立ち：</b>横浜生まれ、東京育ち。</p><p><b>性格：</b>上下関係を重んじ、礼儀のない者には厳しい。</p><p><b>過去：</b>流血沙汰を複数回起こしているとの記録あり。個別の詳細は未掲載。</p><p><b>特記事項：</b>きゅうりに弱い。前歯の出た者への態度は比較的穏やか。</p><button class="btn" id="modalDone">閲覧終了</button>'));
 $('#againBtn').addEventListener('click',()=>$('#yokohama').scrollIntoView({behavior:reduce?'auto':'smooth'}));
+
+function replayReaction(selector,klass,ms){
+ const el=document.querySelector(selector);
+ if(!el)return;
+ el.classList.remove(klass);
+ void el.offsetWidth;
+ el.classList.add(klass);
+ clearTimeout(el._reactionTimer);
+ el._reactionTimer=setTimeout(()=>el.classList.remove(klass),ms);
+}
+$('#feedBtn').addEventListener('click',()=>replayReaction('.food','is-fed',950));
+$('#teethBtn').addEventListener('click',()=>replayReaction('.teeth','is-friend',900));
+$('#fileBtn').addEventListener('click',()=>replayReaction('.crime','is-open',900));
+
 const photos=[...Array.from({length:9},(_,i)=>`assets/ham${i+1}.webp`),...Array.from({length:3},(_,i)=>`assets/real${i+1}.webp`)];let currentPhoto=0;
 function showPhoto(i){currentPhoto=(i+photos.length)%photos.length;openModal(`<span class="gallery-kicker">THE REAL HAMCHELLO / PHOTO FILE ${String(currentPhoto+1).padStart(2,'0')}</span><img class="dialog-gallery" src="${photos[currentPhoto]}" alt="ハムチェッロの写真"><div class="dialog-options"><button class="btn" id="prevPhoto">← 前の写真</button><button class="btn" id="nextPhoto">次の写真 →</button></div><p class="dialog-counter">${currentPhoto+1} / ${photos.length}</p>`)};
 $('#galleryGrid').addEventListener('click',e=>{const btn=e.target.closest('[data-picture]');if(btn)showPhoto(Number(btn.dataset.picture))});
