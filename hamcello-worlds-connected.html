@@ -1005,20 +1005,86 @@ function kingdomPanorama(q){
  ctx.restore();
  return {s,pan,top,g:top+groundY*s};
 }
-function kingdomScene(q,now){
- const wx=90+q*1370;
- const lift=Math.max(hop(wx,375,643,100),hop(wx,640,789,120),hop(wx,880,1095,130),hop(wx,1210,1470,102));
- if(skyReady&&valid(SKY.kingdom)){
-  hdHam('kingdom',wx,kingdomPanorama(q),lift);
-  return;
+
+const ALIEN={};for(const [k,b64] of Object.entries({"idle":"iVBORw0KGgoAAAANSUhEUgAAACUAAAA4CAMAAABNCMF0AAAAkFBMVEUAAADp8/QfXiBdpBab3hMpjSLz+PyaoaCszOLk6WJYaSJXa17o5Jxtbm5wyQ+Vmx+Zs8waLxGqqKosXk50kJrO7SOiaCTLq2L28a3XxbeejVSn3OlytraunJBcY1urru+WtdAWbA9QHxeqyuHQuakhhlFRYlTmraoyUy1pi2nfoyjGtJkiNiB///+Nd1Wzx64hA1I+AAAAMHRSTlMA/vv+/v4L/vf++vr+EP7+7fcI+/n+/fsOXv4NA2FdB1oD+WpU/pAWp//9/qQC/f4be5hlAAADX0lEQVR42n2VAXeqMAyFQyuUtiAUEBxuTp3TqZv7///u3bTC3MZedsZR+52b9Cal9DTGfr9/CLGk5cPD/rhfhq/0d+z3yd23aozj8bj0cSRadl3XY9F/T5IpmYSSTkf63Ob03zj2WQbqz/XkY7WivGrPi3PbrieR6nnM2VLbmomMyaN/Alyh2uvO2AnoA/8bSkMcrtc1TezsmZKXNLqFUqouV/SLe6TVwKimsaCicvMbG4WU4mdjy6hk4+4QiI/Z6oCVtYrS9B57/lL6PElphLVN09RRlHIpgwV5MkJyxiGFELVlxQ0NFlZEQ7pM6wVj83ksal9f8tXbsagsyxazxQ1jsXQzVjVIZZFeALpRseBtlKjHW5WUt6KIoUDJuYyFYGo1pPQJs0vXe6LgkFIGsVvKVbDhkuFRoKYCH7KCtWJxGs24UR2bnhWzWRZdgHnKmzFQm5TzRdYyBSkH3Gf8RrFW1nFtWjKFajIzUOnTfca+g1mFnElfV2ewxbhuQL1493MKTvR9b7g/ssAZYynxKhr2y88nXPOUwspMODGbo93eh1eBJCXlQxs5ZQMh4RwwGM9SohbertDuj8SLnVCT2+12Tg4UN3JoEO+UvWg8RbQDJQOlvprNOVmMKUDUesqX9Qmpx3FYP3gDCnXJtmvbkBBUzRO9+nY60hQas5nmqfHGx6+vyJf8OI2NpyDEkPfU3k19iHxtrTEyBIR48OtD9etwYwOfSp1OoK09WWpUY38oUV6r6FuUqhH1j9fJWpomLf0iP6K0LMs6loZou/2i4BUOYFOmipuVAiYSAr/e7U/KOdrMh1oIU1tEXeOjQ7PM2yGYcYCdsaB3dtXgYPit8ibfK8F9OHgKynH8RhguKTWHkXNvhSPBvrx76k3EToDSulhoneHPSFa8OnJCxFjyx5FnJPeUZkrrttcY135HByyJnLZhDHE5JKY4tzeqaDtomXf8mrOXd76usT+d4XAjozFB5PcrvMLvha++QDmYG7+2pW/sFmKxKM66K7hk+DB5bzDGrpoAuT9uoJzEEDhJbp3nk1owVjileqUc5NaUT16KazTB+bGxceyomrwd3/yZaJjizghRVVO1+xebDRSmX0yVnoe6+wuuKm+qOxx/3kMV7RXm6qpC8IxZdXmiW9J/OSU7oPobO1gAAAAASUVORK5CYII=","walk":"iVBORw0KGgoAAAANSUhEUgAAACoAAAA3CAMAAABNVSgsAAAAkFBMVEUAAQLm8vQfYyNZohn6+/kojyOZ2RJdYCikqKhxyA+rq6uxzd5oaWrh7WPq6qSjmVmes86VclhaaWCZpCIgMR4pYVDW5y1djVyvo5+wt+YHbAd1trij4VRukJzyrKpaY1pcdImw7vapyeIzTTOWZSPZoSePss8oNylPLx9QXU6oyN7NqVw5STgWbW0fhEdcolx1n443AAAAMHRSTlMA/fn9FP7/6/z+EfsH/v7+8vj2/u7+/v6aDwIE//oOUfoVXan+/GCw/5in910M/wy4kDbfAAADkUlEQVR42o2Vi3aiMBCGQwIkcgkQQFYFwWt1bev7v93+E7CCsnt2TmvT+PHPZGYysGwwmSXWsiSTg2EH2/jXGMZYxNzBfhZYDjZsY8H+0+yzES0Csi0WWzIsn6p2ebvd/i3Ux7Fl25vWpyNj91lstel1N/bvzdHL07zgplfdDRFmp+VfSACr/fl3SMbOK+wcTyd2nCMZ2zsj27NMXo5HGbyBO8aeWKpU2Jjso72275LBiAw7lapOOeV5znk0ch5WJiTlrgv79E8sYL8fYCKEL3gFWHVOun8t7OpJOnW89H1/IRuVIobU/ZqwO7YLH6SOY98HvPBK0xgnPLubGffaUXm8BNbrerw0iNidklZUa51YwaUlF8LjCmdcwekzUpdEGVQdIu2vv4CsZ2ifbUZVclPr/eI4uR9rHeeWBcotOi4o+VeaYsjxBPJlUQEUZUnZ1+j8e6Bhoh2d5I4ylFoKlVA8p0ZVWLEznUolCRzrvgoLct+jzQTdW1SQW9JmUghyDzScC8CpasEL1DRJpOi9e14ZTjOwYy7FKuoClvsCkgtfEMkb7J/ZapyCkEKqisulEP6QfqDfJIpquS/NUtVVkWUXYUlKKbeiY//RPdqgV0OgGS5TbkkShVHv7tnLhYH/ukYPjMhvytRI9M6C9pN9RZ0Ri7qubZEEpRRkRTfBHeYCkvuFA1/ZVTmqEkltScooREsiVz/5X0cc/nhr0pSKUInFA/0ulQ302YAt55Rv06T2CqiKe71oWVnN8aUCan9M6ijC04qyxMsyxFUZHz5iEecHW09p6MCgU1OC7NLz28WmSSZz3Klc8ialZghVV5a/xqUfDkYf+UlT70uPd2kaYgiZkgXvcyViG3nSMe50jN5D0E2TllwIOTss5TIGWkNWEFx2htOEkYLm03S0SEwJiOpc5kgqal8WBdLi+yjOenIJXYlDxbWOj8c4EZL65ANfUC14MB1Z7kGSZpxfkjju33Gf2O4fWU/P1XKZ305HyUWeAzWJbFkUId0QHQd7dyP3wLmUVFJOC5NJ2/nB+2yFD+49jNwW0JzL1B0BSKSop2wD/EQ2FTwIcaApXfCnfc46b5E+mxX+eeUFpbNXP7jrd5T61eOHxwa3YSPcd/uw4Q3hQCk42I13NFoHxPJgdOSgQCN8vAcAuyJONwoeFgUSAbXzr+vXzpw/FXXAesuCgP16mjJmG8y+2AN8ydTU4OkF/gM6oD4wYsgYaAAAAABJRU5ErkJggg==","angry":"iVBORw0KGgoAAAANSUhEUgAAACkAAAA4CAMAAABXNCH6AAAAkFBMVEUAAAAiXiD4+Pnp7O9cpRgnkiWc2hSlo6uko6Ryc3Lp7WHw35tvxxGUoBxXY1zZ7ypWahqpscyhmq8sZU4kJg+hXiObmq7grGjlsrDjtZLu5ahYYlXnzrelnWO4xthwcBr22rIiiET//wBPGxVqkF+lp8bknSdXY0x1ipmnp+Pz6NEoKCd1fJ2XqcncajD/f38CfSe9AAAAMHRSTlMA+w39/f7+EOgJ/vP+/vb+/Pdc/f7+m/YQ8AxlYPP6A6P+Af/2Zvyk/gtbah2q/QKzeAovAAAD20lEQVR42pVWh3LjOgwEKaqZVu/uce/5/7+7BSm55Jx78zATKxJXCywAgiL61ST/LOm/TZKcWfQHgrcHy7Zpmn9zSdm/2zijfdVS+EY4kZbVN4/Dk4/7+UiP9vd3miXNOhlK8i1lzznfJ/t7lb/gvkG30hOagDL38wx22+3wVgWjV+fyW3baMbi89vHaGay3+tJH/YJcy1avZMuE/SJNp3QIKH6NcGK8TzRC2+X4ORlwkDlOkMXEHmbtewZDqncUhhyUpDhwYFmcOVhp28FRb3VulEPxdu6pdBsw1HGeYnTP6Od05etsTqPEg4nimB3JyQbtcmUvPiIKW35zNAKSsUqIGKSB1T5Zn01hKLe+czJAwzpWbokQFlezMqGzLWaOKqJztl6SJOYPyLErYhZma2biNFECfm8iC4wijnTsumIB5JXbwsYZsnOirtlHDE1QwqhHHh3WxNXpledcQ+2kVeUlUYXoIjgH0mX3QyWtICBR+tJpPG9edU9kAaT/rJE/cDqO9siJe07lul+F4XwgT1xJ5FxrgnN+oVOeAnBA0hN524E4TKEj8qJ5M089xZRusR0Umey3PtqIu0MlqizLKFIKabeUXP3Tay/5tVzSwfPKclOWnEtLaZzXj1Y+z+C55op5UbnZbMrI64W7YvuoJtuqQ7nyWp7IU0DSRvWU4kuYYj608+5v0Z4SMsrqfieO0jjnsi92XEcL1Vx6eQ1OwlObqrpXyuYSlNBzQ3t00hZTs3skfyHGyBGKCefKIKHnhjw3uunM3NByZtoqFkJZsylykaIbENrRzVnyZprZJiFy0GKLRRBst6mAfRXYWrRcypU+961kJ+QlczJnsOwYF0UxZPu8sjtzAkLpT0WQMZL3L1+z4Bhf2NdUTqhbybWRr9QW0cFhEccYCtliscgCIAVNVaQOz15KTaaVwE+acojwewwCo4+36JTzbQyPxiwBjcQ7M7L0hbBZYORQeAE63KZRpLHb9SjldApRCk6bcEU4OPfZIabaPNnzWBjpKOW8CzENa47mIJ9dF6c8tKM9+Jh1ZJEF4qPDgeRfh0WaNpYz6TnDsJ9IusXgfA5FEoIFwaz3glfxeKY7Lc2YfZwJU9eNnsAvTg5vW6n33RtyTT5kQn8qXBPlY6VreNa8RyqMGaAQwxo67YcgDO4eaF94WW/XPw9OYYar4EZ1xXWoTPvhwGSkaTquzduJ9W7+4RVZ/noAL0NhNg/1yH+QXhRPA96OTlCqMXeb/Ay9GMU4AzodlOb/yy9fFvU8hgXG5jH6Kw7y8PvTt4U/C96tJv/TV8j/MRw1b4bbH4x/AFvlPqiEs0YOAAAAAElFTkSuQmCC"})){const im=new Image();im.onload=request;im.src='data:image/png;base64,'+b64;ALIEN[k]=im}
+// Position of each bite in the original kingdom panorama, not a separate replacement map.
+const kingdomBites=[
+ {start:.075,end:.15,x:326,bx:355,by:239,r:26,rise:166,name:'きゅうりの売店'},
+ {start:.205,end:.275,x:548,bx:570,by:403,r:19,rise:21,name:'きゅうりのアーチ橋'},
+ {start:.325,end:.395,x:707,bx:738,by:343,r:21,rise:68,name:'木箱'},
+ {start:.455,end:.525,x:1008,bx:1042,by:313,r:26,rise:96,name:'きゅうりブロック'},
+ {start:.585,end:.655,x:1160,bx:1190,by:237,r:24,rise:172,name:'きゅうりの休憩所'},
+ {start:.705,end:.775,x:1270,bx:1302,by:184,r:29,rise:225,name:'きゅうり風車'}
+];
+const dialogueLines=[['同胞たちに','なにをする…'],['みんな私たちの','大切なきゅうりだ。'],['許せない！']];
+function kingdomState(q){
+ let prevX=90,prevQ=0;
+ for(const b of kingdomBites){
+  if(q<b.start){const t=clamp((q-prevQ)/(b.start-prevQ));return {x:prevX+(b.x-prevX)*smooth(t),rise:Math.max(hop(prevX+(b.x-prevX)*smooth(t),380,625,85),0),active:null,phase:0}}
+  if(q<=b.end){const t=clamp((q-b.start)/(b.end-b.start));const up=smooth(t/.30),down=1-smooth((t-.72)/.28);return {x:b.x,rise:b.rise*up*down,active:b,phase:t}}
+  prevX=b.x;prevQ=b.end;
  }
- const s=panoScale(),pan=q*Math.max(0,1536-W/s),top=H*.74-446*s;
- skyFill();ctx.save();ctx.translate(-pan*s,top);ctx.scale(s,s);
- kingdomFallback();
- // Continue the fallback platform too, without covering the cloud bridge.
- fRect(0,512,448,Math.max(0,(H-top)/s-512)+1,'#96613c');
- fRect(606,512,930,Math.max(0,(H-top)/s-512)+1,'#96613c');
- ctx.restore();hdHam('kingdom',wx,{s,pan,top,g:top+446*s},lift);
+ return {x:prevX+(1245-prevX)*smooth((q-prevQ)/(.81-prevQ)),rise:0,active:null,phase:0};
+}
+function biteOutline(x,y,r){
+ ctx.beginPath();
+ // Three overlapping tooth scallops make the bite shape rather than a rectangular swap.
+ for(let i=0;i<3;i++){const a=(i-1)*.8;ctx.moveTo(x+Math.sin(a)*r*.60+r*.59,y+Math.cos(a)*r*.26);ctx.arc(x+Math.sin(a)*r*.60,y+Math.cos(a)*r*.26,r*.59,0,Math.PI*2)}
+}
+function paintKingdomBite(b,frame,q){
+ if(q<b.start+(b.end-b.start)*.48)return;
+ const {s,pan,top}=frame;
+ ctx.save();ctx.translate(-pan*s,top);ctx.scale(s,s);
+ const isBox=b.name==='木箱',im=SKY.kingdom;
+ biteOutline(b.bx,b.by,b.r);ctx.fillStyle=isBox?'#a46b31':'#34682c';ctx.fill();
+ biteOutline(b.bx,b.by,b.r*.86);ctx.fillStyle=isBox?'#f2cd88':'#f1f0b4';ctx.fill();
+ biteOutline(b.bx+3,b.by-5,b.r*.65);ctx.save();ctx.clip();
+ // Fill the exposed background with the matching original sky/cloud pixels.
+ if(valid(im)){ctx.imageSmoothingEnabled=false;ctx.drawImage(im,780,35,100,100,b.bx-b.r*1.3,b.by-b.r*1.3,b.r*2.6,b.r*2.6)}
+ else{ctx.fillStyle='#43baf0';ctx.fillRect(b.bx-b.r*2,b.by-b.r*2,b.r*4,b.r*4)}
+ ctx.restore();
+ // Small cucumber pieces fall away as the bite happens.
+ const t=clamp((q-b.start-(b.end-b.start)*.48)/.035);
+ if(t<1)for(let i=0;i<5;i++){const x=b.bx+(i-2)*9+t*(i-2)*16,y=b.by+8+t*28+t*t*60;ctx.globalAlpha*=1-t;ctx.fillStyle='#8ac83d';ctx.fillRect(x,y,5+i%3,5+i%3);ctx.globalAlpha/=(1-t||1)}
+ ctx.restore();
+}
+function alienSprite(q,now,frame){
+ if(q<.81)return null;
+ const enter=smooth((q-.81)/.075);
+ const endX=Math.min(W-35,Math.max(W*.72,(1440-frame.pan)*frame.s));
+ const x=W+70+(endX-W-70)*enter;
+ const speaking=q>=.885;
+ const pose=q>=.975?'angry':speaking?'idle':Math.floor(now/160)%2?'walk':'idle';
+ const im=ALIEN[pose];const h=Math.min(115,Math.max(77,115*frame.s)),w=valid(im)?h*im.naturalWidth/im.naturalHeight:h*.68;
+ const bob=speaking?0:Math.abs(Math.sin(now/100))*5;
+ if(valid(im)){ctx.save();ctx.imageSmoothingEnabled=false;ctx.drawImage(im,x-w/2,frame.g-h-bob,w,h);ctx.restore()}
+ return {x,y:frame.g-h-bob};
+}
+function kingdomSpeech(lines,x,y){
+ const maxW=Math.min(W-24,350),fs=Math.min(23,Math.max(16,(maxW-26)/15)),lh=fs*1.25;
+ const h=lines.length*lh+26,bx=Math.max(12,Math.min(W-maxW-12,x-maxW*.72)),by=Math.max(H*.28,y-h-24);
+ ctx.save();ctx.fillStyle='#174c2c';ctx.strokeStyle='#174c2c';ctx.lineWidth=4;
+ ctx.beginPath();ctx.moveTo(bx+10,by);ctx.lineTo(bx+maxW-10,by);ctx.lineTo(bx+maxW,by+10);ctx.lineTo(bx+maxW,by+h-10);ctx.lineTo(bx+maxW-10,by+h);const tail=Math.max(bx+22,Math.min(bx+maxW-20,x));ctx.lineTo(tail+9,by+h);ctx.lineTo(tail,by+h+16);ctx.lineTo(tail-8,by+h);ctx.lineTo(bx+10,by+h);ctx.lineTo(bx,by+h-10);ctx.lineTo(bx,by+10);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#fffdf6';ctx.fill();ctx.stroke();ctx.font='900 '+fs+'px sans-serif';ctx.fillStyle='#143923';ctx.textAlign='center';ctx.textBaseline='middle';lines.forEach((line,i)=>ctx.fillText(line,bx+maxW/2,by+13+lh*(i+.5)));ctx.restore();
+}
+function kingdomScene(q,now){
+ const state=kingdomState(q),wx=state.x,s=panoScale(),range=Math.max(0,1536-W/s);
+ // Follow the hamster as it stops to chew; keep both characters in the final frame.
+ const camera=Math.max(0,Math.min(range,wx-W/s*.38)),cameraQ=range?camera/range:0;
+ let frame;
+ if(skyReady&&valid(SKY.kingdom))frame=kingdomPanorama(cameraQ);
+ else{
+  const pan=camera,top=H*.74-446*s;skyFill();ctx.save();ctx.translate(-pan*s,top);ctx.scale(s,s);kingdomFallback();
+  fRect(0,512,448,Math.max(0,(H-top)/s-512)+1,'#96613c');fRect(606,512,930,Math.max(0,(H-top)/s-512)+1,'#96613c');ctx.restore();frame={s,pan,top,g:top+446*s};
+ }
+ for(const b of kingdomBites)paintKingdomBite(b,frame,q);
+ if(state.active&&state.phase>.30&&state.phase<.74){
+  const x=(wx-frame.pan)*s,base=frame.g-state.rise*s;
+  // Existing hamster pose, with a small chewing motion at the mouth.
+  const biteBob=Math.sin(now/55)*2.5;
+  drawSkyHam(x+biteBob,base+Math.abs(biteBob),Math.max(42,Math.min(72,66*s)),'land',1);
+ }else hdHam('kingdom',wx,frame,state.rise);
+ const alien=alienSprite(q,now,frame);
+ if(alien&&q>=.885){const n=q<.93?0:q<.975?1:2;kingdomSpeech(dialogueLines[n],alien.x,alien.y)}
 }
 
 function setUI(p){
@@ -1028,13 +1094,13 @@ function setUI(p){
   st=q<.23?'01 / 横浜港':q<.47?'02 / 観覧車':q<.72?'03 / 赤レンガ':'04 / 中華街';
  }else if(p<T_START){st='列車で東京へ';section='YOKOHAMA → TOKYO'}
  else if(p<T_END){section='WORLD 02 / TOKYO';const q=clamp((p-T_START)/(T_END-T_START));const a=tokyoStops();st=q<(a[0]+a[1])/2?'01 / 浅草':q<(a[1]+a[2])/2?'02 / 東京駅':q<(a[2]+a[3])/2?'03 / 東京タワー':'04 / 渋谷'}
- else if(p<I_START){section='TOKYO → ISHIKAWA';st='新幹線で石川へ'}else if(p<C_END){const q=clamp((p-I_START)/(C_END-I_START));section='WORLD 03 / ISHIKAWA';st=q<.28?'01 / 石川・茶屋街':q<.74?'02 / 兼六園':'03 / 金沢駅・鼓門'}else if(p<F_END){const q=clamp((p-C_END)/(F_END-C_END));section='WORLD 04 / COUNTRYSIDE';const n=hdReady?hdFarmCount(q):farmCount(q);st='01 / きゅうり畑　収穫 '+n+' 本'}else if(p<V_END){const q=clamp((p-F_END)/(V_END-F_END));section='WORLD 05 / SKY VINE';st=q<.20?'きゅうりが空へ伸びていく…':q<.94?'空までツルを登ろう':'雲の上に到着！'}else{section='WORLD 06 / CUCUMBER KINGDOM';st=p<.999?'きゅうり王国':'CUCUMBER KINGDOM CLEAR'}
+ else if(p<I_START){section='TOKYO → ISHIKAWA';st='新幹線で石川へ'}else if(p<C_END){const q=clamp((p-I_START)/(C_END-I_START));section='WORLD 03 / ISHIKAWA';st=q<.28?'01 / 石川・茶屋街':q<.74?'02 / 兼六園':'03 / 金沢駅・鼓門'}else if(p<F_END){const q=clamp((p-C_END)/(F_END-C_END));section='WORLD 04 / COUNTRYSIDE';const n=hdReady?hdFarmCount(q):farmCount(q);st='01 / きゅうり畑　収穫 '+n+' 本'}else if(p<V_END){const q=clamp((p-F_END)/(V_END-F_END));section='WORLD 05 / SKY VINE';st=q<.20?'きゅうりが空へ伸びていく…':q<.94?'空までツルを登ろう':'雲の上に到着！'}else{section='WORLD 06 / CUCUMBER KINGDOM';const q=clamp((p-V_END)/(1-V_END));const k=kingdomState(q);st=q>=.885?'きゅうり星人':q>=.81?'きゅうり星人が現れた！':k.active?'かじってしまった！':'きゅうり王国'}
  title.textContent=st;world.textContent=section;bar.style.width=(p*100).toFixed(1)+'%';
- hint.textContent=p<Y_END?'スクロールで横浜を冒険':p<T_START?'屋根に飛び乗って東京へ':p<T_END?'スクロールで東京を冒険':p<I_START?'新幹線で石川へ':p<C_END?'スクロールで石川の街を冒険':p<F_END?'歩くときゅうりが育つ':p<V_END?'上へ登ろう：スクロールで進む':p<.999?'雲の上を横に冒険':'CUCUMBER KINGDOM CLEAR';
+ hint.textContent=p<Y_END?'スクロールで横浜を冒険':p<T_START?'屋根に飛び乗って東京へ':p<T_END?'スクロールで東京を冒険':p<I_START?'新幹線で石川へ':p<C_END?'スクロールで石川の街を冒険':p<F_END?'歩くときゅうりが育つ':p<V_END?'上へ登ろう：スクロールで進む':p<V_END+(1-V_END)*.81?'雲の上を横に冒険':p<V_END+(1-V_END)*.885?'向こうから誰かが来る…':'きゅうり星人の話を聞く';
  hdButton.style.display=p>=T_END&&p<F_END&&!hdReady?'block':'none';
  if(p>=F_END&&!skyReady)hint.textContent=skyFailed?'空の背景素材の読み込みに失敗しました':'空の背景素材を読み込み中';
  if(p>=I_START&&p<C_END&&!hdReady)hint.textContent='石川の街：高画質素材を読み込んでください';
- next.textContent=p>=.999?'最初へ ↺':'次へ ›';
+ next.textContent=p>=.999?'最初へ ↺':p>=V_END+(1-V_END)*.885?'会話を進める ›':'次へ ›';
  const tq=clamp((p-Y_END)/(T_START-Y_END));
  if(info)info.style.opacity='0';
 }
@@ -1058,7 +1124,7 @@ function frame(now){tickId=0;const dt=lastTime?Math.min(70,now-lastTime):16;last
  paint(now);
  if(!ready&&loadedY>=8){ready=true;loader.style.opacity='0';loader.hidden=true}
  const trainInView=progress>=T_START&&progress<T_END;
- if(Math.abs(progress-target)>.0001||trainInView)request();
+ if(Math.abs(progress-target)>.0001||trainInView||(progress>=V_END&&progress<1))request();
 }
 function resize(){
  W=innerWidth;H=innerHeight;dpr=Math.min(devicePixelRatio||1,2);
@@ -1072,7 +1138,7 @@ function resize(){
  const travelFraction=.055,ishikawaTravel=.075;
  const iCameraPixels=Math.max(W*.35,(1536-W/panoScale())*panoScale());
  const fCameraPixels=hdReady?iCameraPixels:Math.max(W*.6,(FARM_LENGTH-W/farmScale())*farmScale());
- const vinePixels=Math.max(H*2.25,1400),kingdomPixels=Math.max(W*.8,(1536-W/panoScale())*panoScale());
+ const vinePixels=Math.max(H*2.25,1400),kingdomPixels=Math.max(H*2.9,W*1.5,(1536-W/panoScale())*panoScale());
  const total=yCameraPixels+tCameraPixels+iCameraPixels+fCameraPixels+vinePixels+kingdomPixels,walkFraction=1-travelFraction-ishikawaTravel;
  Y_END=walkFraction*yCameraPixels/Math.max(1,total);
  T_START=Y_END+travelFraction;
@@ -1095,7 +1161,7 @@ function go(p){const top=clamp(p)*maxScroll;window.scrollTo({top,behavior:'auto'
 let stops=[];
 function rebuildStops(){
  const y=Y_END,t=T_START,r=T_END-t,m=t-y;
- stops=[0,.23*y,.47*y,.73*y,y,y+.33*m,y+.72*m,...tokyoStops().map(q=>t+q*r),T_END+(I_START-T_END)*.60,I_START,...[.22,.48,.75,1].map(q=>I_START+q*(C_END-I_START)),...(hdReady?[.17,.32,.45,.57,.72,.86,1]:beds.map(b=>clamp((b+35-90)/(FARM_LENGTH-180)))).map(q=>C_END+q*(F_END-C_END)),F_END,...[.20,.42,.65,.85,.96,1].map(q=>F_END+q*(V_END-F_END)),...[.24,.48,.72,1].map(q=>V_END+q*(1-V_END)),1];
+ stops=[0,.23*y,.47*y,.73*y,y,y+.33*m,y+.72*m,...tokyoStops().map(q=>t+q*r),T_END+(I_START-T_END)*.60,I_START,...[.22,.48,.75,1].map(q=>I_START+q*(C_END-I_START)),...(hdReady?[.17,.32,.45,.57,.72,.86,1]:beds.map(b=>clamp((b+35-90)/(FARM_LENGTH-180)))).map(q=>C_END+q*(F_END-C_END)),F_END,...[.20,.42,.65,.85,.96,1].map(q=>F_END+q*(V_END-F_END)),...[.125,.25,.37,.50,.63,.75,.84,.90,.95,1].map(q=>V_END+q*(1-V_END)),1];
  stops=[...new Set(stops)].sort((a,b)=>a-b);
 }
 next.addEventListener('click',()=>{if(target>=.999){go(0);return}go(stops.find(v=>v>target+.001)??1)});
@@ -1108,6 +1174,6 @@ window.addEventListener('pageshow',()=>{resize();onScroll()});
 resize();request();
 // Minimal fallback: never cover a functioning screen behind a persistent loader.
 setTimeout(()=>{loader.style.opacity='0';loader.hidden=true},1600);
-window.__hamcelloQA=()=>({progress,target,scrollY,maxScroll,loadedY,loadedT,tStarted,stage:title.textContent,world:world.textContent,transition:progress>=Y_END&&progress<T_START,hasEndY,hasEndT,loadedTrain:loadedA,tokyoScale:tokyoScale(),tokyoView:W/tokyoScale(),tokyoStops:tokyoStops(),Y_END,T_START,T_END,I_START,C_END,F_END,V_END,skyReady,skyFailed,hdReady,hdLoaded,farmCount:hdReady?hdFarmCount(clamp((progress-C_END)/(F_END-C_END))):farmCount(clamp((progress-C_END)/(F_END-C_END))),farmBackdropLoaded:valid(farmPhoto)});
+window.__hamcelloQA=()=>({progress,target,scrollY,maxScroll,loadedY,loadedT,tStarted,stage:title.textContent,world:world.textContent,transition:progress>=Y_END&&progress<T_START,hasEndY,hasEndT,loadedTrain:loadedA,tokyoScale:tokyoScale(),tokyoView:W/tokyoScale(),tokyoStops:tokyoStops(),Y_END,T_START,T_END,I_START,C_END,F_END,V_END,kingdomBitten:kingdomBites.filter(b=>clamp((progress-V_END)/(1-V_END))>=b.start+(b.end-b.start)*.48).map(b=>b.name),kingdomDialogue:progress>=V_END+(1-V_END)*.885?Math.min(2,Math.floor((clamp((progress-V_END)/(1-V_END))-.885)/.045)):-1,skyReady,skyFailed,hdReady,hdLoaded,farmCount:hdReady?hdFarmCount(clamp((progress-C_END)/(F_END-C_END))):farmCount(clamp((progress-C_END)/(F_END-C_END))),farmBackdropLoaded:valid(farmPhoto)});
 })();
 </script></body></html>
