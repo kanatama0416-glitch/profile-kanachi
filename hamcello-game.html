@@ -1,0 +1,1005 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffcf57">
+<meta name="description" content="横浜から東京の夜景、石川の朝、山の種からきゅうりの雲上世界へ。動くハムチェッロの冒険サイト。">
+<title>HAMCELLO QUEST — 8つの世界</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+
+:root{--ink:#1b2722;--cream:#fff9e9;--sun:#ffd259;--wide:100vw}
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{margin:0;background:#e7bb61;color:var(--ink);font-family:'DM Sans','Noto Sans JP',sans-serif;overflow-x:hidden;overflow-y:auto;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer}
+#scrollSpace{height:850vh;pointer-events:none}
+#viewport{position:fixed;inset:0;overflow:hidden;width:100%;height:100vh;height:100svh;isolation:isolate;background:#f8cf73}
+#world{position:absolute;top:0;left:0;height:100%;display:flex;width:max-content;will-change:transform;transform:translate3d(0,0,0)}
+.scene{position:relative;isolation:isolate;flex:0 0 var(--wide);height:100%;overflow:hidden;background:var(--bg);color:var(--fg,var(--ink))}
+.scene:after{content:'';position:absolute;inset:auto 0 0;height:15%;background:var(--floor,#ac7a4c);z-index:9;pointer-events:none}
+.scene .groundline{position:absolute;left:0;right:0;bottom:15%;height:8px;background:var(--rim,#302720);z-index:12}
+.scene .soil{position:absolute;inset:auto 0 0;height:15%;background:repeating-linear-gradient(-17deg,transparent 0 32px,#0000000b 33px 34px),var(--floor,#966c52);z-index:8}
+.art,.atmosphere,.set{position:absolute;inset:0;pointer-events:none}
+.art{z-index:2}.atmosphere{z-index:1}.set{z-index:3}
+.scene .photo{position:absolute;object-fit:contain;z-index:7;user-select:none;pointer-events:none;filter:drop-shadow(0 20px 9px #1d251f34)}
+.photo.sway{animation:hamSway 3.3s ease-in-out infinite alternate}
+.photo.floaty{animation:photoFloat 3.7s ease-in-out infinite alternate}
+@keyframes hamSway{0%{transform:rotate(-2deg) translateY(2px)}100%{transform:rotate(2.5deg) translateY(-8px)}}
+@keyframes photoFloat{0%{transform:translateY(1px) rotate(-1deg)}100%{transform:translateY(-10px) rotate(1deg)}}
+@keyframes swayLeaf{0%{transform:rotate(-6deg)}100%{transform:rotate(6deg)}}
+@keyframes gleam{0%,100%{opacity:.5}45%{opacity:1}}
+.textwall{position:absolute;z-index:6;max-width:100%;line-height:1.25}
+.eyebrow{font-size:clamp(10px,1.1vw,15px);letter-spacing:.22em;font-weight:900;text-transform:uppercase;display:block}
+.jp-mini{font-size:clamp(10px,1.12vw,15px);line-height:1.7;font-weight:800}
+.huge{font-size:clamp(55px,11.5vw,175px);font-weight:900;letter-spacing:-.085em;line-height:.89;margin:0}
+.scene h2{margin:0;letter-spacing:-.06em;line-height:1.12;font-weight:900}
+.scene p{margin:0}
+.light-beam{position:absolute;width:180px;height:130%;top:-18%;background:#fff4;transform:rotate(25deg);filter:blur(16px);pointer-events:none}
+.cloud{position:absolute;top:12%;width:165px;height:42px;border-radius:55px;background:#fff6;opacity:.7;animation:cloudDrift 8s ease-in-out infinite alternate}
+.cloud:before,.cloud:after{content:'';position:absolute;border-radius:50%;background:inherit}
+.cloud:before{width:88px;height:70px;left:23px;bottom:5px}.cloud:after{width:70px;height:55px;right:13px;bottom:1px}
+@keyframes cloudDrift{to{translate:32px 0}}
+/* Global UI, intentionally discreet */
+#ui{position:absolute;inset:0;z-index:70;pointer-events:none;color:#19322c}
+#brand{position:absolute;left:clamp(15px,2.4vw,40px);top:clamp(14px,2.2vw,28px);font-size:clamp(14px,1.8vw,22px);font-weight:900;letter-spacing:-.04em;display:flex;gap:10px;align-items:center;text-shadow:0 1px #fff8}
+#brand i{font-size:12px;display:grid;place-items:center;width:29px;height:29px;font-style:normal;background:#193e35;color:#fff9d9;border-radius:50%;transform:rotate(-12deg)}
+#brand small{display:block;font-weight:900;font-size:9px;letter-spacing:.19em}
+#progressBox{position:absolute;top:clamp(18px,2.8vw,33px);right:clamp(15px,3vw,42px);width:min(240px,28vw)}
+#progressBox .line{height:5px;border-radius:9px;overflow:hidden;background:#20362d35;margin-top:9px}
+#fill{display:block;height:100%;width:0;background:#193e35;transition:width .09s linear}
+#currentChapter{font-size:11px;font-weight:900;letter-spacing:.07em;text-align:right;white-space:nowrap}
+#scrollHint{position:absolute;left:50%;bottom:2.8%;transform:translateX(-50%);background:#142a24;color:#ffefd0;border-radius:100px;padding:9px 19px;display:flex;gap:9px;align-items:center;font-size:11px;font-weight:900;letter-spacing:.07em;box-shadow:0 7px 0 #0002;white-space:nowrap;transition:opacity .4s;}
+#scrollHint svg{animation:hintMove 1.2s ease-in-out infinite alternate}
+@keyframes hintMove{to{transform:translateY(5px)}}
+#returnStart{position:absolute;right:20px;bottom:20px;border:1.5px solid #1b322c;background:#fff9e6ed;color:#1e3830;padding:8px 12px;font-size:10px;font-weight:900;border-radius:50px;pointer-events:auto;opacity:0;visibility:hidden;transition:.3s;box-shadow:2px 3px 0 #192f2860}
+#returnStart.visible{opacity:1;visibility:visible}
+#player{position:absolute;z-index:30;bottom:14.9%;left:clamp(30px,15vw,230px);width:clamp(112px,14.5vw,210px);pointer-events:none;transform:scaleX(-1);transform-origin:50% 100%;filter:drop-shadow(0 11px 7px #1e2a2170)}
+#player img{width:100%;display:block;transform-origin:50% 95%}
+#player.moving img{animation:walk .32s ease-in-out infinite alternate}
+@keyframes walk{from{transform:translateY(0) rotate(0deg)}to{transform:translateY(-11px) rotate(3deg)}}
+#playerShadow{position:absolute;z-index:29;bottom:14.4%;left:clamp(43px,16vw,250px);width:clamp(75px,9vw,130px);height:14px;border-radius:50%;background:#152a2355;filter:blur(8px)}
+#chapterPills{position:absolute;bottom:15px;left:15px;z-index:71;display:flex;gap:5px;pointer-events:auto}
+#chapterPills button{background:#ffffffbf;border:1px solid #1b2f2770;border-radius:40px;width:7px;height:7px;padding:0;opacity:.65;transition:width .3s,background .3s;touch-action:manipulation}
+#chapterPills button.active{width:27px;background:#1b322d;opacity:1}
+#chapterPills button:focus-visible,#returnStart:focus-visible{outline:3px solid #fefefb;outline-offset:3px}
+#ui.dark-mode #brand,#ui.dark-mode #currentChapter{color:#fff3c9;text-shadow:0 1px 3px #142f37;}#ui.dark-mode #progressBox .line{background:#fff8d558;}#ui.dark-mode #fill{background:#ffd99c;}
+/* Prologue: port city */
+.harbor{--bg:#7bd4db;--floor:#bf825f;--rim:#6a453d}
+.harbor .sea{position:absolute;bottom:15%;height:21%;width:100%;background:repeating-linear-gradient(0deg,#009fae 0 15px,#2ab5b5 15px 23px,#0b8eac 23px 31px)}
+.harbor .sun{position:absolute;right:14%;top:12%;border-radius:50%;width:clamp(110px,17vw,265px);aspect-ratio:1;background:#ffe4a1;box-shadow:0 0 0 32px #fff7a51a,0 0 0 75px #fff7a511}
+.harbor .crane{position:absolute;bottom:31%;height:41%;width:6px;background:#26707a;opacity:.56}
+.harbor .crane:before{content:'';position:absolute;left:-7vw;top:9px;width:17vw;height:7px;background:#26707a;transform:rotate(-10deg)}
+.harbor .crane:after{content:'';position:absolute;top:11px;left:7vw;width:2px;height:40%;background:#26707a}
+.harbor .stack{position:absolute;bottom:33%;height:12%;background:repeating-linear-gradient(90deg,#db6655 0 22px,#c45446 22px 25px);border:3px solid #be554a;box-shadow:0 -36px 0 -9px #e5af71}
+.harbor .hero-title{top:22%;left:6%;color:#233e39}
+.harbor .hero-title .huge{font-size:clamp(68px,14vw,215px);color:#fff7d6;text-shadow:6px 7px 0 #204b4b}
+.harbor .hero-title .subtitle{margin-top:24px;background:#fa735d;width:max-content;max-width:420px;padding:12px 16px;transform:rotate(-2deg);color:#fffde8;font-size:clamp(18px,2.2vw,30px);font-weight:900;box-shadow:5px 5px 0 #163e37}
+.harbor .portlabel{position:absolute;top:16%;left:6%;font-size:clamp(12px,1.4vw,18px);font-weight:900;letter-spacing:.18em}
+.harbor .port-fact{position:absolute;bottom:23%;left:37%;z-index:6;background:#f9ecc1;padding:12px 22px;border:3px solid #1e544e;box-shadow:7px 8px 0 #204d4e;transform:rotate(2deg);font-size:clamp(12px,1.8vw,22px);font-weight:900}
+.harbor .hero-photo{right:4%;bottom:19%;width:clamp(270px,36vw,580px);max-height:67%;z-index:6}
+.harbor .stamp{position:absolute;right:5%;top:12%;border:3px solid #d35a53;color:#c04f4c;transform:rotate(13deg);font-size:clamp(14px,2vw,26px);font-weight:900;line-height:1.2;padding:7px 15px;z-index:8;mix-blend-mode:multiply}
+/* Tokyo, love the incisors */
+.tokyo{--bg:#faab73;--floor:#4a5c57;--rim:#2e4140}
+.tokyo .skyline{position:absolute;bottom:15%;left:0;width:100%;height:78%;display:flex;align-items:flex-end;gap:1.1%;opacity:.93}
+.tokyo .skyline b{display:block;height:var(--h);flex:1;background:var(--col,#e5786a);border:3px solid #2d4848;border-bottom:0;position:relative}
+.tokyo .skyline b:before{content:'';position:absolute;inset:17px 10px 6px;background:repeating-linear-gradient(180deg,transparent 0 24px,#fff4 25px 32px,transparent 33px 51px);opacity:.8}
+.tokyo .elevated{position:absolute;bottom:27%;height:19px;background:#253e44;width:100%;box-shadow:0 7px 0 #d0e3d5,0 13px 0 #253e44}
+.tokyo .station{position:absolute;top:18%;left:10%;background:#fff4c7;border:8px solid #253f3d;box-shadow:10px 11px 0 #203e3f5e;padding:20px 22px;transform:rotate(-2deg);z-index:6;color:#20443f}
+.tokyo .station h2{font-size:clamp(27px,4.2vw,56px);line-height:1.08;margin:6px 0}
+.tokyo .station .ticket{font-size:clamp(11px,1.25vw,18px);font-weight:800;line-height:1.8}
+.tokyo .city-tag{position:absolute;top:12%;right:7%;color:#fffbe8;font-size:clamp(46px,7vw,110px);font-weight:900;letter-spacing:-.08em;line-height:1;text-shadow:4px 4px 0 #39474d}
+.tokyo .city-photo{right:8%;bottom:19%;width:clamp(260px,29vw,485px);max-height:50%;z-index:7}
+.tokyo .teeth-club{display:none}
+.tokyo .teeth-club small{display:none}
+.tokyo .railcar{position:absolute;left:0;bottom:29%;height:6%;width:63%;background:#eae0bd;border:6px solid #253c3d;border-radius:10px 30px 0 0;z-index:4}
+.tokyo .railcar:before{content:'';position:absolute;inset:7px 10%;background:repeating-linear-gradient(90deg,#45666a 0 34px,transparent 34px 55px)}
+/* Cucumber paradise */
+.cucumber{--bg:#badd7f;--floor:#8f673b;--rim:#426b3c}
+.cucumber .greenhouse{position:absolute;inset:8% 0 15%;border:11px solid #266d57;border-bottom:0;border-radius:48% 48% 0 0/50% 50% 0 0;background:repeating-linear-gradient(90deg,transparent 0 13%,#2e8c6580 13.2% 13.8%,transparent 14% 20%)}
+.cucumber .greenhouse:before{content:'';position:absolute;left:0;right:0;top:18%;height:8px;background:#236c56;box-shadow:0 110px 0 #236c5680}
+.cucumber .vine{position:absolute;top:4%;width:9px;height:48%;border-radius:7px;background:#1c714c;transform-origin:top;animation:swayLeaf 4s ease-in-out infinite alternate}
+.cucumber .vine:before{content:'';position:absolute;left:-35px;top:22%;width:73px;height:70px;border-radius:60% 15% 80% 20%;background:#40974d;transform:rotate(40deg);box-shadow:42px 65px 0 -12px #4caa50,-21px 129px 0 -9px #36874f}
+.cucumber .real-cuke{position:absolute;top:37%;left:-10px;width:30px;height:111px;border:4px solid #316c3b;border-radius:52% 45% 47% 52%;background:repeating-linear-gradient(90deg,#3eaa59 0 9px,#77c760 9px 14px);transform:rotate(4deg);box-shadow:inset -7px 0 6px #185a2b33}
+.cucumber .produce{position:absolute;left:8%;top:22%;z-index:7;background:#fff4bd;border:7px solid #2f704e;outline:7px solid #ffedb3;padding:21px 26px;box-shadow:12px 13px 0 #2a6b4580;transform:rotate(-2deg);color:#1f6246}
+.cucumber .produce h2{font-size:clamp(42px,6.4vw,98px);letter-spacing:-.08em}
+.cucumber .produce p{font-size:clamp(13px,1.6vw,21px);line-height:1.6;font-weight:900;margin-top:12px}
+.cucumber .produce .price{display:inline-block;margin-top:17px;font-size:clamp(13px,1.6vw,20px);font-weight:900;background:#f5a65d;padding:8px 12px;transform:rotate(3deg)}
+.cucumber .cuke-photo{right:9%;bottom:17%;width:clamp(245px,35vw,570px);max-height:68%;z-index:7}
+.cucumber .plot{position:absolute;bottom:16%;height:17%;width:100%;background:repeating-linear-gradient(20deg,#557d46 0 20px,#729850 20px 36px,#427842 36px 42px);opacity:.84}
+.cucumber .club{position:absolute;top:10%;right:6%;font-size:clamp(28px,4.1vw,66px);color:#226344;opacity:.75;font-weight:900;line-height:1.05;transform:rotate(5deg)}
+/* Taste lab */
+.gourmet{--bg:#f9d6a0;--floor:#b0aa9f;--rim:#403d3b}
+.gourmet .tile{position:absolute;inset:0 0 15%;background:linear-gradient(#fff4 0 50%,transparent 52%),repeating-linear-gradient(90deg,#dcb99b22 0 59px,#b27b745e 60px 62px),repeating-linear-gradient(0deg,#fff2df 0 60px,#ccaa936a 61px 63px)}
+.gourmet .pendant{position:absolute;top:-2%;width:3px;height:28%;background:#57544b}
+.gourmet .pendant:before{content:'';position:absolute;bottom:0;left:-45px;width:92px;height:47px;background:#e47757;border:4px solid #43433e;border-radius:80px 80px 15px 15px}
+.gourmet .window{position:absolute;top:18%;left:6%;width:50%;height:51%;border:14px solid #51625f;box-shadow:8px 8px 0 #173a3445;background:#eff3c4}
+.gourmet .labtext{position:absolute;top:24%;left:9%;z-index:6;color:#1d4845}
+.gourmet .labtext h2{font-size:clamp(39px,6.3vw,94px)}
+.gourmet .labtext p{font-size:clamp(14px,1.8vw,23px);font-weight:800;line-height:1.85;margin-top:13px}
+.gourmet .rejected{position:absolute;top:24%;right:5%;border:7px double #bd423c;color:#b8423a;background:#fff5dfde;z-index:8;transform:rotate(9deg);padding:16px 20px;font-size:clamp(20px,3.8vw,55px);letter-spacing:-.06em;line-height:1.27;font-weight:900;text-align:center}
+.gourmet .rejected small{font-size:clamp(12px,1.6vw,20px);letter-spacing:.12em}
+.gourmet .taste-photo{right:11%;bottom:16%;width:clamp(238px,27vw,450px);max-height:48%;z-index:7}
+.gourmet .counter{position:absolute;bottom:16%;left:0;right:0;height:9%;background:#547e75;border-top:12px solid #e6a66b;z-index:6}
+.gourmet .boardtag{position:absolute;right:8%;bottom:41%;font-size:clamp(11px,1.3vw,17px);line-height:1.6;font-weight:900;color:#365953;max-width:180px;transform:rotate(-4deg)}
+/* Etiquette bureaucratic castle */
+.etiquette{--bg:#b8c9eb;--floor:#65676f;--rim:#42434c}
+.etiquette .wall{position:absolute;inset:15% 0 15%;background:repeating-linear-gradient(0deg,#7c8cad 0 11px,#7c8cad 11px 15px,#7a88a6 15px 16px,transparent 17px 64px),repeating-linear-gradient(90deg,#9bacc8 0 150px,#8495b8 150px 157px);opacity:.58}
+.etiquette .pillars{position:absolute;bottom:15%;left:8%;right:8%;height:67%;display:flex;justify-content:space-between}
+.etiquette .pillars i{display:block;width:7%;background:linear-gradient(90deg,#516481,#b0c3db 40%,#60718c 100%);box-shadow:-9px 0 0 #596c8f,8px 0 0 #596c8f}
+.etiquette .arch{position:absolute;bottom:15%;left:43%;width:28%;height:48%;border:17px solid #304c63;border-bottom:0;border-radius:150px 150px 0 0;background:#152b39;box-shadow:0 0 0 10px #a6bec6,inset 0 0 0 10px #263f50}
+.etiquette .ruleboard{position:absolute;top:13%;left:7%;z-index:7;color:#fff4d0;background:#243f52;border:8px solid #ebd294;box-shadow:12px 12px 0 #24395377;padding:19px 27px;transform:rotate(-2deg)}
+.etiquette .ruleboard h2{font-size:clamp(37px,5.7vw,88px);margin:9px 0}
+.etiquette .ruleboard p{font-size:clamp(14px,1.85vw,24px);line-height:1.7;font-weight:900}
+.etiquette .badgeBoard{position:absolute;right:5%;top:15%;color:#efdeba;z-index:5;font-size:clamp(22px,3vw,47px);line-height:1.2;font-weight:900;letter-spacing:.05em;text-align:center;text-shadow:3px 3px #1c3947}
+.etiquette .manner-photo{right:12%;bottom:17%;width:clamp(245px,31vw,480px);max-height:49%;z-index:8}
+.etiquette .ribbon{position:absolute;bottom:49%;left:41%;height:15px;width:36%;background:repeating-linear-gradient(110deg,#e0ad62 0 40px,#282e39 40px 72px);z-index:6;transform:rotate(-4deg)}
+/* Wanted wall */
+.wanted{--bg:#a34f52;--floor:#57515a;--rim:#3e3a42}
+.wanted .brick{position:absolute;inset:0 0 15%;background:repeating-linear-gradient(0deg,transparent 0 47px,#743b4099 48px 53px),repeating-linear-gradient(90deg,#b96666 0 87px,#9a4d51 89px 92px);opacity:.82}
+.wanted .warningstripe{position:absolute;top:12%;left:-10%;right:-10%;height:30px;background:repeating-linear-gradient(115deg,#f7c06f 0 45px,#26303d 45px 90px);z-index:4;transform:rotate(-4deg)}
+.wanted .file{position:absolute;left:10%;top:19%;width:43%;height:62%;background:#f9e0af;z-index:6;box-shadow:13px 17px 0 #522f30b0;border:7px solid #463d3b;padding:clamp(14px,2vw,30px);transform:rotate(-3deg);color:#362f2b}
+.wanted .file:before{content:'';position:absolute;top:-9px;left:38%;height:35px;width:65px;background:#ffffff70;transform:rotate(4deg)}
+.wanted .file h2{font-size:clamp(49px,7.8vw,115px);line-height:.88;letter-spacing:-.075em;color:#b83c39}
+.wanted .file .sub{font-size:clamp(13px,1.9vw,26px);font-weight:900;line-height:1.3;margin-top:12px;max-width:430px}
+.wanted .file .case{font-size:clamp(11px,1.4vw,18px);line-height:1.85;margin-top:20px;font-weight:900;border-top:3px solid #c38c75;padding-top:15px}
+.wanted .wanted-photo{right:5%;bottom:20%;width:clamp(270px,35vw,580px);max-height:72%;z-index:7;filter:drop-shadow(4px 12px 3px #442b2b99)}
+.wanted .seal{position:absolute;right:6%;top:17%;border:5px solid #ffe5aa;color:#ffe5aa;transform:rotate(10deg);padding:9px 17px;z-index:9;font-size:clamp(14px,2.4vw,36px);font-weight:900;letter-spacing:.06em;mix-blend-mode:screen}
+.wanted .newspaper{position:absolute;right:4%;bottom:18%;height:13%;width:24%;z-index:5;background:#f9e1ba;transform:rotate(13deg);box-shadow:3px 9px 0 #412b2a77;padding:13px 15px;font-weight:900;font-size:clamp(11px,1.6vw,19px);line-height:1.3}
+/* The return */
+.end{--bg:#264c5b;--floor:#223c44;--rim:#142f37;--fg:#fff9dc}
+.end .moon{position:absolute;right:17%;top:10%;width:clamp(175px,24vw,380px);aspect-ratio:1;background:#ffd28c;border-radius:50%;box-shadow:0 0 0 28px #f6c78614,0 0 0 88px #f4d6a407}
+.end .hill{position:absolute;bottom:15%;left:-15%;width:145%;height:46%;border-radius:50% 50% 0 0;background:#2d6d6d}
+.end .hill.back{left:15%;bottom:15%;height:53%;background:#407c80}
+.end .end-title{position:absolute;left:8%;top:19%;z-index:8;color:#fff0bb}
+.end .end-title h2{font-size:clamp(42px,5.7vw,88px);line-height:1.13}
+.end .end-title p{font-size:clamp(14px,1.65vw,23px);line-height:1.7;margin-top:16px;font-weight:800}
+.end .end-photo{right:11%;bottom:18%;width:clamp(265px,37vw,570px);max-height:65%;z-index:7}
+.end .memo{position:absolute;left:7%;bottom:20%;z-index:9;transform:rotate(-4deg);background:#fdf3d1;color:#234c47;box-shadow:9px 8px 0 #15262d;padding:13px 20px;font-size:clamp(12px,1.4vw,18px);font-weight:900;line-height:1.55}
+.end .smallPhoto{position:absolute;right:33%;bottom:25%;z-index:6;width:clamp(105px,15vw,215px);max-height:27%;filter:drop-shadow(0 9px 2px #1428288a);transform:rotate(-9deg)}
+/* chapter joints and ornaments */
+.joint{position:absolute;right:0;top:0;bottom:15%;width:6px;background:#fff4;z-index:15;opacity:.55}
+.street-numbers{position:absolute;top:12%;left:2%;font-size:clamp(40px,6vw,95px);letter-spacing:-.08em;font-weight:900;opacity:.17;z-index:4}
+/* adapted mobile layout: each section is wider than screen to allow meaningful reading time and reduce collisions */
+@media(max-width:720px){
+ :root{--wide:140vw}
+ #brand{font-size:14px;top:16px;left:15px}
+ #progressBox{width:28%;top:20px;right:13px}
+ #progressBox .line{margin-top:7px}
+ #currentChapter{font-size:9px}
+ #player{left:7vw;width:clamp(95px,24vw,145px)}
+ #playerShadow{left:11vw;width:22vw}
+ #scrollHint{bottom:20px;left:52%;font-size:10px;padding:9px 15px}
+ #returnStart{right:11px;bottom:65px}
+ #chapterPills{bottom:8px}
+ .scene .photo{max-width:none}
+ .harbor .hero-title{top:26%;left:8%}
+ .harbor .hero-title .huge{font-size:clamp(70px,16vw,125px)}
+ .harbor .hero-title .subtitle{font-size:17px;margin-top:16px;padding:9px 11px}
+ .harbor .portlabel{top:21%;left:9%;font-size:12px}
+ .harbor .hero-photo{right:1%;bottom:21%;width:70vw;max-height:48%}
+ .harbor .port-fact{bottom:29%;left:38%;max-width:47vw;font-size:12px;padding:8px 10px}
+ .harbor .stamp{top:13%;right:6%;font-size:12px}
+ .tokyo .station{left:6%;top:18%;padding:13px 14px;border-width:5px;max-width:57vw}
+ .tokyo .station h2{font-size:clamp(24px,6vw,40px);line-height:1.12}
+ .tokyo .station .ticket{font-size:12px}
+ .tokyo .city-tag{top:12%;right:5%;font-size:clamp(41px,10vw,75px)}
+ .tokyo .teeth-club{left:47%;top:52%;font-size:19px;padding:9px 13px;max-width:49vw}
+ .tokyo .city-photo{right:29%;bottom:18%;width:59vw;max-height:37%}
+ .tokyo .tooth-sparkle{right:24%;bottom:41%;width:24px;height:24px}
+ .cucumber .produce{top:18%;left:6%;padding:13px 16px;border-width:5px;max-width:63vw}
+ .cucumber .produce h2{font-size:clamp(43px,11vw,72px)}
+ .cucumber .produce p{font-size:13px}
+ .cucumber .cuke-photo{right:4%;bottom:19%;width:62vw;max-height:42%}
+ .cucumber .club{right:6%;top:11%;font-size:36px}
+ .gourmet .window{width:64%;left:5%;top:19%;height:45%;border-width:8px}
+ .gourmet .labtext{left:8%;top:25%}
+ .gourmet .labtext h2{font-size:clamp(38px,9.5vw,76px)}
+ .gourmet .labtext p{font-size:13px}
+ .gourmet .rejected{top:20%;right:3%;font-size:22px;border-width:5px;padding:10px}
+ .gourmet .taste-photo{right:8%;bottom:20%;width:53vw;max-height:39%}
+ .gourmet .boardtag{right:6%;bottom:56%;font-size:10px}
+ .etiquette .ruleboard{top:19%;left:6%;padding:12px 16px;border-width:5px;max-width:64vw}
+ .etiquette .ruleboard h2{font-size:clamp(35px,8.4vw,70px)}
+ .etiquette .ruleboard p{font-size:13px}
+ .etiquette .badgeBoard{top:14%;right:5%;font-size:28px}
+ .etiquette .manner-photo{right:4%;bottom:18%;width:57vw;max-height:45%}
+ .wanted .file{top:21%;left:5%;width:60%;height:auto;min-height:49%;padding:15px;border-width:5px}
+ .wanted .file h2{font-size:clamp(48px,12vw,90px)}
+ .wanted .file .sub{font-size:15px;margin-top:12px}
+ .wanted .file .case{font-size:12px;margin-top:12px;padding-top:9px}
+ .wanted .wanted-photo{right:1%;bottom:17%;width:65vw;max-height:45%}
+ .wanted .seal{right:6%;top:14%;font-size:18px}
+ .scene.end{flex-basis:100vw}
+ .end .end-title{top:20%;left:7%}
+ .end .end-title h2{font-size:clamp(32px,8vw,69px)}
+ .end .end-title p{font-size:13px;line-height:1.65;margin-top:12px}
+ .end .end-photo{right:3%;bottom:19%;width:48vw;max-height:40%}
+ .end .memo{left:7%;bottom:20%;font-size:11px;padding:10px 12px}
+ .end .smallPhoto{right:29%;bottom:23%;width:20vw}
+}
+@media(max-height:640px){
+ #brand{top:12px}
+ .harbor .hero-title{top:23%}
+ .harbor .hero-title .huge{font-size:clamp(48px,11vw,130px)}
+ .cucumber .produce{top:13%}
+ .wanted .file{top:16%;height:65%;overflow:hidden}
+ .wanted .file .case{margin-top:7px}
+ .end .end-title{top:16%}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+
+/* The front-tooth glint is part of the scenery, not a clickable object. */
+.tokyo .tooth-sparkle{position:absolute;right:9.5%;bottom:36.5%;z-index:12;width:22px;height:22px;pointer-events:none;filter:drop-shadow(0 0 5px #fff4bd);animation:glint 2.6s ease-in-out infinite;transform-origin:center}
+.tokyo .tooth-sparkle:before,.tokyo .tooth-sparkle:after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fffef0;border-radius:20px;box-shadow:0 0 11px #fff8db,0 0 20px #fff2a1}
+.tokyo .tooth-sparkle:before{width:3px;height:100%}
+.tokyo .tooth-sparkle:after{height:3px;width:100%}
+@keyframes glint{0%,58%,100%{opacity:0;transform:scale(.2) rotate(0deg)}65%{opacity:1;transform:scale(1.4) rotate(45deg)}77%{opacity:.9;transform:scale(.9) rotate(55deg)}86%{opacity:0;transform:scale(.25) rotate(70deg)}}
+@media(max-width:720px){.tokyo .tooth-sparkle{right:31%;bottom:32%;width:17px;height:17px}}
+@media(prefers-reduced-motion:reduce){.tokyo .tooth-sparkle{animation:none;opacity:1;transform:rotate(45deg)}}
+
+
+/* HYBRID RENDER: original city scenes + climb-only vertical camera */
+#progressFill{display:block;height:100%;width:0;background:#193e35;transition:width .09s linear}
+
+:root{--wide:100vw}
+html{scroll-behavior:auto}
+body{margin:0;overflow-x:hidden;overflow-y:scroll;overscroll-behavior-y:auto;background:#78d1d8}
+#scrollSpace{height:1200vh;pointer-events:none}
+#viewport{position:fixed;inset:0;height:100dvh;overflow:hidden;isolation:isolate;background:#79d2d8}
+#world{position:absolute;inset:0 auto 0 0;height:100%;width:max-content;display:flex;will-change:transform;transform:translate3d(0,0,0)}
+.scene{flex:0 0 100vw;width:100vw;height:100%;position:relative;overflow:hidden;isolation:isolate}
+.scene:has(.cloud-sky):after,.climb-scene:after{display:none}
+#player{z-index:70;left:clamp(30px,15vw,230px);bottom:14.9%;width:clamp(110px,14vw,205px);transition:none;transform:scaleX(-1);transform-origin:50% 90%;filter:drop-shadow(0 10px 6px #173d3590)}
+#player.climbing{transform-origin:50% 90%}
+#player img{display:block;width:100%}
+#playerShadow{transition:opacity .3s ease}
+#playerShadow.hidden{opacity:0}
+#player.climbing img{animation:ham-climb .42s ease-in-out infinite alternate}
+@keyframes ham-climb{from{transform:translateY(-5px) rotate(-4deg)}to{transform:translateY(7px) rotate(5deg)}}
+#scrollHint{z-index:83;bottom:18px;white-space:nowrap}
+#ui{z-index:83}
+#returnStart{z-index:86}
+#chapterPills{display:none}
+#stageLabel{position:absolute;bottom:18px;left:20px;z-index:82;color:#173b33;background:#fff7d2e0;border:1px solid #173d3348;border-radius:100px;padding:8px 15px;font-size:11px;font-weight:900;letter-spacing:.05em;pointer-events:none}
+.tokyo .station{z-index:9}
+.tokyo .city-photo{z-index:8}
+.tokyo .station .ticket{display:none}
+.tokyo .tooth-sparkle{z-index:12;right:12%;bottom:30%}
+
+/* softer scene transitions */
+.tokyo{--tok-merge:0}
+.tokyo .transition-wash{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(90deg,transparent 0 55%,#9bcce2 77%,#def6ff 100%);opacity:calc(var(--tok-merge) * .92)}
+.tokyo .skyline{transform:translateX(calc(var(--tok-merge) * -24px));filter:saturate(calc(1 - var(--tok-merge) * .08)) brightness(calc(1 - var(--tok-merge) * .02))}
+.tokyo .elevated,.tokyo .railcar{transform:translateX(calc(var(--tok-merge) * -22px))}
+.tokyo .station{transform:translateY(calc(var(--tok-merge) * -4px)) rotate(calc(-2deg + var(--tok-merge) * -1deg));opacity:calc(1 - var(--tok-merge) * .08)}
+.tokyo .city-tag{opacity:calc(1 - var(--tok-merge) * .18);transform:translateX(calc(var(--tok-merge) * -10px))}
+.tokyo .city-photo{transform:translateY(calc(var(--tok-merge) * -7px)) translateX(calc(var(--tok-merge) * -6px));filter:drop-shadow(0 20px 9px #1d251f34) brightness(calc(1 + var(--tok-merge) * .03))}
+.tokyo .tokyo-vine,.tokyo .tokyo-leaf,.tokyo .tokyo-cloud{position:absolute;pointer-events:none;z-index:5}
+.tokyo .tokyo-vine{width:14px;border-radius:30px;background:linear-gradient(180deg,#36754d,#68b25a 52%,#2e6a43 100%);transform-origin:bottom center;opacity:calc(var(--tok-merge) * 1.05);box-shadow:0 0 0 4px #2f704921}
+.tokyo .vine-a{right:16%;bottom:14%;height:38%;transform:rotate(7deg) scaleY(calc(.15 + var(--tok-merge) * .85))}
+.tokyo .vine-b{right:7%;bottom:11%;height:31%;transform:rotate(-10deg) scaleY(calc(.15 + var(--tok-merge) * .85))}
+.tokyo .tokyo-leaf{width:112px;height:74px;border-radius:74% 11% 70% 14%;background:linear-gradient(135deg,#75c95b,#2f8d52);border:4px solid #30784c;box-shadow:inset -8px -8px 0 #1f744038;opacity:calc(var(--tok-merge) * 1.1);transform-origin:center center}
+.tokyo .tokyo-leaf:after{content:'';position:absolute;left:17%;right:15%;top:51%;height:3px;background:#1f6e3d;transform:rotate(-20deg)}
+.tokyo .leaf-a{right:13%;bottom:40%;transform:rotate(-18deg) scale(calc(.55 + var(--tok-merge) * .45))}
+.tokyo .leaf-b{right:1%;bottom:31%;transform:rotate(25deg) scale(calc(.5 + var(--tok-merge) * .5))}
+.tokyo .leaf-c{right:17%;bottom:23%;transform:rotate(-35deg) scale(calc(.46 + var(--tok-merge) * .54))}
+.tokyo .tokyo-cloud{background:#fffef7;border-radius:999px;box-shadow:0 18px 26px #6f9abb24;opacity:calc(var(--tok-merge) * .95)}
+.tokyo .tokyo-cloud:before,.tokyo .tokyo-cloud:after{content:'';position:absolute;border-radius:50%;background:inherit}
+.tokyo .tokyo-cloud:before{width:46%;height:105%;left:9%;top:-42%}.tokyo .tokyo-cloud:after{width:43%;height:95%;right:11%;top:-30%}
+.tokyo .tc-a{width:145px;height:50px;right:4%;top:17%;transform:translateX(calc((1 - var(--tok-merge)) * 40px))}
+.tokyo .tc-b{width:112px;height:38px;right:16%;top:10%;transform:translateX(calc((1 - var(--tok-merge)) * 24px)) scale(.82)}
+
+.climb-scene{--climb-enter:0;--climb-exit:0}
+.climb-entry-fade{position:absolute;left:0;right:0;bottom:0;height:27%;z-index:4;pointer-events:none;background:linear-gradient(180deg,transparent 0%,#f2a26f22 24%,#f5a57066 45%,#f4b37f8f 76%,#f8ca8d 100%);opacity:calc(1 - var(--climb-enter));filter:saturate(.95)}
+.climb-exit-fade{position:absolute;left:-4%;right:-4%;top:0;height:30%;z-index:4;pointer-events:none;background:linear-gradient(180deg,#fffefa 0%,#ffffffea 42%,#ffffff92 74%,transparent 100%);opacity:calc(.25 + var(--climb-exit) * .95);transform:translateY(calc((1 - var(--climb-exit)) * -12px))}
+.city-at-base{opacity:calc(1 - var(--climb-enter) * .75)}
+.seed-marker,.seed-small,.altitude-label{opacity:calc(1 - var(--climb-enter) * .18)}
+.climb-floating{opacity:calc(.28 + var(--climb-enter) * .72);transform:translateY(calc((1 - var(--climb-enter)) * 18px))}
+.top-cloud-world{opacity:calc(.28 + var(--climb-exit) * .72);transform:translateY(calc((1 - var(--climb-exit)) * 30px))}
+.top-cukes{opacity:calc(.2 + var(--climb-exit) * .8)}
+
+.cloud-land{--cloud-enter:0}
+.cloud-land .arrival-veil{position:absolute;inset:-3% auto -3% -3%;width:48%;z-index:11;pointer-events:none;background:radial-gradient(circle at 18% 18%,#fff 0 20%,transparent 21%),radial-gradient(circle at 40% 28%,#fff 0 22%,transparent 23%),radial-gradient(circle at 30% 54%,#fff 0 24%,transparent 25%),radial-gradient(circle at 58% 38%,#fff 0 22%,transparent 23%),linear-gradient(90deg,#ffffff 0%,#ffffffe6 44%,#ffffffa8 68%,transparent 100%);opacity:calc(1 - var(--cloud-enter));transform:translateX(calc((var(--cloud-enter) - 1) * 60px));filter:blur(.5px)}
+.cloud-land .arrival-vine{position:absolute;left:8%;bottom:23%;width:18px;height:38%;z-index:10;border-radius:20px;background:linear-gradient(180deg,#2b6e43 0%,#6fb95c 54%,#2d6b43 100%);transform:rotate(-18deg) scaleY(calc(.55 + var(--cloud-enter) * .45));transform-origin:bottom center;opacity:calc(.75 - var(--cloud-enter) * .35);box-shadow:0 0 0 5px #2a6d451c}
+.cloud-land .arrival-vine:before,.cloud-land .arrival-vine:after{content:'';position:absolute;width:92px;height:62px;border-radius:74% 11% 70% 14%;background:linear-gradient(135deg,#78cb61,#309253);border:4px solid #30794d;box-shadow:inset -8px -8px 0 #216b4033}
+.cloud-land .arrival-vine:before{left:-76px;top:34%;transform:rotate(-38deg)}
+.cloud-land .arrival-vine:after{left:2px;top:10%;transform:scaleX(-1) rotate(-20deg)}
+.cloud-land .cloud-title,.cloud-land .cuke-photo,.cloud-land .sky-banner,.cloud-land .cloud-arches,.cloud-land .floating-cucumber{transform:translateX(calc((1 - var(--cloud-enter)) * 24px));opacity:calc(.65 + var(--cloud-enter) * .35)}
+.cloud-land .cloud-platform-front{transform:translateY(calc((1 - var(--cloud-enter)) * 8px))}
+
+/* vertical climb frame */
+.climb-scene{background:#99c6e5}
+.climb-tower{position:absolute;top:0;left:0;width:100%;height:400%;will-change:transform;transform:translateY(-75%);overflow:hidden}
+.climb-sky{position:absolute;inset:0;background:linear-gradient(180deg,#d8f4ff 0%,#8fcbe6 37%,#8fc1e0 65%,#f7bb83 95%,#f4a36f 100%)}
+.climb-sun{position:absolute;top:4%;right:7%;width:180px;aspect-ratio:1;border-radius:50%;background:#fff8bc;box-shadow:0 0 0 35px #fff2a51f,0 0 0 90px #fff5a415}
+.climb-floating{position:absolute;width:210px;height:72px;background:#fffdf3;border-radius:100px;box-shadow:0 22px 25px #5086ae1c}
+.climb-floating:before,.climb-floating:after{content:"";position:absolute;border-radius:50%;background:#fffdf3}
+.climb-floating:before{width:48%;height:120%;left:11%;top:-45%}
+.climb-floating:after{width:53%;height:120%;right:7%;top:-32%}
+.cloud-one{top:21%;left:5%}.cloud-two{top:34%;right:3%;transform:scale(.75)}.cloud-three{top:56%;left:3%;transform:scale(.6)}
+.growing-vine{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:6}
+.vine-shadow,.vine-line,.vine-highlight{fill:none;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.vine-shadow{stroke:#175e3e88;stroke-width:34;opacity:.33;stroke-dasharray:1000;stroke-dashoffset:var(--vine-off,1000)}
+.vine-line{stroke:#286e42;stroke-width:26;stroke-dasharray:1000;stroke-dashoffset:var(--vine-off,1000)}
+.vine-highlight{stroke:#72b854;stroke-width:8;stroke-dasharray:1000;stroke-dashoffset:var(--vine-off,1000)}
+.climb-leaf,.climb-fruit,.climb-flower{position:absolute;z-index:7;opacity:0;transform:scale(0);transform-origin:center center;pointer-events:none}
+.climb-leaf{width:clamp(75px,13vw,160px);height:clamp(55px,9vw,118px);border-radius:75% 8% 72% 10%;background:linear-gradient(135deg,#7bd05b,#288b4e);border:4px solid #2f8548;box-shadow:inset -8px -10px 0 #1e793a3b;rotate:var(--rotate,0deg)}
+.climb-leaf:after{content:"";position:absolute;width:67%;height:3px;left:15%;top:52%;background:#216d3b;transform:rotate(-24deg)}
+.climb-fruit{width:clamp(35px,5vw,64px);height:clamp(115px,17vw,215px);border-radius:47% 42% 43% 47%;background:repeating-linear-gradient(90deg,#2b914f 0 13px,#7ec95c 13px 19px);border:5px solid #277342;box-shadow:inset -7px 0 10px #144c323f}
+.climb-fruit:after{content:"";position:absolute;top:-16px;left:34%;width:11px;height:18px;background:#2a6840;border-radius:10px}
+.climb-flower{width:47px;height:47px;border-radius:50%;background:radial-gradient(circle,#ffcd56 0 21%,transparent 22%),radial-gradient(circle at 50% 0%,#fff2a9 0 28%,transparent 29%),radial-gradient(circle at 100% 50%,#ffe5a8 0 28%,transparent 29%),radial-gradient(circle at 50% 100%,#ffe6b2 0 28%,transparent 29%),radial-gradient(circle at 0 50%,#ffeab7 0 28%,transparent 29%)}
+.city-at-base{position:absolute;left:0;bottom:0;height:17%;width:100%;z-index:5}
+.seed-soil{position:absolute;bottom:0;left:0;right:0;height:65%;background:linear-gradient(#ac7751,#76543d);box-shadow:inset 0 13px 0 #334d3b}
+.seed-crack{position:absolute;left:54%;bottom:62%;width:90px;height:12px;background:#423a2c;border-radius:50%;transform:translateX(-50%)}
+.seed-core{position:absolute;left:calc(54% - 19px);bottom:62%;width:38px;height:54px;background:#754c32;border:5px solid #513a2c;border-radius:58% 44% 53% 52%;transform-origin:50% 90%;z-index:7}
+.seed-core:after{content:'';position:absolute;top:8px;left:10px;width:5px;height:17px;border-radius:50%;background:#b58c54;transform:rotate(24deg)}
+.seed-marker{position:absolute;left:9%;bottom:58%;padding:14px 18px;z-index:8;transform:rotate(-5deg);background:#fff2c6;border:5px solid #345947;font-size:clamp(15px,2.4vw,25px);font-weight:900;box-shadow:8px 8px 0 #31534755}
+.seed-small{position:absolute;left:13%;bottom:44%;z-index:8;color:#fff9de;font-size:13px;font-weight:900;letter-spacing:.18em}
+.base-building{position:absolute;bottom:60%;background:#ad7176;border:3px solid #664f55}
+.base-building:after{content:'';position:absolute;inset:14px 9px;background:repeating-linear-gradient(180deg,#ffebb3a6 0 14px,transparent 15px 32px)}
+.building-a{height:32%;width:18%;left:2%;background:#ad7176}.building-b{height:47%;width:14%;right:6%;background:#ca8a79}.building-c{height:27%;width:12%;right:22%;background:#a77e81}
+.top-cloud-world{position:absolute;top:0;left:0;right:0;height:24%;background:linear-gradient(180deg,#d0f2ff,#a5e6e3);color:#1b7251;text-align:center;z-index:5;padding-top:11%}
+.top-cloud-world:after{content:'';position:absolute;left:-10%;right:-10%;bottom:-4%;height:30%;border-radius:50%;background:#fffdfa;box-shadow:0 -50px 0 -24px #fff,#fff 0 0 45px}
+.top-cloud-world>span{font-size:clamp(14px,2vw,24px);letter-spacing:.35em;font-weight:900}
+.top-cloud-world>strong{display:block;margin-top:18px;font-size:clamp(37px,6vw,82px);line-height:1.15;font-weight:900;letter-spacing:-.06em}
+.top-cukes{position:absolute;bottom:24%;right:13%;display:flex;gap:30px;transform:rotate(14deg)}
+.top-cukes i{width:42px;height:160px;border-radius:48%;border:4px solid #287447;background:repeating-linear-gradient(90deg,#2b9b50 0 12px,#82c861 12px 20px)}
+.top-cukes i:nth-child(2){transform:translateY(-32px) rotate(-20deg)}
+.altitude-label{position:absolute;top:14%;left:8%;z-index:13;padding:10px 17px;color:#1e5944;background:#fff4cfdb;transform:rotate(-2deg);font-size:clamp(13px,1.6vw,18px);font-weight:900;border:3px solid #2b6952;box-shadow:7px 7px 0 #24544a33}
+/* cloud cucumber area, after upward climb */
+.cloud-land{--bg:#bceaf8;--fg:#215844;--floor:transparent;background:#bceafa}
+.cloud-land:after{display:none}
+.cloud-sky{position:absolute;inset:0;background:linear-gradient(180deg,#d2f1ff 0%,#d4effb 50%,#b8e5e5 100%)}
+.cloud-glow{position:absolute;right:12%;top:10%;width:230px;aspect-ratio:1;background:#fff5b7;border-radius:50%;box-shadow:0 0 0 50px #ffedbd3f}
+.cloud-platform{position:absolute;left:-5%;right:-5%;height:28%;bottom:3%;border-radius:50% 50% 4% 4%;background:radial-gradient(ellipse at 20% 5%,#fff 0 33%,transparent 34%),radial-gradient(ellipse at 44% 8%,#fff 0 34%,transparent 35%),radial-gradient(ellipse at 68% 4%,#fff 0 35%,transparent 36%),radial-gradient(ellipse at 89% 9%,#fff 0 34%,transparent 35%),#fff;box-shadow:0 -25px 40px #ffffffa0,0 22px 28px #8daab56f;z-index:8}
+.cloud-platform-back{bottom:17%;height:16%;left:7%;right:7%;opacity:.75;filter:blur(1px);z-index:4}
+.cloud-platform-front{z-index:8}
+.cloud-title{position:absolute;left:7%;top:19%;z-index:12;color:#1b6b4e}
+.cloud-title span{display:inline-block;background:#245e4a;color:#fffae5;padding:8px 15px;letter-spacing:.13em;font-weight:900;font-size:11px;transform:rotate(-2deg)}
+.cloud-title h2{margin:13px 0 12px;font-size:clamp(58px,9vw,135px);color:#fffce4;text-shadow:6px 6px 0 #276d57;line-height:.95}
+.cloud-title p{font-size:clamp(16px,1.75vw,26px);font-weight:900;line-height:1.65}
+.cloud-land .cuke-photo{position:absolute;right:5%;bottom:17%;width:clamp(250px,37vw,555px);height:auto;max-height:55%;z-index:12}
+.cloud-arches{position:absolute;bottom:23%;right:24%;height:47%;width:25%;border-radius:48% 48% 0 0;border:14px solid #2d8a5c;border-bottom:0;opacity:.77;z-index:5}
+.arch-b{right:7%;height:33%;width:19%;border-width:11px;opacity:.6}
+.floating-cucumber{position:absolute;width:49px;height:160px;border-radius:48%;border:4px solid #2d6e42;background:repeating-linear-gradient(90deg,#2f9858 0 12px,#7aca66 12px 20px);z-index:7;transform:rotate(19deg);box-shadow:inset -7px 0 6px #24513a44}
+.sky-cuke-a{top:23%;right:12%}.sky-cuke-b{top:15%;right:32%;transform:rotate(-22deg)}.sky-cuke-c{top:36%;right:43%;height:100px;width:37px}
+.sky-banner{position:absolute;top:12%;right:7%;z-index:8;color:#2a7452;font-size:clamp(18px,3.2vw,50px);font-weight:900;transform:rotate(5deg);line-height:1}
+.small-sign{position:absolute;bottom:24%;left:9%;z-index:13;padding:10px 14px;color:#fff8dd;background:#225f46;font-size:clamp(12px,1.4vw,21px);font-weight:900;transform:rotate(-3deg)}
+@media(max-width:720px){
+:root{--wide:100vw}
+.scene{flex-basis:100vw;width:100vw}
+#player{width:24vw;left:7vw}
+#player.climbing{transform-origin:50% 90%}
+#scrollHint{left:55%;font-size:10px}
+#stageLabel{bottom:62px;left:14px;font-size:10px}
+.harbor .hero-title{left:7%;top:29%}
+.harbor .hero-title .huge{font-size:clamp(57px,15.4vw,92px)}
+.harbor .hero-photo{right:-8%;bottom:20%;width:65vw;max-height:40%}
+.harbor .port-fact{left:31%;bottom:31%;max-width:59vw}
+.tokyo .station{left:4%;top:19%;max-width:73vw}
+.tokyo .station h2{font-size:clamp(26px,7vw,43px)}
+.tokyo .city-photo{right:3%;bottom:19%;width:54vw;max-height:41%}
+.tokyo .tooth-sparkle{right:8%;bottom:31%}
+.tokyo .city-tag{right:3%;font-size:37px}
+.seed-marker{left:7%;bottom:62%;font-size:14px}
+.seed-small{left:9%;bottom:44%;font-size:10px}
+.altitude-label{left:5%;top:17%;max-width:66%;font-size:13px}
+.cloud-title{top:23%;left:6%}
+.cloud-title h2{font-size:clamp(49px,14vw,80px)}
+.cloud-title p{font-size:13px}
+.cloud-land .cuke-photo{right:-5%;bottom:23%;width:63vw;max-height:34%}
+.cloud-arches{right:7%;bottom:25%;width:38%;height:40%;border-width:9px}
+.arch-b{right:-7%;height:30%}
+.sky-banner{right:5%;top:15%;font-size:21px}
+.small-sign{bottom:24%;left:4%;font-size:11px}
+.floating-cucumber{width:29px;height:95px}
+.sky-cuke-a{right:12%;top:30%}.sky-cuke-b{top:24%;right:35%}.sky-cuke-c{right:49%;top:44%}
+
+ .tokyo .tokyo-leaf{width:76px;height:52px;border-width:3px}
+ .tokyo .tokyo-cloud.tc-a{width:108px;height:38px;right:1%;top:18%}
+ .tokyo .tokyo-cloud.tc-b{width:84px;height:30px;right:17%;top:12%}
+ .tokyo .vine-a{right:17%;height:31%}.tokyo .vine-b{right:5%;height:26%}
+ .climb-entry-fade{height:31%}
+ .cloud-land .arrival-veil{width:58%}
+ .cloud-land .arrival-vine{left:4%;bottom:27%;height:31%;width:14px}
+ .cloud-land .arrival-vine:before,.cloud-land .arrival-vine:after{width:68px;height:46px;border-width:3px}
+
+.climb-floating{width:120px;height:45px}
+.top-cloud-world{padding-top:17%}
+.top-cloud-world>strong{font-size:clamp(32px,9vw,57px)}
+.top-cukes{right:8%;bottom:25%;gap:12px}
+.top-cukes i{width:27px;height:90px}
+}
+@media(prefers-reduced-motion:reduce){#player.climbing img{animation:none}}
+
+
+/* ===============================================
+   MOTION EXPANSION / The original HAMCELLO art direction stays intact.
+   =============================================== */
+.scene{contain:paint}
+.tokyo .tokyo-vine,.tokyo .tokyo-leaf,.tokyo .tokyo-cloud,.tokyo .transition-wash{display:none}
+#player{z-index:75;transition:none}
+#playerShadow{z-index:70}
+.scene .journeySky,.scene .nightSky,.scene .dawnSky,.scene .ishikawaSky,.scene .seedSky{position:absolute;inset:0;pointer-events:none}
+/* Ferris wheel belongs to the port illustration; never over the main title */
+.ferrisLandmark{position:absolute;right:18%;top:23%;width:clamp(150px,21vw,330px);aspect-ratio:1;z-index:3;pointer-events:none;opacity:.83}
+.ferrisRing{position:absolute;inset:0;border:8px solid #2f6875;border-radius:50%;box-shadow:inset 0 0 0 4px #f1d9b566;transform:rotate(var(--wheel-angle,0deg));will-change:transform}
+.ferrisHub{position:absolute;width:17%;aspect-ratio:1;left:41.5%;top:41.5%;z-index:5;background:#ffdf97;border:6px solid #2c696c;border-radius:50%}
+.ferrisSpoke{position:absolute;left:calc(50% - 3px);top:0;height:100%;width:6px;background:#2f6875;z-index:1}
+.ferrisSpoke.s1{transform:rotate(45deg)}.ferrisSpoke.s2{transform:rotate(90deg)}.ferrisSpoke.s3{transform:rotate(135deg)}
+.ferrisSeat{position:absolute;width:12%;height:11%;border:3px solid #2e5c62;border-radius:7px 7px 15px 15px;background:#ffcb8a;z-index:4}
+.ferrisSeat.c0{left:44%;top:-6%;background:#f6ad78}.ferrisSeat.c1{left:76%;top:8%;background:#f8d5a1}.ferrisSeat.c2{right:-6%;top:44%;background:#e59383}.ferrisSeat.c3{left:76%;bottom:8%;background:#f8d5a1}.ferrisSeat.c4{left:44%;bottom:-6%;background:#f6ad78}.ferrisSeat.c5{left:8%;bottom:8%;background:#dba1a5}.ferrisSeat.c6{left:-6%;top:44%;background:#f8d5a1}.ferrisSeat.c7{left:8%;top:8%;background:#dba1a5}
+.ferrisSupport{position:absolute;left:25%;bottom:-29%;height:52%;width:50%;border-left:13px solid #2f6875;border-right:13px solid #2f6875;transform:perspective(150px) rotateX(27deg);z-index:-1}
+.ferrisBase{position:absolute;left:13%;right:13%;bottom:-31%;height:13px;background:#2f6875;border-radius:20px}
+/* The train is a single consistent vehicle across sunset, Tokyo and dawn. */
+.trainRide{position:absolute;bottom:14.8%;left:13%;width:clamp(290px,39vw,540px);height:clamp(115px,15vw,175px);z-index:51;opacity:0;pointer-events:none;transform:translateY(38px) scale(.94);transform-origin:bottom center;will-change:opacity,transform;filter:drop-shadow(0 14px 4px #171b3436)}
+.trainRails{position:absolute;bottom:-5px;left:-13vw;width:calc(100% + 26vw);height:11px;background:#33444b;box-shadow:0 8px 0 #e7c292;z-index:1}
+.trainRails i{position:absolute;bottom:-10px;height:18px;width:44px;background:#455752;left:18%}.trainRails i+ i{left:67%}
+.trainBody{position:absolute;left:4%;right:3%;top:18%;bottom:18%;border:6px solid #274e51;border-radius:24px 24px 16px 16px;background:linear-gradient(180deg,#e86659 0 55%,#b74952 55% 100%);overflow:hidden;box-shadow:inset 0 7px #ffad8a88}
+.trainStripe{position:absolute;left:0;right:0;bottom:25%;height:12%;background:#f1d7a7;border-top:3px solid #325c55;border-bottom:3px solid #325c55}
+.trainRoof{position:absolute;left:11%;right:10%;top:8%;height:26px;border:6px solid #274e51;border-radius:28px 28px 0 0;background:#ffe9ba;z-index:4}
+.trainFront{position:absolute;right:0;top:23%;bottom:25%;width:19%;border:6px solid #274e51;border-radius:27px 18px 18px 27px;background:#d76559;z-index:5}
+.trainWindows{position:absolute;left:4%;right:24%;top:13%;height:38%;display:flex;gap:3%}
+.trainWindows b{flex:1;background:linear-gradient(145deg,#a8d9d6 0%,#ffeac7 48%,#6fa4ad 52%,#9ac9c9 100%);border:4px solid #28514f;border-radius:11px}
+.trainDoor{position:absolute;right:5%;top:14%;width:13%;height:66%;background:#f2bd90;border:4px solid #28514f;border-radius:10px;z-index:3}
+.trainSeal{position:absolute;left:6%;bottom:7%;font-size:10px;line-height:.92;font-weight:900;letter-spacing:.07em;color:#fff6d7}
+.trainWheel{position:absolute;bottom:4%;width:14%;aspect-ratio:1;border:8px solid #2d393c;border-radius:50%;background:#f6d7a9;z-index:4;transform:rotate(var(--train-turn,0deg))}
+.trainWheel.wA{left:13%}.trainWheel.wB{left:47%}.trainWheel.wC{right:12%}
+.trainWheel:after{content:'';position:absolute;inset:28%;background:#324c50;border-radius:50%}
+.trainLight{position:absolute;right:-3%;top:39%;width:18px;height:21px;background:#fff4be;border:4px solid #3a5154;border-radius:50%;z-index:7;box-shadow:0 0 25px #ffeaa8}
+/* Movement bridge 01 : port blue -> sunset orange */
+.train-sunset{--bg:#f49b79;--floor:#927d76;--rim:#385154;background:linear-gradient(90deg,#78cfd7 0%,#b9d5c6 18%,#f4bc83 57%,#f69574 100%)}
+.train-sunset .journeySun{position:absolute;right:22%;top:15%;width:clamp(110px,17vw,240px);aspect-ratio:1;border-radius:50%;background:#ffe7a1;box-shadow:0 0 0 40px #ffe4a52b,0 0 0 105px #ffe4a518;transform:translateY(calc(var(--sunset-p,0) * 15vh))}
+.train-sunset .journeyGlow{position:absolute;inset:0;background:linear-gradient(180deg,transparent 0%,#ffca7a24 50%,#d7737165 100%);opacity:var(--sunset-p,0)}
+.journeyHarborEdge{position:absolute;left:0;bottom:29%;height:30%;width:37%;display:flex;align-items:flex-end;gap:3%;opacity:calc(1 - var(--sunset-p,0) * .82)}
+.journeyHarborEdge i{display:block;background:#d77e67;border:4px solid #5d6764;border-bottom:0;flex:1;height:42%}.journeyHarborEdge i:nth-child(2){height:73%}.journeyHarborEdge i:nth-child(3){height:57%}
+.journeyHorizon{position:absolute;left:0;right:0;bottom:25%;height:9px;background:#54696b;box-shadow:0 7px 0 #d0bd9e}
+.journeyTowers{position:absolute;bottom:25%;right:0;width:50%;height:43%;display:flex;gap:3%;align-items:flex-end;opacity:var(--sunset-p,0)}
+.journeyTowers b{height:35%;background:#5e6e73;border:3px solid #4b5b60;flex:1}.journeyTowers b:nth-child(2){height:53%}.journeyTowers b:nth-child(3){height:77%}.journeyTowers b:nth-child(4){height:45%}.journeyTowers b:nth-child(5){height:62%}
+.journeySpeedlines{position:absolute;left:0;right:0;bottom:29%;height:20%;background:repeating-linear-gradient(0deg,transparent 0 33px,#ffffff25 34px 37px,transparent 38px 50px);transform:translateX(calc(var(--sunset-p,0) * -40px));opacity:.4}
+.journeyTicket{position:absolute;left:7%;top:19%;width:min(47%,610px);z-index:9;padding:20px 25px 18px;color:#2e5e55;background:#fff3c9;border:7px solid #2b5856;outline:7px solid #ffdca9;box-shadow:13px 13px 0 #2f5d5660;transform:rotate(-3deg)}
+.journeyTicket strong{display:block;font-size:clamp(38px,5.7vw,90px);line-height:1.05;letter-spacing:-.07em;font-weight:900;margin:12px 0}
+.ticketSplit{display:flex;gap:17px;justify-content:space-between;border-top:3px dashed #bda676;padding-top:10px;font-size:clamp(8px,1.1vw,13px);letter-spacing:.1em;font-weight:900}
+.ticketSplit span b{font-size:clamp(13px,2vw,25px);letter-spacing:.02em}
+.journeyNumber{position:absolute;right:6%;top:14%;font-size:clamp(39px,6vw,110px);font-weight:900;line-height:.93;letter-spacing:-.08em;color:#fff7d9;text-shadow:5px 5px 0 #5e696b99;transform:rotate(6deg);z-index:5}
+.journeyRoute{position:absolute;right:5%;bottom:32%;font-size:clamp(10px,1.2vw,18px);letter-spacing:.15em;font-weight:900;color:#284b4a;z-index:8}
+/* Tokyo city raises its original skyline; the existing large hamster stays */
+.tokyo .skyline b{transform-origin:bottom;transform:scaleY(calc(.06 + var(--tok-grow,1) * .94))}
+.tokyo .tokyoDuskLayer{position:absolute;inset:0;background:linear-gradient(180deg,#1a2a56ed 0%,#283b63a4 54%,#1b3151bf 100%);opacity:var(--tok-night,0);z-index:5;pointer-events:none}
+.tokyo .tokyoWindowStars{position:absolute;inset:5% 0 20%;background:radial-gradient(circle at 16% 22%,#ffecba 0 2px,transparent 3px),radial-gradient(circle at 32% 35%,#fff7e1 0 2px,transparent 3px),radial-gradient(circle at 45% 13%,#fff7e1 0 2px,transparent 3px),radial-gradient(circle at 72% 26%,#ffecba 0 2px,transparent 3px),radial-gradient(circle at 87% 12%,#fff7e1 0 2px,transparent 3px);opacity:.8}
+.tokyo .tokyoLamp{position:absolute;bottom:28%;width:10px;height:29%;background:#243e45;z-index:6;opacity:var(--tok-night,0)}
+.tokyo .tokyoLamp:before{content:'';position:absolute;left:-26px;top:-9px;width:61px;height:12px;background:#25464a;border-radius:24px;box-shadow:0 4px 12px #ffe2a5}
+.tokyo .tokyoLamp:after{content:'';position:absolute;left:-18px;top:0;width:40px;height:36px;border-radius:50%;background:radial-gradient(circle,#fff3b8 0%,#ffcf80a8 43%,transparent 70%)}
+.tokyo .lampA{left:10%}.tokyo .lampB{left:87%;height:35%}
+/* Movement bridge 02 : Tokyo sunset -> night. */
+.tokyo-night{--bg:#1e3155;--fg:#fff3d5;--floor:#354150;--rim:#819b9d;background:linear-gradient(90deg,#ef9570 0%,#a16f79 16%,#43456d 55%,#1c2b4e 100%)}
+.nightSky{z-index:1}.nightMoon{position:absolute;right:17%;top:13%;width:clamp(110px,14vw,220px);aspect-ratio:1;background:#fff2ca;border-radius:50%;box-shadow:0 0 0 37px #ffffff12,0 0 0 88px #ffffff09}
+.nightStars{position:absolute;inset:0;background:radial-gradient(circle at 12% 22%,#ffffffd9 0 2px,transparent 3px),radial-gradient(circle at 34% 12%,#ffffffe0 0 2px,transparent 3px),radial-gradient(circle at 69% 20%,#ffffffd9 0 2px,transparent 3px),radial-gradient(circle at 82% 38%,#ffffffe0 0 2px,transparent 3px),radial-gradient(circle at 49% 48%,#ffffffe0 0 2px,transparent 3px);opacity:var(--night-p,1)}
+.nightCloud{position:absolute;left:4%;top:23%;width:32%;height:14%;background:#b9bbc420;border-radius:99px;filter:blur(18px)}
+.nightDistant,.nightSkyline{position:absolute;left:0;right:0;bottom:18%;height:59%;display:flex;gap:.5%;align-items:flex-end}
+.nightDistant{opacity:.45;z-index:2;transform:translateY(14px)}.nightDistant i{flex:1;background:#6b6483;height:50%}.nightDistant i:nth-child(2n){height:72%}.nightDistant i:nth-child(3n){height:88%}
+.nightSkyline{z-index:3;gap:1.2%}.nightSkyline b{flex:1;min-height:30%;background:#263757;border:3px solid #1c2946;border-bottom:none;position:relative;box-shadow:0 -7px 0 #5c6884 inset}
+.nightSkyline b:nth-child(2){height:75%}.nightSkyline b:nth-child(3){height:58%}.nightSkyline b:nth-child(4){height:88%}.nightSkyline b:nth-child(5){height:69%}.nightSkyline b:nth-child(6){height:97%}.nightSkyline b:nth-child(7){height:80%}.nightSkyline b:nth-child(8){height:49%}
+.nightSkyline b:before{content:'';position:absolute;inset:12px 8px 10px;background:repeating-linear-gradient(180deg,#f7dca8 0 8px,transparent 8px 26px),repeating-linear-gradient(90deg,transparent 0 9px,#f7dca8 9px 18px,transparent 18px 29px);opacity:var(--night-p,1);mix-blend-mode:screen}
+.nightTrainRails{position:absolute;left:0;right:0;bottom:32%;height:14px;background:#243f4b;box-shadow:0 8px 0 #9c9e9a;z-index:5}
+.nightBillboard{position:absolute;right:5%;top:12%;color:#fff0c5;font-size:clamp(33px,5vw,80px);font-weight:900;line-height:.95;transform:rotate(7deg);text-shadow:5px 5px 0 #1d2d4d;z-index:8}
+.nightBoard{position:absolute;left:7%;top:23%;z-index:9;width:min(48%,595px);padding:22px 27px;background:#f6dfb8;color:#2d4553;border:7px solid #355060;box-shadow:12px 14px 0 #161e415a;transform:rotate(-2deg)}
+.nightBoard h2{font-size:clamp(40px,5.7vw,91px);line-height:1.06}.nightBoard p{font-size:clamp(12px,1.4vw,20px);font-weight:900;line-height:1.8;margin-top:12px}
+.nightBadge{display:inline-block;margin-top:16px;font-size:clamp(11px,1.2vw,16px);font-weight:900;background:#e7a36e;padding:8px 12px}
+.nightPhoto{right:5%;bottom:15%;width:clamp(220px,27vw,430px);max-height:49%;z-index:7}
+.nightStreet{position:absolute;left:0;right:0;bottom:0;height:18%;background:#354150;z-index:9}
+/* Train slowly exits the night. Mountains grow on the dawn horizon. */
+.train-dawn{--bg:#eed0aa;--fg:#294c46;--floor:#73956d;--rim:#365a4b;background:linear-gradient(90deg,#1c2e55 0%,#6b5579 21%,#e99582 48%,#f7d59b 76%,#bbd9c2 100%)}
+.dawnSun{position:absolute;right:17%;top:19%;width:clamp(120px,16vw,230px);aspect-ratio:1;background:#ffecab;border-radius:50%;box-shadow:0 0 0 40px #fff8bb2a,0 0 0 100px #fffbd81a;opacity:var(--dawn-p,0)}
+.dawnAfterglow{position:absolute;inset:0;background:linear-gradient(180deg,transparent 0 40%,#fbe0a241 71%,#a3c5b1 100%);opacity:var(--dawn-p,0)}
+.dawnStars{position:absolute;left:0;right:50%;top:0;bottom:45%;background:radial-gradient(circle at 22% 30%,#fff7cf 0 2px,transparent 3px),radial-gradient(circle at 47% 14%,#fff7cf 0 2px,transparent 3px),radial-gradient(circle at 68% 45%,#fff7cf 0 2px,transparent 3px);opacity:calc(1 - var(--dawn-p,0))}
+.dawnMountains,.ishikawaRidges,.seedRidges{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.dawnBackMountain{fill:#7e9690;opacity:calc(var(--dawn-p,0) * .62);transform:translateY(calc((1 - var(--dawn-p,0)) * 13%))}
+.dawnFrontMountain{fill:#5b826f;opacity:var(--dawn-p,0);transform:translateY(calc((1 - var(--dawn-p,0)) * 18%))}
+.dawnPines{position:absolute;left:0;right:0;bottom:14%;height:28%;display:flex;justify-content:space-around;z-index:4;opacity:var(--dawn-p,0)}
+.dawnPines i{display:block;width:10px;height:100%;background:#37624d;position:relative}.dawnPines i:before{content:'';position:absolute;left:-35px;top:-10px;width:80px;height:90px;background:#46865a;border-radius:85% 16% 75% 13%}
+.dawnNotice{position:absolute;left:7%;top:20%;width:min(51%,650px);z-index:9;padding:22px 27px;color:#334f48;background:#fff1d0;border:7px solid #365a53;box-shadow:12px 14px 0 #2a534c55;transform:rotate(-2deg)}
+.dawnNotice h2{font-size:clamp(36px,5.8vw,88px);line-height:1.07;margin:10px 0}.dawnNotice p{font-size:clamp(12px,1.35vw,19px);line-height:1.8;font-weight:900}
+.dawnNumber{position:absolute;right:5%;top:9%;z-index:6;color:#fff2c2;font-size:clamp(38px,6vw,100px);font-weight:900;line-height:.92;text-shadow:6px 5px 0 #365b579c;transform:rotate(6deg)}
+.dawnSoil{position:absolute;bottom:0;left:0;right:0;height:15%;background:#77976e}
+/* Ishikawa: garden and old town; substantial illustration, not generic green shapes */
+.ishikawa{--bg:#c2ddd0;--floor:#94735b;--rim:#40614d;background:linear-gradient(90deg,#b6dacc 0%,#d4d8a8 45%,#a9c4b6 100%)}
+.ishikawaSun{position:absolute;top:11%;right:15%;width:clamp(120px,17vw,230px);aspect-ratio:1;border-radius:50%;background:#f9e3ad;box-shadow:0 0 0 50px #ffffcc1b}
+.ridgeBack{fill:#94b298}.ridgeFront{fill:#6a936f}
+.ishikawaArrival{position:absolute;right:8%;top:12%;z-index:10;padding:9px 23px;background:#fdf4d8;border:7px solid #35624f;box-shadow:11px 12px 0 #2c5c4b5d;color:#245744;font-size:clamp(33px,4.4vw,78px);font-weight:900;line-height:1.13;transform:rotate(6deg)}
+.ishikawaArrival small{display:block;font-size:clamp(9px,1.2vw,16px);font-weight:900;letter-spacing:.17em}
+.ishikawaTitle{position:absolute;left:6%;top:18%;z-index:12;padding:20px 26px;color:#244b3a;background:#fff5d4;border:7px solid #35604c;outline:7px solid #ecd69d;box-shadow:12px 13px 0 #39634c65;transform:rotate(-2deg);max-width:49%}
+.ishikawaTitle h2{font-size:clamp(36px,5.7vw,88px);line-height:1.09;margin:9px 0}
+.ishikawaTitle p{font-size:clamp(12px,1.55vw,22px);line-height:1.7;font-weight:900}
+.gardenScene{position:absolute;left:4%;bottom:16%;width:49%;height:38%;z-index:6}
+.gardenPlaque,.townPlaque{position:absolute;left:5%;top:0;z-index:9;font-size:clamp(15px,2vw,28px);font-weight:900;color:#fff9df;background:#376049;padding:8px 15px;transform:rotate(-4deg);box-shadow:6px 7px 0 #28513b50}
+.gardenPlaque small,.townPlaque small{display:block;font-size:10px;letter-spacing:.12em}
+.gardenCanopy{position:absolute;bottom:20%;background:#3e7657;border-radius:50%;z-index:3}
+.canopyOne{left:4%;width:39%;height:51%}.canopyTwo{right:11%;width:28%;height:44%;background:#528960}
+.gardenPine{position:absolute;bottom:7%;height:49%;width:10px;background:#4b6651;z-index:4}.pineOne{left:23%}.pineTwo{right:25%}
+.gardenPond{position:absolute;bottom:0;left:0;right:0;height:25%;border-radius:50%;background:repeating-linear-gradient(0deg,#78b8c6 0 11px,#92d0d4 11px 18px);border:6px solid #6b9ca0;z-index:6}
+.gardenBridge{position:absolute;left:34%;bottom:20%;width:38%;height:14%;border:9px solid #784d3b;border-bottom:0;border-radius:50% 50% 0 0;z-index:7}
+.gardenLantern{position:absolute;left:51%;bottom:25%;width:80px;height:118px;z-index:8}
+.gardenLantern i{position:absolute;left:26px;top:23px;width:28px;height:70px;background:#888b76;border-radius:6px}
+.gardenLantern b{position:absolute;left:13px;top:11px;width:54px;height:28px;background:#777b70;border-radius:5px}
+.gardenLantern em{position:absolute;left:7px;top:0;width:66px;height:15px;background:#6b7368;transform:rotate(-8deg);border-radius:50%}
+.townScene{position:absolute;right:3%;bottom:16%;width:43%;height:36%;z-index:6}
+.townPlaque{top:-4%;left:16%;background:#985f45}
+.townHouse{position:absolute;bottom:0;width:24%;height:62%;background:#90644d;border:6px solid #473b37;z-index:5;box-shadow:inset 0 10px 0 #bc8c67}
+.townHouse:before{content:'';position:absolute;left:-7%;right:-7%;top:-28px;height:32px;background:#554643;clip-path:polygon(0% 100%,50% 0%,100% 100%)}
+.townHouse div{position:absolute;left:12%;right:12%;top:16%;bottom:5%;background:repeating-linear-gradient(90deg,#433832 0 6px,#b9906b 6px 16px,#433832 16px 21px);border-top:8px solid #443831}
+.townHouse.house1{left:0;height:52%}.townHouse.house2{left:25%;height:74%}.townHouse.house3{left:51%;height:64%}.townHouse.house4{left:77%;height:51%}
+.ishikawaPhoto{right:28%;bottom:16%;width:clamp(190px,22vw,350px);max-height:46%;z-index:8;transform:translateY(calc((1 - var(--ish-p,0)) * 26px))}
+.ishikawa .gardenScene,.ishikawa .townScene,.ishikawa .ishikawaArrival{opacity:calc(.18 + var(--ish-p,0) * .82);transform:translateY(calc((1 - var(--ish-p,0)) * 25px))}
+/* Mountain scene -> original vine climbing chapter */
+.seed-mountain{--bg:#9bc7ac;--floor:#735a41;--rim:#38614e;background:linear-gradient(90deg,#acd1b7 0%,#92bfa8 47%,#96c5d6 100%)}
+.seedSun{position:absolute;right:13%;top:11%;width:clamp(95px,14vw,200px);aspect-ratio:1;background:#ffedbf;border-radius:50%;box-shadow:0 0 0 40px #fff9d51a}
+.seedFarRidge{fill:#729c89}.seedNearRidge{fill:#4d886e}
+.seedPines{position:absolute;bottom:14%;left:0;right:0;height:26%;display:flex;justify-content:space-around;z-index:4}
+.seedPines i{position:relative;height:100%;width:15px;background:#345e43}.seedPines i:before{content:'';position:absolute;left:-35px;top:-12px;width:85px;height:85px;border-radius:60% 10% 80% 18%;background:#43835b}
+.seedStory{position:absolute;left:7%;top:17%;padding:23px 30px;background:#fff0ca;border:7px solid #37624b;box-shadow:12px 13px 0 #315b4a66;transform:rotate(-2deg);max-width:52%;z-index:9}
+.seedStory h2{font-size:clamp(36px,6.4vw,99px);line-height:1.05;margin:9px 0}
+.seedStory p{font-size:clamp(13px,1.45vw,22px);line-height:1.75;font-weight:900}
+.seedSpot{position:absolute;left:54%;bottom:23%;z-index:9;width:120px;height:130px;transform:scale(calc(.8 + var(--seed-p,0) * .3));transform-origin:center bottom}
+.seedSpotHalo{position:absolute;inset:-20px;border-radius:50%;background:radial-gradient(circle,#e7f9ad99 0%,transparent 75%);opacity:var(--seed-p,0)}
+.seedShell{position:absolute;bottom:0;left:44px;width:39px;height:53px;border-radius:70% 60% 75% 70%;background:#71503b;border:5px solid #4d362d;transform:rotate(-21deg)}
+.seedCrack{position:absolute;bottom:-5px;left:20px;width:82px;height:17px;background:#4b6654;border-radius:50%}
+.seedSprout{position:absolute;bottom:46px;left:57px;height:48px;width:8px;border-radius:10px;background:#327f51;transform-origin:bottom center;transform:scaleY(var(--seed-p,0))}
+.seedSprout:after{content:'';position:absolute;top:0;left:-20px;width:36px;height:24px;border-radius:65% 10% 65% 15%;background:#79c46f}
+.seedSprout.right{transform:scaleY(var(--seed-p,0)) rotate(22deg);height:39px}.seedSprout.right:after{left:1px;transform:scaleX(-1)}
+.seedGround{position:absolute;bottom:0;left:0;right:0;height:16%;background:repeating-linear-gradient(-24deg,#58744c 0 36px,#517047 36px 43px,#618052 43px 75px)}
+.seedFootnote{position:absolute;left:5%;bottom:21%;z-index:9;font-size:clamp(10px,1.3vw,19px);font-weight:900;letter-spacing:.12em;color:#fff8d9;text-shadow:2px 2px #284e3a}
+.seedPhoto{right:11%;bottom:16%;width:clamp(180px,23vw,355px);max-height:43%;z-index:8}
+.climb-scene .base-building{display:none}
+.climb-scene .city-at-base{background:linear-gradient(180deg,#88b694 0%,#699d6c 36%,#7c6e4d 100%)}
+.climb-scene .city-at-base:before{content:'';position:absolute;left:0;right:0;top:-25%;height:50%;background:#65966b;clip-path:polygon(0 100%,12% 58%,27% 100%,43% 21%,65% 100%,79% 42%,100% 100%)}
+.climb-scene .seed-soil{background:#876f52}
+.climb-scene .seed-marker{background:#fff1c7}
+/* visual confirmation of arrival at the cloud world stays in the original style */
+@media (max-width:720px){
+  .ferrisLandmark{right:4%;top:17%;width:clamp(120px,36vw,200px);opacity:.74}
+  .ferrisRing{border-width:5px}.ferrisSpoke{width:3px;left:calc(50% - 1.5px)}.ferrisHub{border-width:3px}
+  .trainRide{left:6%;width:min(88vw,390px);height:clamp(96px,25vw,126px);bottom:14.8%}
+  .trainBody{border-width:4px;border-radius:18px}.trainRoof{height:20px;border-width:4px;top:12%}.trainFront{border-width:4px}
+  .trainWindows b{border-width:2px;border-radius:6px}.trainWheel{border-width:4px}
+  .journeyTicket{left:5%;top:19%;width:70%;padding:13px 15px;border-width:5px;outline-width:5px;box-shadow:7px 9px 0 #2f5d5660}
+  .journeyTicket strong{font-size:clamp(31px,8vw,52px)}.journeyNumber{right:2%;top:11%;font-size:35px}
+  .journeyRoute{right:5%;bottom:31%;font-size:10px;max-width:65%;text-align:right}
+  .tokyo .tokyoLamp{height:23%}.tokyo .lampB{height:27%}
+  .nightBoard{top:19%;left:5%;width:65%;padding:14px 16px;border-width:5px;box-shadow:6px 8px 0 #161e415a}
+  .nightBoard h2{font-size:clamp(30px,8vw,53px)}.nightBoard p{font-size:12px}.nightBadge{font-size:10px;padding:6px 8px}
+  .nightBillboard{font-size:38px;right:3%;top:13%}.nightPhoto{right:2%;bottom:21%;width:51vw;max-height:32%}
+  .dawnNotice{top:21%;left:5%;width:74%;padding:13px 15px;border-width:5px;box-shadow:7px 9px 0 #2a534c55}
+  .dawnNotice h2{font-size:clamp(31px,8.5vw,58px)}.dawnNotice p{font-size:12px}.dawnNumber{font-size:36px;right:4%}
+  .ishikawaTitle{top:16%;left:5%;max-width:74%;padding:12px 14px;border-width:5px;outline-width:4px;box-shadow:7px 9px 0 #39634c65}
+  .ishikawaTitle h2{font-size:clamp(31px,8vw,52px)}.ishikawaTitle p{font-size:12px}
+  .ishikawaArrival{right:3%;top:7%;z-index:15;padding:6px 9px;border-width:4px;font-size:22px;box-shadow:5px 6px 0 #2c5c4b5d}.ishikawaArrival small{font-size:7px}
+  .gardenScene{left:0;bottom:16%;width:56%;height:32%}.townScene{right:0;bottom:16%;width:53%;height:32%}
+  .gardenPlaque,.townPlaque{font-size:14px;padding:5px 7px}.gardenPlaque small,.townPlaque small{font-size:7px}
+  .gardenLantern{transform:scale(.62);left:42%;bottom:9%}
+  .ishikawaPhoto{right:9%;bottom:18%;width:46vw;max-height:34%}
+  .seedStory{left:5%;top:19%;max-width:75%;padding:13px 15px;border-width:5px;box-shadow:7px 9px 0 #315b4a66}
+  .seedStory h2{font-size:clamp(32px,8.5vw,56px)}.seedStory p{font-size:12px}
+  .seedSpot{left:26%;bottom:24%;transform-origin:center bottom}.seedPhoto{right:2%;bottom:17%;width:45vw;max-height:32%}
+  .seedFootnote{left:5%;bottom:20%;font-size:10px;max-width:70%}
+}
+@media(prefers-reduced-motion:reduce){.ferrisRing{will-change:auto}.trainRide{will-change:auto}}
+
+
+/* HAMCELLO QUEST / original artwork and typography preserved */
+#brand small{display:block;font-size:9px;letter-spacing:.16em;line-height:1.2}
+#gameHud{position:absolute;z-index:90;top:63px;right:16px;min-width:145px;padding:9px 12px;background:#fff6deee;border:2px solid #315a4b;border-radius:13px;color:#235442;box-shadow:5px 6px 0 #244b4c24;pointer-events:none}
+#gameHud strong{font-size:14px;font-weight:1000;letter-spacing:.08em}#gameHud span{display:block;font-size:10px;font-weight:900;letter-spacing:.07em;margin:3px 0 6px}.gameMeter{height:5px;border-radius:5px;background:#3e76512c;overflow:hidden}.gameMeter i{display:block;width:0;height:100%;background:#2b9161}
+.q-level{--level-p:0;--bg:#c9e6d7;--fg:#2a5147;--floor:#456b52;--rim:#304d49;background:var(--bg)}
+.q-sky{position:absolute;inset:0;background:linear-gradient(180deg,#c4e9ec,#e5d0a7 67%,#bbbc9a)}
+.q-heading{position:absolute;z-index:14;left:6%;top:21%;width:min(52%,640px);padding:21px 27px 23px;background:#fff2d0;border:7px solid #35594d;box-shadow:12px 13px 0 #254b4557;color:#214e43;transform:rotate(-2deg)}
+.q-heading span{font-weight:1000;font-size:clamp(10px,1.1vw,14px);letter-spacing:.14em}.q-heading h2{font-size:clamp(40px,5.5vw,86px);line-height:1.06;letter-spacing:-.07em;margin:10px 0;font-weight:1000}
+.q-heading p{font-size:clamp(13px,1.45vw,20px);line-height:1.7;font-weight:900}
+.q-photo{position:absolute;z-index:12;right:4%;bottom:17%;width:clamp(220px,27vw,430px);height:52%;object-fit:contain;filter:drop-shadow(0 13px 8px #224c4428)}
+.q-floor{position:absolute;z-index:13;left:0;right:0;bottom:0;height:15%;background:#77624e;border-top:10px solid #385b4c}
+.q-land{position:absolute;z-index:5;inset:0}.q-prop{position:absolute;display:block;transform-origin:bottom;transition:none}
+.q-flag{position:absolute;right:4%;bottom:15%;width:16px;height:35%;z-index:13;border-left:7px solid #33594e;transform:scale(.72);transform-origin:bottom}
+.q-flag i{position:absolute;left:0;top:6%;height:38px;width:73px;background:#f3d792;border:5px solid #305e52;clip-path:polygon(0 0,100% 0,82% 50%,100% 100%,0 100%);transform:translateY(calc((1 - var(--level-p,0))*80px))}
+.q-port{--bg:#89c9cb}.q-port .q-sky{background:linear-gradient(#98dade,#b4e9e9 57%,#efd0a9)}
+.q-port .q-prop{bottom:15%;width:12%;height:35%;border:5px solid #3c7472;background:repeating-linear-gradient(0deg,#d17d66 0 35px,#ab685e 35px 41px);transform:translateY(calc((1 - var(--level-p,0))*35px))}
+.q-port .q-p0{left:19%;height:26%}.q-port .q-p1{left:32%;height:44%;background:repeating-linear-gradient(0deg,#6ba4ab 0 35px,#447f86 35px 41px)}
+.q-port .q-p2{left:45%;height:53%}.q-port .q-p3{left:58%;height:29%;background:repeating-linear-gradient(0deg,#bca779 0 35px,#8a7a59 35px 41px)}
+.q-port .q-p4{right:10%;height:41%;background:#d17d66}.q-port .q-p5{right:0;height:29%;background:#78b8b5}
+.q-port .q-p6{left:67%;bottom:54%;width:21%;height:13px;background:#376b6c;border:none;transform:translateX(calc(var(--level-p,0)*-40px))}
+.q-brick{--bg:#dfa180}.q-brick .q-sky{background:linear-gradient(#e9ae88,#c87966)}
+.q-brick .q-land{left:15%;right:2%;top:8%;bottom:15%;background:repeating-linear-gradient(0deg,#b66e59 0 23px,#82574d 23px 27px);border:14px solid #8c5c4a}
+.q-brick .q-prop{width:11%;height:27%;top:14%;background:#526d6c;border:9px solid #e5b58c;border-radius:50% 50% 2px 2px;transform:translateY(calc(var(--level-p,0) * 13px))}
+.q-brick .q-p0{left:5%}.q-brick .q-p1{left:24%}.q-brick .q-p2{left:43%}.q-brick .q-p3{left:62%}.q-brick .q-p4{left:81%}
+.q-brick .q-p5{left:48%;top:auto;bottom:0%;width:18%;height:40%;background:#69483d;border-radius:80px 80px 0 0}
+.q-brick .q-p6{left:71%;top:auto;bottom:0%;width:20%;height:17%;border:8px solid #6a5746;background:#c29d68;transform:translateY(calc((1 - var(--level-p,0))*-55px))}
+.q-china{--bg:#ecc58e}.q-china .q-sky{background:linear-gradient(#f8d59e,#e5af7a)}
+.q-china .q-land{left:28%;right:3%;top:15%;bottom:15%;border:0}
+.q-china .q-land:before{content:"";position:absolute;left:8%;right:6%;top:11%;height:25%;background:#348670;clip-path:polygon(0 100%,10% 39%,32% 45%,50% 0%,70% 45%,90% 39%,100% 100%);border-bottom:17px solid #315c57}
+.q-china .q-prop{top:33%;width:9%;height:67%;background:#be5248;border:8px solid #7e4440}
+.q-china .q-p0{left:15%}.q-china .q-p1{right:15%}
+.q-china .q-p2,.q-china .q-p3,.q-china .q-p4,.q-china .q-p5,.q-china .q-p6{width:6%;height:12%;top:4%;border:5px solid #a14943;background:#e86e56;border-radius:50%;transform:translateY(calc(var(--level-p,0)*19px))}
+.q-china .q-p2{left:4%}.q-china .q-p3{left:27%}.q-china .q-p4{left:50%}.q-china .q-p5{left:73%}.q-china .q-p6{left:90%}
+.q-roof{--bg:#bb7a7a}.q-roof .q-sky{background:linear-gradient(#ec957c,#8b6583 64%,#565576)}
+.q-roof .q-land{left:25%;right:0%;top:14%;bottom:15%;display:flex;align-items:flex-end;gap:1%}
+.q-roof .q-prop{position:relative;flex:1;height:58%;background:#3c4961;border:5px solid #35445a;border-bottom:0;transform:scaleY(calc(.35 + var(--level-p,0)*.65))}
+.q-roof .q-p1{height:84%}.q-roof .q-p2{height:69%}.q-roof .q-p3{height:96%}.q-roof .q-p4{height:73%}.q-roof .q-p5{height:59%}.q-roof .q-p6{height:80%}
+.q-roof .q-prop:after{content:"";position:absolute;top:16%;left:20%;right:20%;bottom:10%;background:repeating-linear-gradient(180deg,#fff1b0 0 9px,transparent 9px 30px)}
+.q-old{--bg:#bdd9bc}.q-old .q-sky{background:linear-gradient(#cde5d9,#a6ba95)}
+.q-old .q-land{left:26%;right:1%;bottom:15%;top:18%;display:flex;gap:1%;align-items:flex-end}
+.q-old .q-prop{position:relative;flex:1;height:56%;background:#946b53;border:7px solid #473f38;border-bottom:0;transform:translateY(calc((1 - var(--level-p,0))*25px))}
+.q-old .q-prop:before{content:"";position:absolute;left:-9%;right:-9%;top:-31px;height:31px;background:#514840;clip-path:polygon(0 100%,50% 0,100% 100%)}
+.q-old .q-prop:after{content:"";position:absolute;inset:15% 14% 10%;background:repeating-linear-gradient(90deg,#40352e 0 11px,#b8926f 11px 22px)}
+.q-old .q-p1{height:82%}.q-old .q-p2{height:69%}.q-old .q-p3{height:97%}.q-old .q-p4{height:55%}.q-old .q-p5{height:76%}.q-old .q-p6{height:59%}
+.q-palace{--bg:#ccebf1}.q-palace .q-sky{background:linear-gradient(#d3f5ff,#c1f0e3)}
+.q-palace .q-land{left:30%;right:2%;top:20%;bottom:16%;display:flex;justify-content:space-around;align-items:flex-end}
+.q-palace .q-prop{position:relative;width:13%;height:72%;border:8px solid #347c58;border-radius:48% 48% 5% 5%;background:repeating-linear-gradient(90deg,#b0d9b4 0 24px,#8ac19a 24px 29px);transform:translateY(calc((1 - var(--level-p,0))*24px))}
+.q-palace .q-p1{height:96%;width:19%}.q-palace .q-p3{height:82%}.q-palace .q-p5{height:90%}
+.q-palace .q-p6{position:absolute;top:0;right:28%;width:9%;height:40%;border-radius:45%;background:repeating-linear-gradient(90deg,#338b52 0 11px,#85ca71 11px 17px);transform:translateY(calc(var(--level-p,0)*25px))}
+.q-palace .q-floor{background:#fff;border-color:#bde7eb;border-radius:50% 50% 0 0}
+.q-obstacles{position:absolute;z-index:10;left:20%;right:5%;bottom:18%;display:flex;justify-content:space-around;gap:14px;pointer-events:none;--level-p:0}
+.q-obstacles i{display:block;min-width:70px;min-height:43px;background:#f0d6a0;border:5px solid #396558;border-radius:12px;font-weight:1000;text-align:center;padding:10px;transform:translateY(calc((1 - var(--level-p,0))*-54px));opacity:calc(.15 + var(--level-p,0)*.85)}
+.q-cloud i{background:#fff;border-radius:100px;border-color:#78a9b1;transform:translateY(calc(var(--level-p,0)*-30px))}
+.q-etiquette i:last-child{color:#bc5854;font-size:31px}
+.q-wanted i{transform:rotate(calc((1 - var(--level-p,0))*35deg));background:#e5c18d}
+@media(max-width:720px){
+ #gameHud{top:60px;right:7px;padding:7px 8px;min-width:108px}#gameHud strong{font-size:11px}#gameHud span{font-size:9px}
+ .q-heading{left:4%;top:18%;width:76%;padding:12px 15px;border-width:5px;box-shadow:6px 8px 0 #254b4557}
+ .q-heading span{font-size:9px}.q-heading h2{font-size:clamp(31px,8.6vw,51px)}.q-heading p{font-size:12px}
+ .q-photo{right:1%;bottom:16%;width:56vw;height:38%}.q-floor{height:15%}
+ .q-flag{bottom:15%;right:-4%;height:24%;transform:scale(.55)}
+ .q-port .q-land{left:8%}.q-brick .q-land{left:3%;right:0}.q-china .q-land{left:8%;right:0}
+ .q-roof .q-land{left:10%;top:22%}.q-old .q-land{left:7%;top:30%}.q-palace .q-land{left:11%;top:23%}
+ .q-obstacles{left:8%;right:2%;bottom:18%;gap:3px}.q-obstacles i{min-width:47px;min-height:31px;padding:5px;font-size:10px}
+}
+
+</style></head><body>
+<div id="scrollSpace" aria-hidden="true"></div>
+<main id="viewport" aria-label="ハムチェッロの冒険：横浜から東京へ電車で進み、石川の山からつたを登りきゅうりの雲上世界へ進む">
+<div id="world">
+<section class="scene harbor" aria-label="横浜生まれ">
+    <div class="atmosphere"><div class="sun"></div><div class="cloud" style="left:17%;top:13%"></div><div class="cloud" style="left:51%;top:18%;transform:scale(.67)"></div></div>
+    <div class="art"><div class="crane" style="left:61%"></div><div class="crane" style="left:90%;height:51%"></div><div class="stack" style="left:35%;width:18%"></div><div class="stack" style="left:55%;width:23%;height:16%"></div><div class="sea"></div></div>
+    
+    <div class="ferrisLandmark" aria-hidden="true">
+      <div class="ferrisRing" id="ferrisRing">
+        <div class="ferrisHub"></div>
+        <i class="ferrisSpoke s0"></i><i class="ferrisSpoke s1"></i><i class="ferrisSpoke s2"></i><i class="ferrisSpoke s3"></i>
+        <i class="ferrisSeat c0"></i><i class="ferrisSeat c1"></i><i class="ferrisSeat c2"></i><i class="ferrisSeat c3"></i><i class="ferrisSeat c4"></i><i class="ferrisSeat c5"></i><i class="ferrisSeat c6"></i><i class="ferrisSeat c7"></i>
+      </div>
+      <div class="ferrisSupport"></div>
+      <div class="ferrisBase"></div>
+    </div>
+<div class="portlabel">WELCOME TO THE SMALL WORLD OF</div>
+    <div class="textwall hero-title"><h1 class="huge">HAM<br/>CELLO!</h1><div class="subtitle">小さな体に、大きなプライド。</div></div>
+    <div class="port-fact">横浜生まれ。<br>東京育ち。</div>
+    <div class="stamp">PORT OF<br>YOKOHAMA</div>
+    <img class="photo hero-photo floaty" alt="ハムチェッロの正面の写真" data-asset="hamcello_07.webp" src="./hamcello-media/hamcello_07.webp">
+    <div class="soil"></div><div class="groundline"></div><div class="joint"></div>
+  </section>
+
+<section class="scene q-level q-port" data-world="1" aria-label="YOKOHAMA / PORT YARD">
+<div class="q-sky"></div><div class="q-land"><b class="q-prop q-p0" aria-hidden="true"></b><b class="q-prop q-p1" aria-hidden="true"></b><b class="q-prop q-p2" aria-hidden="true"></b><b class="q-prop q-p3" aria-hidden="true"></b><b class="q-prop q-p4" aria-hidden="true"></b><b class="q-prop q-p5" aria-hidden="true"></b><b class="q-prop q-p6" aria-hidden="true"></b></div>
+<div class="q-heading"><span>WORLD 1-2 / YOKOHAMA / PORT YARD</span><h2>コンテナを、<br>飛び越えろ。</h2><p>港のクレーンが動き、木箱が転がり出す。</p></div>
+<img class="q-photo" src="./hamcello-media/hamcello_03.webp" alt="コンテナを、飛び越えろ。のハムチェッロ">
+<div class="q-floor"></div><div class="q-flag"><i></i></div>
+</section><section class="scene q-level q-brick" data-world="1" aria-label="YOKOHAMA / RED BRICK">
+<div class="q-sky"></div><div class="q-land"><b class="q-prop q-p0" aria-hidden="true"></b><b class="q-prop q-p1" aria-hidden="true"></b><b class="q-prop q-p2" aria-hidden="true"></b><b class="q-prop q-p3" aria-hidden="true"></b><b class="q-prop q-p4" aria-hidden="true"></b><b class="q-prop q-p5" aria-hidden="true"></b><b class="q-prop q-p6" aria-hidden="true"></b></div>
+<div class="q-heading"><span>WORLD 1-3 / YOKOHAMA / RED BRICK</span><h2>赤レンガの<br>秘密の通路。</h2><p>扉が開いて、積荷が動き始める。</p></div>
+<img class="q-photo" src="./hamcello-media/hamcello_06.webp" alt="赤レンガの秘密の通路。のハムチェッロ">
+<div class="q-floor"></div><div class="q-flag"><i></i></div>
+</section><section class="scene q-level q-china" data-world="1" aria-label="YOKOHAMA / CHINATOWN">
+<div class="q-sky"></div><div class="q-land"><b class="q-prop q-p0" aria-hidden="true"></b><b class="q-prop q-p1" aria-hidden="true"></b><b class="q-prop q-p2" aria-hidden="true"></b><b class="q-prop q-p3" aria-hidden="true"></b><b class="q-prop q-p4" aria-hidden="true"></b><b class="q-prop q-p5" aria-hidden="true"></b><b class="q-prop q-p6" aria-hidden="true"></b></div>
+<div class="q-heading"><span>WORLD 1-4 / YOKOHAMA / CHINATOWN</span><h2>誘惑の、<br>食べ物通り。</h2><p>屋台の湯気、中華まん。味の審査は後ほど。</p></div>
+<img class="q-photo" src="./hamcello-media/hamcello_02.webp" alt="誘惑の、食べ物通り。のハムチェッロ">
+<div class="q-floor"></div><div class="q-flag"><i></i></div>
+</section>
+<section class="scene train-sunset" id="sunsetScene" aria-label="横浜から東京へ、夕焼け列車">
+  <div class="journeySky"><div class="journeySun"></div><div class="journeyGlow"></div></div>
+  <div class="journeyHarborEdge"><i></i><i></i><i></i></div>
+  <div class="journeyHorizon"></div>
+  <div class="journeyTowers"><b></b><b></b><b></b><b></b><b></b></div>
+  <div class="journeySpeedlines"></div>
+  <div class="journeyTicket"><span class="eyebrow">ONE WAY TICKET / HAMCELLO RAILWAY</span><strong>夕日行きの、<br>列車にのる。</strong><div class="ticketSplit"><span>DEPART<br><b>YOKOHAMA</b></span><span>ARRIVE<br><b>TOKYO</b></span></div></div>
+  <div class="journeyNumber">TRAIN<br>001</div>
+  <div class="journeyRoute">PORT OF YOKOHAMA　—　TOKYO TERMINAL</div>
+  <div class="groundline"></div><div class="soil"></div>
+</section>
+
+<section class="scene tokyo" aria-label="東京・前歯同盟">
+    <div class="art"><div class="skyline"><b style="--h:55%;--col:#e68072"></b><b style="--h:80%;--col:#bc686b"></b><b style="--h:44%;--col:#e9ac7e"></b><b style="--h:70%;--col:#9e7881"></b><b style="--h:94%;--col:#bb5f68"></b><b style="--h:62%;--col:#c78b7b"></b><b style="--h:72%;--col:#b46e6d"></b><b style="--h:53%;--col:#dc7966"></b></div><div class="elevated"></div><div class="railcar"></div><div class="transition-wash"></div><div class="tokyo-vine vine-a"></div><div class="tokyo-vine vine-b"></div><div class="tokyo-leaf leaf-a"></div><div class="tokyo-leaf leaf-b"></div><div class="tokyo-leaf leaf-c"></div><div class="tokyo-cloud tc-a"></div><div class="tokyo-cloud tc-b"></div></div>
+    <div class="tokyoDuskLayer"><div class="tokyoWindowStars"></div></div>
+    <div class="tokyoLamp lampA"></div><div class="tokyoLamp lampB"></div>
+    <div class="city-tag">TOKYO<br>01</div>
+    <div class="station"><span class="eyebrow">TOKYO / ASSOCIATION</span><h2>前歯が出てるやつは<br>大体友達</h2></div>
+        <img class="photo city-photo sway" alt="横からこちらを見るハムチェッロ" data-asset="hamcello_04.webp" src="./hamcello-media/hamcello_04.webp">
+    <div class="tooth-sparkle" aria-hidden="true"></div>
+    <div class="soil"></div><div class="groundline"></div><div class="joint"></div>
+  </section>
+
+<section class="scene q-level q-roof" data-world="2" aria-label="TOKYO / ROOFTOP">
+<div class="q-sky"></div><div class="q-land"><b class="q-prop q-p0" aria-hidden="true"></b><b class="q-prop q-p1" aria-hidden="true"></b><b class="q-prop q-p2" aria-hidden="true"></b><b class="q-prop q-p3" aria-hidden="true"></b><b class="q-prop q-p4" aria-hidden="true"></b><b class="q-prop q-p5" aria-hidden="true"></b><b class="q-prop q-p6" aria-hidden="true"></b></div>
+<div class="q-heading"><span>WORLD 2-2 / TOKYO / ROOFTOP</span><h2>屋上にも、<br>前歯仲間。</h2><p>ビルの屋上を渡ると、仲間が顔を出す。</p></div>
+<img class="q-photo" src="./hamcello-media/hamcello_07.webp" alt="屋上にも、前歯仲間。のハムチェッロ">
+<div class="q-floor"></div><div class="q-flag"><i></i></div>
+</section>
+<section class="scene tokyo-night" id="nightScene" aria-label="東京・夜景">
+  <div class="nightSky"><div class="nightMoon"></div><div class="nightStars"></div><div class="nightCloud"></div></div>
+  <div class="nightDistant"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="nightSkyline"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div>
+  <div class="nightTrainRails"></div>
+  <div class="nightBillboard">NIGHT　<br>TOKYO</div>
+  <div class="nightBoard"><span class="eyebrow">THE CITY DOES NOT SLEEP</span><h2>気づけば、<br>東京は夜。</h2><p>夕焼けの街が、少しずつ明かりをつける。<br>電車はそのまま、次の朝へ。</p><span class="nightBadge">NEXT STOP / ISHIKAWA</span></div>
+  <img class="photo nightPhoto sway" src="hamcello-media/hamcello_02.webp" alt="東京の夜を眺めるハムチェッロ">
+  <div class="nightStreet"></div>
+</section>
+
+
+<section class="scene train-dawn" id="dawnScene" aria-label="夜行列車から石川の朝へ">
+  <div class="dawnSky"><div class="dawnSun"></div><div class="dawnAfterglow"></div></div>
+  <div class="dawnStars"></div>
+  <svg class="dawnMountains" viewBox="0 0 1200 700" preserveAspectRatio="none" aria-hidden="true">
+    <path class="dawnBackMountain" d="M 0 460 L 180 270 L 340 390 L 530 225 L 735 420 L 960 255 L 1200 455 L1200 700 L0 700Z"></path>
+    <path class="dawnFrontMountain" d="M 0 530 L 170 420 L 325 500 L 580 345 L 730 500 L 1000 360 L 1200 530 L1200 700 L0 700Z"></path>
+  </svg>
+  <div class="dawnPines"><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="dawnNotice"><span class="eyebrow">OVERNIGHT EXPRESS / INTO THE MORNING</span><h2>夜を越えて、<br>石川へ。</h2><p>電車に乗ったまま、遠くの空が明るくなる。<br>街のビルが消えると、山並みが広がっていく。</p></div>
+  <div class="dawnNumber">DAY<br>BREAK</div>
+  <div class="dawnSoil"></div>
+</section>
+
+
+<section class="scene ishikawa" id="ishikawaScene" aria-label="石川県・兼六園と古い町並み">
+  <div class="ishikawaSky"><div class="ishikawaSun"></div></div>
+  <svg class="ishikawaRidges" viewBox="0 0 1200 700" preserveAspectRatio="none" aria-hidden="true">
+    <path class="ridgeBack" d="M0 520L150 345L260 420L450 290L620 425L775 245L970 420L1115 320L1200 370L1200 700L0 700Z"></path>
+    <path class="ridgeFront" d="M0 580L170 455L355 555L540 410L725 540L950 425L1200 540L1200 700L0 700Z"></path>
+  </svg>
+  <div class="ishikawaArrival"><small>WELCOME TO</small>石川県<small>ISHIKAWA PREF.</small></div>
+  <div class="ishikawaTitle"><span class="eyebrow">FROM THE NIGHT TRAIN / ISHIKAWA</span><h2>朝がきた。<br>山も、街も。</h2><p>増えていく山並み。<br>窓の外に現れる、兼六園と古い町並み。</p></div>
+  <div class="gardenScene">
+    <div class="gardenPlaque">兼六園 <small>KENROKUEN</small></div>
+    <div class="gardenCanopy canopyOne"></div><div class="gardenCanopy canopyTwo"></div><div class="gardenPine pineOne"></div><div class="gardenPine pineTwo"></div>
+    <div class="gardenLantern"><i></i><b></b><em></em></div>
+    <div class="gardenPond"></div><div class="gardenBridge"></div>
+  </div>
+  <div class="townScene">
+    <div class="townPlaque">古い町並み <small>OLD TOWN</small></div>
+    <div class="townHouse house1"><div></div></div><div class="townHouse house2"><div></div></div><div class="townHouse house3"><div></div></div><div class="townHouse house4"><div></div></div>
+  </div>
+  <img class="photo ishikawaPhoto sway" src="hamcello-media/hamcello_06.webp" alt="石川の街を冒険するハムチェッロ">
+  <div class="soil"></div><div class="groundline"></div>
+</section>
+
+
+<section class="scene q-level q-old" data-world="3" aria-label="ISHIKAWA / OLD TOWN">
+<div class="q-sky"></div><div class="q-land"><b class="q-prop q-p0" aria-hidden="true"></b><b class="q-prop q-p1" aria-hidden="true"></b><b class="q-prop q-p2" aria-hidden="true"></b><b class="q-prop q-p3" aria-hidden="true"></b><b class="q-prop q-p4" aria-hidden="true"></b><b class="q-prop q-p5" aria-hidden="true"></b><b class="q-prop q-p6" aria-hidden="true"></b></div>
+<div class="q-heading"><span>WORLD 3-3 / ISHIKAWA / OLD TOWN</span><h2>古い屋根を<br>飛び越える。</h2><p>石川の町家が続く道。次は山へ。</p></div>
+<img class="q-photo" src="./hamcello-media/hamcello_04.webp" alt="古い屋根を飛び越える。のハムチェッロ">
+<div class="q-floor"></div><div class="q-flag"><i></i></div>
+</section>
+<section class="scene seed-mountain" id="mountainScene" aria-label="石川の山、種を見つける">
+  <div class="seedSky"><div class="seedSun"></div></div>
+  <svg class="seedRidges" viewBox="0 0 1200 700" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M 0 490 L 170 315 L 370 480 L 560 220 L 740 480 L 930 285 L 1200 520 L1200 700 L0 700Z" class="seedFarRidge"></path>
+    <path d="M 0 560 L 225 450 L 470 550 L 700 355 L 950 540 L1200 430 L1200 700 L0 700Z" class="seedNearRidge"></path>
+  </svg>
+  <div class="seedPines"><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="seedStory"><span class="eyebrow">ONE VERY SMALL BEGINNING</span><h2>山の上に、<br>種がひとつ。</h2><p>石川の山を進むと、地面に小さな種が。<br>もう少し進むと、何かが動きはじめる。</p></div>
+  <div class="seedSpot"><div class="seedSpotHalo"></div><div class="seedShell"></div><div class="seedCrack"></div><div class="seedSprout left"></div><div class="seedSprout right"></div></div>
+  <div class="seedGround"></div><div class="seedFootnote">THE JOURNEY TURNS UPWARD / SCROLL TO GROW</div>
+  <img class="photo seedPhoto floaty" src="hamcello-media/hamcello_04.webp" alt="種を見つめるハムチェッロ">
+</section>
+
+<section class="scene climb-scene" id="climbScene" aria-label="種からつたを登って雲の上へ">
+ <div class="climb-tower" id="climbTower">
+   <div class="climb-sky"></div>
+   <div class="climb-sun"></div><div class="climb-entry-fade"></div><div class="climb-exit-fade"></div>
+   <div class="climb-floating cloud-one"></div><div class="climb-floating cloud-two"></div><div class="climb-floating cloud-three"></div>
+   <div class="top-cloud-world"><span>CUCUMBER SKY</span><strong>雲の上に、<br>きゅうりの世界。</strong><div class="top-cukes"><i></i><i></i><i></i></div></div>
+   <svg class="growing-vine" viewBox="0 0 1000 4000" preserveAspectRatio="none" aria-hidden="true">
+     <path class="vine-shadow" pathLength="1000" d="M 540 3600 C 600 3390, 340 3300, 490 3100 S 680 2770, 515 2640 S 375 2260, 535 2110 S 675 1800, 485 1640 S 350 1250, 565 1080 S 675 700, 505 530 S 450 340, 520 270"/>
+     <path id="vineLine" class="vine-line" pathLength="1000" d="M 540 3600 C 600 3390, 340 3300, 490 3100 S 680 2770, 515 2640 S 375 2260, 535 2110 S 675 1800, 485 1640 S 350 1250, 565 1080 S 675 700, 505 530 S 450 340, 520 270"/>
+     <path id="vineHighlight" class="vine-highlight" pathLength="1000" d="M 540 3600 C 600 3390, 340 3300, 490 3100 S 680 2770, 515 2640 S 375 2260, 535 2110 S 675 1800, 485 1640 S 350 1250, 565 1080 S 675 700, 505 530 S 450 340, 520 270"/>
+   </svg>
+   <span class="climb-leaf" data-bloom="0.120" style="top:78%;left:46%;--rotate:-25deg"></span><span class="climb-leaf" data-bloom="0.225" style="top:67%;left:62%;--rotate:22deg"></span><span class="climb-leaf" data-bloom="0.330" style="top:57%;left:39%;--rotate:-25deg"></span><span class="climb-leaf" data-bloom="0.435" style="top:47%;left:60%;--rotate:24deg"></span><span class="climb-leaf" data-bloom="0.540" style="top:36%;left:34%;--rotate:-18deg"></span><span class="climb-leaf" data-bloom="0.645" style="top:25%;left:59%;--rotate:19deg"></span><span class="climb-leaf" data-bloom="0.750" style="top:15%;left:39%;--rotate:-15deg"></span><span class="climb-fruit" data-bloom="0.34" style="top:68%;left:58%"></span><span class="climb-fruit" data-bloom="0.55" style="top:49%;left:37%"></span><span class="climb-fruit" data-bloom="0.75" style="top:29%;left:61%"></span><span class="climb-flower" data-bloom="0.24" style="top:72%;left:56%"></span><span class="climb-flower" data-bloom="0.42" style="top:55%;left:35%"></span><span class="climb-flower" data-bloom="0.61" style="top:41%;left:61%"></span><span class="climb-flower" data-bloom="0.80" style="top:20%;left:40%"></span>
+   <div class="city-at-base"><div class="base-building building-a"></div><div class="base-building building-b"></div><div class="base-building building-c"></div><div class="seed-soil"></div><div class="seed-crack"></div><div class="seed-core" id="seedCore"></div><div class="seed-marker">ここに種が、ひとつ。</div><div class="seed-small">SCROLL TO GROW</div></div>
+ </div>
+ <div class="altitude-label" id="altitudeLabel">石川の山から、雲の上へ。</div>
+ </section>
+<section class="scene cloud-land" aria-label="雲の上のきゅうり天国">
+<div class="cloud-sky"><div class="cloud-glow"></div><div class="arrival-veil"></div><div class="arrival-vine"></div></div>
+<div class="cloud-arches arch-a"></div><div class="cloud-arches arch-b"></div>
+<div class="floating-cucumber sky-cuke-a"></div><div class="floating-cucumber sky-cuke-b"></div><div class="floating-cucumber sky-cuke-c"></div>
+<div class="cloud-platform cloud-platform-back"></div><div class="cloud-platform cloud-platform-front"></div>
+<div class="cloud-title"><span>02 / ABOVE THE CLOUDS</span><h2>きゅうり<br>天国。</h2><p>好きな食べ物、きゅうり。<br>ここでは、きゅうりがすべて。</p></div>
+<div class="sky-banner">CUCUMBER PARADISE</div>
+<img class="photo cuke-photo sway" alt="鼻先を上げるハムチェッロ" data-asset="hamcello_05.webp" src="./hamcello-media/hamcello_05.webp">
+<div class="small-sign">無限きゅうり栽培中</div>
+<div class="q-obstacles q-cloud"><i></i><i></i><i></i></div></section>
+<section class="scene q-level q-palace" data-world="5" aria-label="CUCUMBER / PALACE">
+<div class="q-sky"></div><div class="q-land"><b class="q-prop q-p0" aria-hidden="true"></b><b class="q-prop q-p1" aria-hidden="true"></b><b class="q-prop q-p2" aria-hidden="true"></b><b class="q-prop q-p3" aria-hidden="true"></b><b class="q-prop q-p4" aria-hidden="true"></b><b class="q-prop q-p5" aria-hidden="true"></b><b class="q-prop q-p6" aria-hidden="true"></b></div>
+<div class="q-heading"><span>WORLD 5-2 / CUCUMBER / PALACE</span><h2>きゅうりの<br>宮殿に到着。</h2><p>雲の足場、巨大きゅうりの滑り台。</p></div>
+<img class="q-photo" src="./hamcello-media/hamcello_05.webp" alt="きゅうりの宮殿に到着。のハムチェッロ">
+<div class="q-floor"></div><div class="q-flag"><i></i></div>
+</section>
+<section class="scene gourmet" aria-label="舌の肥えたハムチェッロの味覚審査室">
+    <div class="art"><div class="tile"></div><div class="window"></div><div class="pendant" style="left:22%"></div><div class="pendant" style="left:83%;height:24%"></div><div class="counter"></div></div>
+    <div class="labtext"><span class="eyebrow">HAMCELLO TASTE INSTITUTE</span><h2>舌の肥えた<br>ネズミ。</h2><p>化学調味料入りのものは、<br>おいしいと思っていない。<br>判定基準は、本人の舌。</p></div>
+    <div class="rejected">化学調味料<br>不採用<br><small>NOT APPROVED</small></div>
+    <div class="boardtag">審査員：ハムチェッロ<br>審査基準：自分の好み</div>
+    <img class="photo taste-photo floaty" alt="味を吟味する表情のハムチェッロ" data-asset="hamcello_02.webp" src="./hamcello-media/hamcello_02.webp">
+    <div class="soil"></div><div class="groundline"></div><div class="joint"></div>
+  <div class="q-obstacles q-conveyor"><i>きゅうり</i><i>審査</i><i>不合格</i></div></section>
+<section class="scene etiquette" aria-label="礼儀検問所">
+    <div class="art"><div class="wall"></div><div class="pillars"><i></i><i></i><i></i><i></i></div><div class="arch"></div><div class="ribbon"></div></div>
+    <div class="ruleboard"><span class="eyebrow">THE SUPREME CODE OF CONDUCT</span><h2>礼儀を<br>わきまえよ。</h2><p>上下関係には厳格。<br>わきまえない者には容赦がない。</p></div>
+    <div class="badgeBoard">礼儀検問所<br>RULE<br>No.01</div>
+    <img class="photo manner-photo sway" alt="堂々と立ち上がるハムチェッロ" data-asset="hamcello_06.webp" src="./hamcello-media/hamcello_06.webp">
+    <div class="soil"></div><div class="groundline"></div><div class="joint"></div>
+  <div class="q-obstacles q-etiquette"><i>礼</i><i>規則</i><i>怒</i></div></section>
+<section class="scene wanted" aria-label="ハムチェッロ事件記録">
+    <div class="art"><div class="brick"></div><div class="warningstripe"></div></div>
+    <div class="file"><span class="eyebrow">THE HAMCELLO INCIDENT ARCHIVE / CASE 005</span><h2>WANTED</h2><div class="sub">かわいい顔に、油断するな。</div><div class="case">礼儀を知らない相手には激怒。<br>怒りのあまり自分がわからなくなる。<br>これまで何度も流血沙汰を起こしている。</div></div>
+    <div class="seal">HANDLE WITH<br>RESPECT</div>
+    <div class="newspaper">速報<br>また礼儀問題か？<br>目撃情報を募集中</div>
+    <img class="photo wanted-photo floaty" alt="口元に食べ物をつけたハムチェッロ" data-asset="hamcello_09.webp" src="./hamcello-media/hamcello_09.webp">
+    <div class="soil"></div><div class="groundline"></div><div class="joint"></div>
+  <div class="q-obstacles q-wanted"><i>WANTED</i><i>!</i><i>CAUTION</i></div></section>
+<section class="scene end" aria-label="冒険の終わり">
+    <div class="atmosphere"><div class="moon"></div><div class="cloud" style="left:9%;top:13%;opacity:.22"></div></div>
+    <div class="art"><div class="hill back"></div><div class="hill"></div></div>
+    <div class="end-title"><span class="eyebrow">THE END OF THE ROAD</span><h2>かわいい。<br>しかし、<br>無害とは<br>限らない。</h2><p>きゅうりを愛し、礼儀を重んじる。<br>これがハムチェッロという生き物。</p></div>
+    <div class="memo">前歯が出ているなら、<br>また会おう。</div>
+    <img class="photo end-photo sway" alt="正面を向いたハムチェッロ" data-asset="hamcello_03.webp" src="./hamcello-media/hamcello_03.webp">
+    <img class="smallPhoto" alt="走るハムチェッロ" data-asset="hamcello_08.webp" src="./hamcello-media/hamcello_08.webp">
+    <div class="soil"></div><div class="groundline"></div>
+  </section>
+</div>
+<div id="playerShadow" aria-hidden="true"></div>
+<div class="trainRide" id="trainRide" aria-hidden="true">
+  <div class="trainRails"><i></i><i></i></div>
+  <div class="trainRoof"></div>
+  <div class="trainFront"></div>
+  <div class="trainBody">
+    <div class="trainStripe"></div><div class="trainWindows"><b></b><b></b><b></b><b></b></div>
+    <div class="trainDoor"></div><div class="trainSeal">HAM<br>LINE</div>
+  </div>
+  <div class="trainWheel wA"></div><div class="trainWheel wB"></div><div class="trainWheel wC"></div>
+  <div class="trainLight"></div>
+</div>
+
+<div id="player" aria-hidden="true"><img data-asset="hamcello_08.webp" alt="" src="./hamcello-media/hamcello_08.webp"></div>
+<div id="brand">HAMCELLO QUEST <small>8 WORLDS / SCROLL ADVENTURE</small></div>
+<div id="progressBox"><span>THE ADVENTURE</span><div class="line"><span id="progressFill"></span></div></div>
+<div id="currentChapter">00 / YOKOHAMA</div>
+<div id="scrollHint"><span id="hintText">スクロールして冒険する</span></div>
+<div id="gameHud"><strong>WORLD 1</strong><span>1-1 / YOKOHAMA</span><div class="gameMeter"><i></i></div></div><div id="stageLabel">横浜から東京へ</div>
+<button id="returnStart" type="button" aria-label="最初に戻る">↺ 最初に戻る</button>
+</main>
+<script>
+(()=>{'use strict';
+const world=document.getElementById('world'),space=document.getElementById('scrollSpace');
+const climb=document.getElementById('climbScene'),tower=document.getElementById('climbTower');
+const vine=document.getElementById('vineLine'),lineHi=document.getElementById('vineHighlight');
+const player=document.getElementById('player'),shadow=document.getElementById('playerShadow');
+const indicator=document.getElementById('currentChapter'),fill=document.getElementById('progressFill'),label=document.getElementById('stageLabel');
+const hint=document.getElementById('hintText'),back=document.getElementById('returnStart');
+const train=document.getElementById('trainRide'),ferris=document.getElementById('ferrisRing');
+const harbor=document.querySelector('.scene.harbor'),sunset=document.getElementById('sunsetScene');
+const tokyo=document.querySelector('.scene.tokyo'),night=document.getElementById('nightScene');
+const dawn=document.getElementById('dawnScene'),ishikawa=document.getElementById('ishikawaScene');
+const mountain=document.getElementById('mountainScene'),cloudLand=document.querySelector('.scene.cloud-land');
+const skyline=[...tokyo.querySelectorAll('.skyline b')], bloom=[...climb.querySelectorAll('[data-bloom]')];
+const scenes=[...world.querySelectorAll(':scope > .scene')];
+const levelNames={harbor:'1-1 / YOKOHAMA','q-port':'1-2 / PORT','q-brick':'1-3 / RED BRICK','q-china':'1-4 / CHINATOWN','train-sunset':'1-5 / TRAIN',tokyo:'2-1 / TOKYO','q-roof':'2-2 / ROOFTOP','tokyo-night':'2-3 / NIGHT','train-dawn':'3-1 / DAWN',ishikawa:'3-2 / GARDEN','q-old':'3-3 / OLD TOWN','seed-mountain':'3-4 / SEED','climb-scene':'4 / GREAT VINE','cloud-land':'5-1 / CUCUMBER','q-palace':'5-2 / PALACE',gourmet:'6 / TASTE LAB',etiquette:'7 / ETIQUETTE',wanted:'8 / WANTED',end:'THE END'};
+const names=scenes.map(el=>levelNames[el.classList[1]]||'HAMCELLO QUEST');
+const clamp=n=>Math.max(0,Math.min(1,n));
+const smooth=t=>t*t*(3-2*t);
+const reduced=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+let p1=1,p2=1,p3=1,climbX=1,maxX=1,maxScroll=1,camX=0,camY=0,nextX=0,nextY=0,raf=0,movingUntil=0,chapterIndex=-1;
+const chapterPills=document.getElementById('chapterPills');
+if(chapterPills){chapterPills.textContent='';scenes.forEach((scene,i)=>{const b=document.createElement('button');b.type='button';b.setAttribute('aria-label',(i+1)+'章目 '+names[i]+'に移動');b.addEventListener('click',()=>{const x=scene.offsetLeft;const y=x<=climbX?x/climbX*p1:(p1+p2+(x-climbX)/(Math.max(1,maxX-climbX))*p3);window.scrollTo({top:y,behavior:reduced?'instant':'smooth'})});chapterPills.appendChild(b)})}
+
+const gameHud=document.getElementById('gameHud');
+const worldNos=[1,1,1,1,1,2,2,2,3,3,3,3,4,5,5,6,7,8,8];
+function gameEffects(camera){
+ const center=camera+innerWidth*.5;let idx=0;
+ for(let i=1;i<scenes.length;i++)if(center>=scenes[i].offsetLeft)idx=i;
+ const node=scenes[idx],p=clamp((center-node.offsetLeft)/Math.max(1,node.offsetWidth));
+ for(let i=Math.max(0,idx-1);i<=Math.min(scenes.length-1,idx+1);i++){
+ const x=scenes[i];x.style.setProperty('--level-p',clamp((center-x.offsetLeft)/Math.max(1,x.offsetWidth)).toFixed(3));}
+ gameHud.querySelector('strong').textContent='WORLD '+worldNos[idx];
+ gameHud.querySelector('span').textContent=names[idx];
+ gameHud.querySelector('i').style.width=(p*100).toFixed(1)+'%';
+ const key=node.classList[1];
+ const levels=['q-port','q-brick','q-china','q-roof','q-old','q-palace','cloud-land','gourmet','etiquette','wanted','ishikawa'];
+ if(!levels.includes(key))return 0;
+ const jumps=key==='q-roof'||key==='q-old'?[[.12,.37],[.44,.67],[.72,.93]]:
+ key==='q-port'||key==='q-palace'?[[.18,.44],[.53,.77]]:
+ [[.30,.69]];
+ let power=0;for(const [a,b] of jumps){if(p>a&&p<b){const t=(p-a)/(b-a);power=Math.max(power,Math.sin(t*Math.PI)**2)}}
+ return power*Math.min(innerHeight*.12,95);
+}
+
+function progress(scene,lead=.48){return clamp((camX-(scene.offsetLeft-innerWidth*lead))/Math.max(innerWidth*.7,scene.offsetWidth*.96))}
+function measure(){const W=innerWidth,H=innerHeight;climbX=climb.offsetLeft;maxX=Math.max(0,world.scrollWidth-W);p1=Math.max(H*3.8,climbX*1.04);p2=H*4.3;p3=Math.max(H*3,(maxX-climbX)*1.04);space.style.height=Math.ceil(H+p1+p2+p3)+'px';maxScroll=p1+p2+p3;tick(true)}
+function animateGeometry(){
+ const sunsetP=smooth(progress(sunset,.62));sunset.style.setProperty('--sunset-p',sunsetP.toFixed(4));
+ const wheelAngle=(camX/Math.max(1,harbor.offsetWidth))*630;
+ ferris.style.setProperty('--wheel-angle',wheelAngle.toFixed(1)+'deg');
+ const tokGrow=smooth(progress(tokyo,.66));const tokNight=smooth(clamp((tokGrow-.47)/.5));
+ tokyo.style.setProperty('--tok-grow',tokGrow.toFixed(4));tokyo.style.setProperty('--tok-night',(tokNight*.62).toFixed(4));
+ night.style.setProperty('--night-p',smooth(progress(night,.74)).toFixed(4));
+ const dawnP=smooth(progress(dawn,.72));dawn.style.setProperty('--dawn-p',dawnP.toFixed(4));
+ const ishP=smooth(progress(ishikawa,.75));ishikawa.style.setProperty('--ish-p',ishP.toFixed(4));
+ const seedP=smooth(progress(mountain,.74));mountain.style.setProperty('--seed-p',seedP.toFixed(4));
+ const trainOn=smooth(clamp((camX-(sunset.offsetLeft-innerWidth*.23))/(innerWidth*.52)));
+ const trainOff=smooth(clamp((camX-(ishikawa.offsetLeft+innerWidth*.16))/(innerWidth*.54)));
+ const riding=trainOn*(1-trainOff);
+ train.style.opacity=riding.toFixed(3);
+ train.style.transform='translateY('+(38*(1-riding)).toFixed(1)+'px) scale('+(0.94+.06*riding).toFixed(3)+')';
+ train.style.setProperty('--train-turn',(camX*.7).toFixed(1)+'deg');
+ return riding;
+}
+function animateVine(p){
+ const off=(1-p)*1000;
+ vine.style.strokeDashoffset=String(off);lineHi.style.strokeDashoffset=String(off);climb.style.setProperty('--vine-off',off);
+ for(const el of bloom){const start=Number(el.dataset.bloom),b=clamp((p-start)*7);el.style.opacity=b.toFixed(3);el.style.transform='scale('+b.toFixed(3)+')'}
+ document.getElementById('seedCore').style.transform='scale('+Math.max(.52,1-p*.48).toFixed(2)+') rotate('+(Math.sin(p*30)*6).toFixed(1)+'deg)';
+ const now=window.scrollY||0;
+ const climbEnter=smooth(clamp((now-p1)/(innerHeight*.9)));
+ const climbExit=smooth(clamp((now-(p1+p2-innerHeight*.95))/(innerHeight*.95)));
+ const cloudEnter=smooth(clamp((now-(p1+p2))/(innerHeight*.85)));
+ climb.style.setProperty('--climb-enter',climbEnter.toFixed(4));climb.style.setProperty('--climb-exit',climbExit.toFixed(4));cloudLand.style.setProperty('--cloud-enter',cloudEnter.toFixed(4));
+ document.getElementById('altitudeLabel').textContent=p<.19?'種が芽を出した。':p<.5?'つたが伸びる、伸びる。':p<.8?'きゅうりが実ってきた。':'もうすぐ雲の上。';
+}
+function tick(immediate=false){
+ const s=Math.max(0,Math.min(maxScroll,window.scrollY||0));let stage,vertical=0;
+ if(s<=p1){stage='横浜から、夕暮れの東京を通って石川へ';nextX=climbX*clamp(s/p1);vertical=0}
+ else if(s<=p1+p2){stage='山の種から、つたを登って雲の上へ';nextX=climbX;vertical=clamp((s-p1)/p2)}
+ else{stage='雲上きゅうり世界から、ふたたび横へ';nextX=climbX+(maxX-climbX)*clamp((s-p1-p2)/p3);vertical=1}
+ nextY=vertical;
+ camX=immediate||reduced?nextX:camX+(nextX-camX)*.21;
+ camY=immediate||reduced?nextY:camY+(nextY-camY)*.17;
+ if(Math.abs(nextX-camX)<.1)camX=nextX;
+ if(Math.abs(nextY-camY)<.0001)camY=nextY;
+ world.style.transform='translate3d('+(-camX.toFixed(2))+'px,0,0)';
+ const towerOffset=(tower.offsetHeight-innerHeight)*(1-camY);
+ tower.style.transform='translate3d(0,'+(-towerOffset.toFixed(2))+'px,0)';
+ const riding=animateGeometry();animateVine(camY);const jump=gameEffects(camX);
+ const onVine=s>p1&&s<p1+p2;
+ const goingBack=s>=p1+p2&&s<p1+p2+innerHeight*.6;
+ const climbBlend=onVine?smooth(clamp(camY/.16)):(goingBack?1-smooth(clamp((s-p1-p2)/(innerHeight*.6))):0);
+ const baseLeft=innerWidth<=720?innerWidth*.07:Math.max(30,Math.min(innerWidth*.15,230));
+ const trainLeft=innerWidth*.13+train.offsetWidth*.24-player.offsetWidth*.2;
+ const centerLeft=innerWidth*.54-Math.max(56,Math.min(innerWidth*.07,100));
+ const rideLeft=baseLeft+(trainLeft-baseLeft)*riding;
+ player.style.left=(rideLeft+(centerLeft-rideLeft)*climbBlend).toFixed(1)+'px';
+ const trainLift=(train.offsetHeight*.68/innerHeight)*100;
+ player.style.bottom=(14.9+trainLift*riding+(20.1-trainLift*riding)*climbBlend).toFixed(2)+'%';
+ player.style.transform='translateY('+(-jump).toFixed(1)+'px) scaleX(-1) rotate('+(-13*climbBlend).toFixed(1)+'deg)';
+ player.classList.toggle('climbing',onVine&&camY>.1&&camY<.96);
+ const isMoving=performance.now()<movingUntil;
+ player.classList.toggle('moving',isMoving&&!onVine);
+ shadow.classList.toggle('hidden',(onVine&&camY>.08&&camY<.965)||riding>.3);
+ const halfway=camX+innerWidth*.48;
+ let chapter=0;for(let i=1;i<scenes.length;i++)if(halfway>=scenes[i].offsetLeft)chapter=i;
+ if(chapterIndex!==chapter){chapterIndex=chapter;const pills=chapterPills?.children;if(pills){[...pills].forEach((b,i)=>{b.classList.toggle('active',i===chapter);b.setAttribute('aria-current',i===chapter?'step':'false')})}}
+ indicator.textContent=names[chapter]||names[0];label.textContent=stage;fill.style.width=(100*s/maxScroll).toFixed(2)+'%';
+ back.classList.toggle('visible',s>innerHeight*.7);
+ hint.textContent=s<p1*.14?'スクロールして冒険する':onVine?'そのままスクロールして、つたを登る':'そのままスクロールして進む';
+ document.getElementById('brand').style.color=chapter===scenes.length-1?'#fff5ca':'';
+ if(Math.abs(camX-nextX)>.1||Math.abs(camY-nextY)>.0002){raf=requestAnimationFrame(()=>tick())}else raf=0;
+}
+function schedule(){movingUntil=performance.now()+190;if(!raf)raf=requestAnimationFrame(()=>tick())}
+addEventListener('scroll',schedule,{passive:true});addEventListener('resize',measure,{passive:true});addEventListener('pageshow',measure);
+back.addEventListener('click',()=>window.scrollTo({top:0,behavior:reduced?'instant':'smooth'}));
+document.addEventListener('keydown',e=>{if(['ArrowRight','ArrowDown'].includes(e.key)){e.preventDefault();scrollBy({top:innerHeight*.43,behavior:reduced?'instant':'smooth'})}if(['ArrowLeft','ArrowUp'].includes(e.key)){e.preventDefault();scrollBy({top:-innerHeight*.43,behavior:reduced?'instant':'smooth'})}});
+measure();
+})();
+</script>
+</body></html>
