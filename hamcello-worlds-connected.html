@@ -385,14 +385,30 @@ for(const [name,uri] of Object.entries(TRAIN_ASSETS)){
 }
 const valid=im=>im&&im.complete&&im.naturalWidth>0;
 function image(key,x,y,w,h,photo=false){const im=IT[key];if(!valid(im))return;ctx.save();ctx.imageSmoothingEnabled=photo;if(photo)ctx.imageSmoothingQuality='high';ctx.drawImage(im,x,y,w,h);ctx.restore();}
+// The original 1536x512 Tokyo panorama is kept unchanged.
+const TOKYO_VIEW_END=1550;
+function tokyoScale(){
+ const ideal=(H*.77)/460;
+ const fit=(W-12)/326; // show the whole Asakusa gate in portrait
+ return W<730?Math.max(.84,Math.min(ideal,fit)):ideal;
+}
 function paintTokyo(p,now,noHam=false){
  const im=IT.tokyo_reference_clean;
- const ideal=(H*.77)/460;const physicalScale=Math.max(1,Math.round(ideal*dpr));const scale=physicalScale/dpr;
- const fullWidth=1536*scale, pan=p*Math.max(0,fullWidth-W);
+ const scale=tokyoScale();
+ // Framing ends after Shibuya, with only a very short edge continuation.
+ const fullWidth=1536*scale;
+ const pan=clamp(p)*Math.max(0,TOKYO_VIEW_END*scale-W);
  const top=H*.74-450*scale, soilTop=top+512*scale,ground=top+453*scale;
  ctx.setTransform(dpr,0,0,dpr,0,0);ctx.imageSmoothingEnabled=false;
  ctx.fillStyle='#23b7f4';ctx.fillRect(0,0,W,H);
- if(valid(im))ctx.drawImage(im,Math.round(-pan),Math.round(top),Math.ceil(fullWidth),Math.ceil(512*scale));
+ if(valid(im)){
+  ctx.drawImage(im,Math.round(-pan),Math.round(top),Math.ceil(fullWidth),Math.ceil(512*scale));
+  // Continue the original rightmost 14px so the map does not end in a cut building.
+  const extra=14;
+  ctx.save();ctx.translate((1536+extra)*scale-pan,top);ctx.scale(-1,1);
+  ctx.drawImage(im,1536-extra,0,extra,512,0,0,extra*scale,512*scale);
+  ctx.restore();
+ }
  if(soilTop<H){
   ctx.fillStyle='#a56e45';ctx.fillRect(0,soilTop,W,H-soilTop);
   if(valid(IT.soil_tile)){
@@ -421,7 +437,7 @@ function paintTokyo(p,now,noHam=false){
 }
 // One continuous camera pan instead of crossfading between two fixed screens.
 // The actual end of Yokohama and beginning of Tokyo are preserved as bookends.
-const Y_END=.45,T_START=.55;
+let Y_END=.635,T_START=.715;
 const endY=document.createElement('canvas'),endT=document.createElement('canvas'),endTSoft=document.createElement('canvas');
 let hasEndY=false,hasEndT=false;
 function snapshotBookends(now){
@@ -459,7 +475,7 @@ function drawJourneyStrip(start,len){
  const mobile=W<730;
  const ys=Math.min(W/(mobile?630:1130),H/650);
  const gY=H*(mobile?.76:.805);
- const ts=Math.max(1,Math.round(((H*.77)/460)*dpr))/dpr;
+ const ts=tokyoScale();
  const gT=H*.74+3*ts;
  // Daylight only. The destination Tokyo artwork/blue sky is never color graded.
  const sky=ctx.createLinearGradient(start,0,start+len,0);
@@ -559,7 +575,7 @@ function trainScene(p,now){
  const mobile=W<730;
  const ys=Math.max(.48,Math.min(1.55,Math.min(W/(mobile?630:1130),H/650)));
  const gY=H*(mobile?.76:.805);
- const ts=Math.max(1,Math.round(((H*.77)/460)*dpr))/dpr;
+ const ts=tokyoScale();
  const gT=H*.74+3*ts;
  const g=gY+(gT-gY)*smooth(q);
  const train=IA.train;
@@ -638,7 +654,14 @@ function resize(){
  canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);
  canvas.style.width=W+'px';canvas.style.height=H+'px';
  hasEndY=false;hasEndT=false;
- const ratio=window.scrollY/Math.max(1,maxScroll);
+ // Match real visible pixels of camera travel per scroll pixel in both worlds.
+ const yScale=Math.max(.48,Math.min(1.55,Math.min(W/(W<730?630:1130),H/650)));
+ const yCameraPixels=Math.max(0,5700-W/yScale)*yScale;
+ const tCameraPixels=Math.max(0,TOKYO_VIEW_END*tokyoScale()-W);
+ const travelFraction=.08;
+ Y_END=(1-travelFraction)*yCameraPixels/Math.max(1,yCameraPixels+tCameraPixels);
+ T_START=Y_END+travelFraction;
+ rebuildStops();
  track.style.height=Math.round(H*7.25)+'px';
  maxScroll=Math.max(1,track.offsetHeight-H);
  target=clamp(window.scrollY/maxScroll);
@@ -646,7 +669,11 @@ function resize(){
 }
 function onScroll(){target=clamp(window.scrollY/maxScroll);request()}
 function go(p){const top=clamp(p)*maxScroll;window.scrollTo({top,behavior:'auto'});onScroll()}
-const stops=[0,.12,.245,.355,Y_END,.479,.520,T_START,.67,.79,.90,1];
+let stops=[];
+function rebuildStops(){
+ const y=Y_END,t=T_START,r=1-t,m=t-y;
+ stops=[0,.23*y,.47*y,.73*y,y,y+.33*m,y+.72*m,t,t+.25*r,t+.52*r,t+.78*r,1];
+}
 next.addEventListener('click',()=>{if(target>.975){go(0);return}go(stops.find(v=>v>target+.015)??1)});
 back.addEventListener('click',()=>go([...stops].reverse().find(v=>v<target-.015)??0));
 reset.addEventListener('click',()=>go(0));
