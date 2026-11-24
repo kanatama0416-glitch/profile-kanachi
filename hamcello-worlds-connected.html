@@ -854,6 +854,118 @@ function hdFarm(q,now){
  }
 }
 
+
+let F_END=.80,V_END=.90;
+const SKY={};let skyReady=false,skySource=null;
+function installSky(d){
+ if(!d||!['vine','kingdom'].every(k=>typeof d[k]==='string'&&/^data:image\/(webp|jpeg|png);base64,/.test(d[k])))return false;
+ skySource=d;skyReady=false;let n=0;
+ for(const k of ['vine','kingdom']){const im=new Image();SKY[k]=im;im.onload=()=>{if(SKY[k]!==im)return;if(++n===2){skyReady=true;request()}};im.src=d[k]}
+ return true;
+}
+const skyInput=document.createElement('input');skyInput.type='file';skyInput.accept='.js,.json';skyInput.hidden=true;document.body.append(skyInput);
+const skyButton=document.createElement('button');skyButton.type='button';skyButton.textContent='空のイラストを読み込む';skyButton.style.cssText='position:absolute;right:12px;top:max(120px,calc(env(safe-area-inset-top) + 115px));padding:9px 10px;font-size:11px;display:none;pointer-events:auto';document.getElementById('hud').append(skyButton);
+skyButton.onclick=()=>skyInput.click();
+skyInput.onchange=async()=>{try{const file=skyInput.files[0];if(!file)return;const d=JSON.parse((await file.text()).replace(/^\s*window\.HAMCELLO_SKY_ART\s*=\s*/,'').replace(/;\s*$/,''));if(!installSky(d))throw Error('art');try{localStorage.setItem('hamcello-sky-art-v1',JSON.stringify(d))}catch(e){}skyButton.textContent='素材を読み込み中'}catch(e){skyButton.textContent='素材を選び直す'}};
+try{const saved=localStorage.getItem('hamcello-sky-art-v1');if(saved)installSky(JSON.parse(saved))}catch(e){}
+const skyScript=document.createElement('script');skyScript.src='hamcello-sky-art.js?v=1';skyScript.onload=()=>{if(!skySource&&window.HAMCELLO_SKY_ART)installSky(window.HAMCELLO_SKY_ART)};document.head.append(skyScript);
+const vinePoints=[[500,1390],[516,1320],[493,1250],[431,1190],[394,1120],[421,1052],[510,1000],[584,948],[595,885],[534,840],[441,814],[410,760],[433,705],[505,655],[630,621],[689,570],[680,528],[626,490],[490,478],[407,437],[400,382],[465,346],[555,320],[616,273],[620,234],[587,210],[493,211],[413,190]];
+function vineX(y){for(let i=1;i<vinePoints.length;i++){const [a,b]=vinePoints[i-1],[x,z]=vinePoints[i];if(y>=z&&y<=b){const t=(b-y)/(b-z);return a+(x-a)*smooth(t)}}return y>1390?500:413}
+function pixelCloud(x,y,w,h){
+ ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.scale(w/100,h/42);
+ fPoly([[0,36],[0,28],[8,28],[8,21],[17,21],[17,14],[30,14],[30,7],[43,7],[43,0],[60,0],[60,7],[72,7],[72,14],[83,14],[83,21],[94,21],[94,28],[100,28],[100,36]],'#f8fdff');
+ fPoly([[0,36],[12,30],[25,31],[35,24],[49,31],[63,24],[78,28],[91,30],[100,36],[86,42],[16,42]],'#bcdef8');ctx.restore();
+}
+function skyFill(){const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#138edc');g.addColorStop(1,'#56c7f3');ctx.fillStyle=g;ctx.fillRect(0,0,W,H)}
+function leafAt(x,y,dir,sz){
+ ctx.save();ctx.translate(x,y);ctx.scale(dir*sz,sz);
+ fPoly([[0,0],[11,-21],[29,-35],[43,-37],[57,-29],[67,-15],[63,0],[51,4],[43,15],[27,10],[13,15]],'#327d2e');
+ fPoly([[4,-2],[18,-21],[32,-30],[45,-31],[59,-19],[57,-4],[43,8],[29,3],[16,8]],'#9ad53e');
+ fPoly([[7,0],[29,-18],[49,-26],[32,-13],[28,4],[25,-9]],'#d0ee5a');ctx.restore();
+}
+function cucumberAt(x,y,s=1){
+ ctx.save();ctx.translate(x,y);ctx.scale(s,s);
+ fPoly([[-10,0],[6,-4],[15,6],[19,40],[11,61],[-1,66],[-13,59],[-19,45],[-16,13]],'#165d3a');
+ fPoly([[-7,2],[5,0],[12,8],[14,39],[8,55],[-1,59],[-10,52],[-13,40],[-10,12]],'#56ae38');
+ fPoly([[-5,7],[0,5],[2,30],[-1,47],[-6,50],[-7,35]],'#b5ec60');ctx.restore();
+}
+function flowerAt(x,y,s=1){ctx.save();ctx.translate(x,y);ctx.scale(s,s);for(let k=0;k<5;k++){ctx.save();ctx.rotate(k*Math.PI*2/5);fPoly([[-6,0],[-12,-12],[-8,-23],[4,-25],[12,-16],[8,0]],'#f8c541');fRect(-4,-20,7,9,'#ffe57c');ctx.restore()}fRect(-7,-7,14,14,'#e9a22d');ctx.restore()}
+function vineFallback(grow){
+ // The scenery is drawn in the same portrait coordinates as the supplied art.
+ for(const [x,y,w,h] of [[80,380,180,65],[282,60,490,175],[518,300,220,75],[740,430,190,70],[80,610,170,60],[590,650,230,85],[110,870,170,68],[790,920,165,55],[210,1020,150,58]])pixelCloud(x,y,w,h);
+ fPoly([[0,1190],[140,1060],[240,1120],[330,1045],[475,1190],[680,1050],[800,1015],[1024,1150],[1024,1440],[0,1440]],'#428ebd');
+ fPoly([[92,1108],[140,1060],[188,1105],[158,1094],[140,1080],[126,1095],[112,1090]],'#eff7fa');
+ fPoly([[605,1110],[680,1050],[800,1015],[885,1080],[811,1042],[780,1055],[751,1047],[700,1080]],'#f0faff');
+ if(hdReady&&valid(HD.farmClean)){ctx.imageSmoothingEnabled=false;ctx.drawImage(HD.farmClean,0,210,1536,302,0,1180,1024,356)}
+ else{fRect(0,1260,1024,190,'#8fbd42');for(let i=0;i<9;i++)fRect(0,1260+i*23,1024,6,'#bbdf5c');fRect(0,1430,1024,106,'#915331')}
+ ctx.save();ctx.beginPath();ctx.rect(0,1390-1205*grow,1024,1536-(1390-1205*grow));ctx.clip();
+ const trace=()=>{ctx.beginPath();ctx.moveTo(500,1390);for(let y=1388;y>=190;y-=3)ctx.lineTo(vineX(y),y)};
+ ctx.lineJoin='round';ctx.lineCap='round';trace();ctx.lineWidth=30;ctx.strokeStyle='#236b39';ctx.stroke();trace();ctx.lineWidth=21;ctx.strokeStyle='#62b23c';ctx.stroke();trace();ctx.lineWidth=7;ctx.strokeStyle='#aedb54';ctx.stroke();
+ for(const [y,dir,sz] of [[1280,1,1.2],[1150,-1,1.2],[1005,1,1.05],[920,-1,1.2],[860,1,1.3],[800,-1,1.2],[650,-1,1.1],[500,1,1.2],[365,-1,1.05]])leafAt(vineX(y),y,dir,sz);
+ for(const y of [1240,905,690,530])cucumberAt(vineX(y)+(y===530?25:-12),y+15,1.2);
+ for(const y of [1130,875,755,430])flowerAt(vineX(y)+30,y,1);
+ ctx.restore();
+}
+function drawSkyHam(x,y,h,key='run',facing=1){
+ const im=IA[key]||IA.run;if(!valid(im))return;const w=h*im.naturalWidth/im.naturalHeight;
+ ctx.save();ctx.translate(x,y);ctx.scale(facing,1);ctx.imageSmoothingEnabled=true;ctx.drawImage(im,-w/2,-h,w,h);ctx.restore();
+}
+function vineScene(q,now){
+ const s=Math.max(W/1024,Math.min(H/850,W/460)),viewH=H/s,viewW=W/s;
+ // Root first grows to the cloud; then the camera follows Hamcello upwards.
+ const grow=smooth(q/.20),climb=smooth((q-.20)/.75),y=1390-1198*climb,x=vineX(y);
+ const cameraY=Math.max(0,Math.min(1536-viewH,y-viewH*.56)),cameraX=Math.max(0,Math.min(1024-viewW,x-viewW*.50));
+ skyFill();ctx.save();ctx.translate(-cameraX*s,-cameraY*s);ctx.scale(s,s);ctx.imageSmoothingEnabled=false;
+ if(skyReady&&valid(SKY.vine)){
+  const im=SKY.vine;
+  if(grow<.999){
+   // Show the actual artwork progressively from the growing tip down.
+   ctx.drawImage(im,0,1090,1024,446,0,1090,1024,446);
+   ctx.save();ctx.beginPath();ctx.rect(0,1390-1205*grow,1024,1536);ctx.clip();ctx.drawImage(im,0,0,1024,1536);ctx.restore();
+   pixelCloud(282,60,490,175);
+  }else ctx.drawImage(im,0,0,1024,1536);
+ }else vineFallback(grow);
+ ctx.restore();
+ // A continuous alternating climb using the existing real Hamcello sprites.
+ const pose=q<.20?'run':q>.94?'land':Math.floor(climb*42)%2?'airborne':'jump';
+ const sway=q<.20?0:Math.sin(climb*Math.PI*42)*5;
+ drawSkyHam((x-cameraX)*s+sway,(y-cameraY)*s+10,Math.min(68,H*.085),pose,1);
+ if(q>.94){const a=smooth((q-.94)/.06);ctx.save();ctx.globalAlpha=a;pixelCloud(-W*.1,H*.48,W*1.2,H*.45);ctx.restore()}
+ if(q<.055){ctx.save();ctx.globalAlpha=1-smooth(q/.055);if(hdReady)hdFarm(1,now);else farmScene(1,now);ctx.restore()}
+}
+function cucumberDisc(x,y,r){ctx.save();ctx.translate(x,y);ctx.scale(r/20,r/20);fPoly([[-14,-15],[8,-19],[18,-9],[20,8],[10,19],[-9,19],[-20,8],[-20,-7]],'#3f8b36');fPoly([[-12,-12],[7,-15],[15,-7],[15,7],[7,15],[-7,15],[-15,7],[-15,-7]],'#cce87a');for(let i=0;i<6;i++){ctx.save();ctx.rotate(i*Math.PI/3);fRect(-2,-11,4,7,'#f4f6bb');ctx.restore()}ctx.restore()}
+function skyPlatform(x,y,w,h=70){fRect(x,y+9,w,h,'#96613c');fRect(x,y+9,w,12,'#c3864c');for(let i=0;i<w;i+=26)fRect(x+i,y+17+(i%3)*5,13,10,'#aa6d3f');fRect(x,y,w,8,'#76c73c');fRect(x,y,w,3,'#b9ee60')}
+function kingdomFallback(){
+ for(const [x,y,w,h] of [[-20,90,180,65],[190,42,200,65],[480,100,180,60],[650,155,200,60],[1100,74,250,70],[1370,123,180,65],[20,365,230,75],[330,360,200,75],[850,380,240,65],[1250,362,300,80]])pixelCloud(x,y,w,h);
+ cucumberDisc(544,96,66);
+ // Floating cucumber castle.
+ pixelCloud(750,165,300,75);fPoly([[763,179],[1018,179],[964,270],[875,301],[803,259]],'#5da6dd');
+ for(const [x,y,w,h] of [[790,103,55,76],[850,61,85,125],[940,115,55,70]]){fPoly([[x,y+18],[x+8,y+4],[x+w/2,y],[x+w-8,y+4],[x+w,y+18],[x+w,y+h],[x,y+h]],'#479b37');fRect(x+9,y+17,8,h-23,'#a0d95a');cucumberDisc(x+w/2,y+h*.65,w*.28);fRect(x+w/2,y-14,3,18,'#526d39');fPoly([[x+w/2,y-14],[x+w/2+23,y-8],[x+w/2,y-2]],'#d9f47d')}
+ // Market stall, pickle jars, bridge, crates and cucumber blocks.
+ fRect(56,286,265,132,'#725131');fRect(69,304,238,95,'#aa7540');fRect(93,324,128,68,'#4c4530');fPoly([[22,292],[55,245],[113,216],[258,206],[330,220],[356,246],[331,273],[140,290]],'#246d32');fPoly([[34,274],[72,240],[140,222],[277,217],[335,232],[303,246],[121,267]],'#6fb93b');
+ for(const x of [100,144,188,268]){fRect(x,340,30,43,'#cce6a4');fRect(x+2,345,26,34,'#7eaa3e');cucumberDisc(x+15,362,11);fRect(x,335,30,7,'#c6e5ec')}
+ for(const x of [450,492,534,576])cucumberDisc(x,415-Math.sin((x-450)/126*Math.PI)*16,23);
+ for(const [x,y] of [[669,397],[722,397],[696,345]]){fRect(x,y,52,51,'#a16a39');fRect(x+4,y+4,44,43,'#c99757');fPoly([[x+5,y+8],[x+9,y+5],[x+47,y+42],[x+42,y+47]],'#89572f');fPoly([[x+42,y+5],[x+47,y+10],[x+10,y+47],[x+5,y+42]],'#89572f')}
+ for(const [x,y] of [[925,379],[968,379],[1011,379],[968,336],[1011,336]]){fRect(x,y,44,44,'#4b9d38');cucumberDisc(x+22,y+22,19)}
+ // Cucumber windmill and slide.
+ fPoly([[1250,400],[1268,244],[1320,244],[1341,400]],'#f0f5da');fRect(1285,325,22,42,'#6e7361');for(let i=0;i<4;i++){ctx.save();ctx.translate(1294,247);ctx.rotate(i*Math.PI/2+.5);fPoly([[-13,4],[-19,-90],[0,-108],[19,-90],[13,4]],'#4a943b');fPoly([[-9,-8],[-11,-86],[0,-95],[11,-86],[9,-8]],'#d9ed8b');ctx.restore()}cucumberDisc(1294,247,12);
+ ctx.save();ctx.lineCap='round';ctx.beginPath();ctx.moveTo(1508,267);ctx.bezierCurveTo(1440,260,1500,397,1370,424);ctx.strokeStyle='#347c35';ctx.lineWidth=58;ctx.stroke();ctx.strokeStyle='#b8e568';ctx.lineWidth=36;ctx.stroke();ctx.restore();
+ skyPlatform(0,446,448);skyPlatform(606,446,930);
+}
+function kingdomScene(q,now){
+ const s=Math.max(W/1536,Math.min(H*.80/460,W/440)),view=W/s,pan=q*Math.max(0,1536-view),top=H*.75-446*s;
+ skyFill();ctx.save();ctx.translate(-pan*s,top);ctx.scale(s,s);ctx.imageSmoothingEnabled=false;
+ if(skyReady&&valid(SKY.kingdom))ctx.drawImage(SKY.kingdom,0,0,1536,512);else kingdomFallback();
+ // Below the platform use cloud banks rather than stretched edge pixels.
+ for(let x=-100;x<1700;x+=150)pixelCloud(x,515,220,115);
+ for(let x=-50;x<1700;x+=230)pixelCloud(x,615,310,130);
+ ctx.restore();
+ const wx=90+q*1370,base=top+446*s;
+ const lift=Math.max(hop(wx,386,636,90),hop(wx,638,784,70),hop(wx,882,1090,100),hop(wx,1210,1470,100));
+ const x=(wx-pan)*s;drawSkyHam(x,base-lift*s,Math.min(64,H*.085),lift>8?'jump':Math.floor(wx/27)%2?'run':'land');
+ if(q<.075){const a=1-smooth(q/.075);ctx.save();ctx.globalAlpha=a;pixelCloud(-W*.12,H*.46,W*1.25,H*.54);ctx.restore()}
+}
+
 function setUI(p){
  let st,section;
  if(p<Y_END){
@@ -861,10 +973,11 @@ function setUI(p){
   st=q<.23?'01 / 横浜港':q<.47?'02 / 観覧車':q<.72?'03 / 赤レンガ':'04 / 中華街';
  }else if(p<T_START){st='列車で東京へ';section='YOKOHAMA → TOKYO'}
  else if(p<T_END){section='WORLD 02 / TOKYO';const q=clamp((p-T_START)/(T_END-T_START));const a=tokyoStops();st=q<(a[0]+a[1])/2?'01 / 浅草':q<(a[1]+a[2])/2?'02 / 東京駅':q<(a[2]+a[3])/2?'03 / 東京タワー':'04 / 渋谷'}
- else if(p<I_START){section='TOKYO → ISHIKAWA';st='新幹線で石川へ'}else if(p<C_END){const q=clamp((p-I_START)/(C_END-I_START));section='WORLD 03 / ISHIKAWA';st=q<.28?'01 / 石川・茶屋街':q<.74?'02 / 兼六園':'03 / 金沢駅・鼓門'}else{const q=clamp((p-C_END)/(1-C_END));section='WORLD 04 / COUNTRYSIDE';const n=hdReady?hdFarmCount(q):farmCount(q);st=q<.999?'01 / きゅうり畑　収穫 '+n+' 本':'ISHIKAWA CLEAR　'+n+' 本'}
+ else if(p<I_START){section='TOKYO → ISHIKAWA';st='新幹線で石川へ'}else if(p<C_END){const q=clamp((p-I_START)/(C_END-I_START));section='WORLD 03 / ISHIKAWA';st=q<.28?'01 / 石川・茶屋街':q<.74?'02 / 兼六園':'03 / 金沢駅・鼓門'}else if(p<F_END){const q=clamp((p-C_END)/(F_END-C_END));section='WORLD 04 / COUNTRYSIDE';const n=hdReady?hdFarmCount(q):farmCount(q);st='01 / きゅうり畑　収穫 '+n+' 本'}else if(p<V_END){const q=clamp((p-F_END)/(V_END-F_END));section='WORLD 05 / SKY VINE';st=q<.20?'きゅうりが空へ伸びていく…':q<.94?'空までツルを登ろう':'雲の上に到着！'}else{section='WORLD 06 / CUCUMBER KINGDOM';st=p<.999?'きゅうり王国':'CUCUMBER KINGDOM CLEAR'}
  title.textContent=st;world.textContent=section;bar.style.width=(p*100).toFixed(1)+'%';
- hint.textContent=p<Y_END?'スクロールで横浜を冒険':p<T_START?'屋根に飛び乗って東京へ':p<T_END?'スクロールで東京を冒険':p<I_START?'新幹線で石川へ':p<C_END?'スクロールで石川の街を冒険':p<.999?'歩くときゅうりが育つ':'ISHIKAWA CLEAR';
- hdButton.style.display=p>=T_END&&!hdReady?'block':'none';
+ hint.textContent=p<Y_END?'スクロールで横浜を冒険':p<T_START?'屋根に飛び乗って東京へ':p<T_END?'スクロールで東京を冒険':p<I_START?'新幹線で石川へ':p<C_END?'スクロールで石川の街を冒険':p<F_END?'歩くときゅうりが育つ':p<V_END?'上へ登ろう：スクロールで進む':p<.999?'雲の上を横に冒険':'CUCUMBER KINGDOM CLEAR';
+ hdButton.style.display=p>=T_END&&p<F_END&&!hdReady?'block':'none';
+ skyButton.style.display=p>=F_END&&!skyReady?'block':'none';
  if(p>=I_START&&p<C_END&&!hdReady)hint.textContent='石川の街：高画質素材を読み込んでください';
  next.textContent=p>=.999?'最初へ ↺':'次へ ›';
  const tq=clamp((p-Y_END)/(T_START-Y_END));
@@ -877,7 +990,9 @@ function paint(now){
  else if(progress<T_END)paintTokyo(clamp((progress-T_START)/(T_END-T_START)),now);
  else if(progress<I_START){const q=clamp((progress-T_END)/(I_START-T_END));if(hdReady)hdTravel(q,now);else ishikawaTrain(q,now)}
  else if(progress<C_END){const q=clamp((progress-I_START)/(C_END-I_START));if(hdReady)cityScene(q,now);else{farmBackdrop(farmScale(),H*.74,q*1400);farmGround(farmScale(),H*.74,q*400)}}
- else{const q=clamp((progress-C_END)/(1-C_END));if(hdReady)hdFarm(q,now);else farmScene(q,now)}
+ else if(progress<F_END){const q=clamp((progress-C_END)/(F_END-C_END));if(hdReady)hdFarm(q,now);else farmScene(q,now)}
+ else if(progress<V_END)vineScene(clamp((progress-F_END)/(V_END-F_END)),now);
+ else kingdomScene(clamp((progress-V_END)/(1-V_END)),now);
  setUI(progress);
 }
 function request(){if(tickId||document.visibilityState==='hidden')return;tickId=requestAnimationFrame(frame)}
@@ -902,14 +1017,17 @@ function resize(){
  const travelFraction=.055,ishikawaTravel=.075;
  const iCameraPixels=Math.max(W*.35,(1536-W/panoScale())*panoScale());
  const fCameraPixels=hdReady?iCameraPixels:Math.max(W*.6,(FARM_LENGTH-W/farmScale())*farmScale());
- const total=yCameraPixels+tCameraPixels+iCameraPixels+fCameraPixels,walkFraction=1-travelFraction-ishikawaTravel;
+ const vinePixels=Math.max(H*1.65,1000),kingdomPixels=Math.max(W*.8,(1536-W/panoScale())*panoScale());
+ const total=yCameraPixels+tCameraPixels+iCameraPixels+fCameraPixels+vinePixels+kingdomPixels,walkFraction=1-travelFraction-ishikawaTravel;
  Y_END=walkFraction*yCameraPixels/Math.max(1,total);
  T_START=Y_END+travelFraction;
  T_END=T_START+walkFraction*tCameraPixels/Math.max(1,total);
  I_START=T_END+ishikawaTravel;
  C_END=I_START+walkFraction*iCameraPixels/Math.max(1,total);
+ F_END=C_END+walkFraction*fCameraPixels/Math.max(1,total);
+ V_END=F_END+walkFraction*vinePixels/Math.max(1,total);
  rebuildStops();
- track.style.height=Math.round(H*7.25*(1+(iCameraPixels+fCameraPixels)/Math.max(1,yCameraPixels+tCameraPixels))*1.07)+'px';
+ track.style.height=Math.round(H*7.25*(1+(iCameraPixels+fCameraPixels+vinePixels+kingdomPixels)/Math.max(1,yCameraPixels+tCameraPixels))*1.07)+'px';
  const scroller=document.scrollingElement||document.documentElement;
  maxScroll=Math.max(1,scroller.scrollHeight-scroller.clientHeight);
  target=scrollProgress();
@@ -922,7 +1040,8 @@ function go(p){const top=clamp(p)*maxScroll;window.scrollTo({top,behavior:'auto'
 let stops=[];
 function rebuildStops(){
  const y=Y_END,t=T_START,r=T_END-t,m=t-y;
- stops=[0,.23*y,.47*y,.73*y,y,y+.33*m,y+.72*m,...tokyoStops().map(q=>t+q*r),T_END+(I_START-T_END)*.60,I_START,...[.22,.48,.75,1].map(q=>I_START+q*(C_END-I_START)),...(hdReady?[.17,.32,.45,.57,.72,.86,1]:beds.map(b=>clamp((b+35-90)/(FARM_LENGTH-180)))).map(q=>C_END+q*(1-C_END)),1];
+ stops=[0,.23*y,.47*y,.73*y,y,y+.33*m,y+.72*m,...tokyoStops().map(q=>t+q*r),T_END+(I_START-T_END)*.60,I_START,...[.22,.48,.75,1].map(q=>I_START+q*(C_END-I_START)),...(hdReady?[.17,.32,.45,.57,.72,.86,1]:beds.map(b=>clamp((b+35-90)/(FARM_LENGTH-180)))).map(q=>C_END+q*(F_END-C_END)),F_END,...[.20,.42,.65,.85,.96,1].map(q=>F_END+q*(V_END-F_END)),...[.24,.48,.72,1].map(q=>V_END+q*(1-V_END)),1];
+ stops=[...new Set(stops)].sort((a,b)=>a-b);
 }
 next.addEventListener('click',()=>{if(target>=.999){go(0);return}go(stops.find(v=>v>target+.001)??1)});
 back.addEventListener('click',()=>go([...stops].reverse().find(v=>v<target-.001)??0));
@@ -934,6 +1053,6 @@ window.addEventListener('pageshow',()=>{resize();onScroll()});
 resize();request();
 // Minimal fallback: never cover a functioning screen behind a persistent loader.
 setTimeout(()=>{loader.style.opacity='0';loader.hidden=true},1600);
-window.__hamcelloQA=()=>({progress,target,scrollY,maxScroll,loadedY,loadedT,tStarted,stage:title.textContent,world:world.textContent,transition:progress>=Y_END&&progress<T_START,hasEndY,hasEndT,loadedTrain:loadedA,tokyoScale:tokyoScale(),tokyoView:W/tokyoScale(),tokyoStops:tokyoStops(),Y_END,T_START,T_END,I_START,C_END,hdReady,hdLoaded,farmCount:hdReady?hdFarmCount(clamp((progress-C_END)/(1-C_END))):farmCount(clamp((progress-C_END)/(1-C_END))),farmBackdropLoaded:valid(farmPhoto)});
+window.__hamcelloQA=()=>({progress,target,scrollY,maxScroll,loadedY,loadedT,tStarted,stage:title.textContent,world:world.textContent,transition:progress>=Y_END&&progress<T_START,hasEndY,hasEndT,loadedTrain:loadedA,tokyoScale:tokyoScale(),tokyoView:W/tokyoScale(),tokyoStops:tokyoStops(),Y_END,T_START,T_END,I_START,C_END,F_END,V_END,skyReady,hdReady,hdLoaded,farmCount:hdReady?hdFarmCount(clamp((progress-C_END)/(F_END-C_END))):farmCount(clamp((progress-C_END)/(F_END-C_END))),farmBackdropLoaded:valid(farmPhoto)});
 })();
 </script></body></html>
