@@ -667,10 +667,12 @@ function resize(){
  track.style.height=Math.round(H*7.25)+'px';
  const scroller=document.scrollingElement||document.documentElement;
  maxScroll=Math.max(1,scroller.scrollHeight-scroller.clientHeight);
- target=clamp(window.scrollY/maxScroll);
+ target=scrollProgress();
  progress=target;request();
 }
-function onScroll(){target=clamp(window.scrollY/maxScroll);request()}
+// Scroll positions are integer CSS pixels; snap subpixel rounding at each stop.
+function scrollProgress(){const p=clamp(window.scrollY/maxScroll);return stops.find(v=>Math.abs(v-p)<=1.01/maxScroll)??p;}
+function onScroll(){target=scrollProgress();request()}
 function go(p){const top=clamp(p)*maxScroll;window.scrollTo({top,behavior:'auto'});onScroll()}
 let stops=[];
 function rebuildStops(){
