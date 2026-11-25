@@ -1,7 +1,7 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>HAMCELLO QUEST｜横浜・東京・石川</title><meta name="description" content="ハムチェッロと横浜から東京、石川へ。1枚の画面をスクロールで冒険するゲーム。"><style>
 :root{font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;color:#23495b;background:#1db8ec}
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;overflow-x:hidden;overscroll-behavior-x:none;background:#1db8ec}
+html,body{margin:0;padding:0;overflow-x:hidden;overscroll-behavior-x:none;overflow-anchor:none;background:#1db8ec}
 #track{width:100%;height:900vh;touch-action:pan-y;-webkit-user-select:none;user-select:none}
 #screen{position:fixed;inset:0;width:100vw;height:100dvh;display:block;image-rendering:pixelated;pointer-events:none}
 #hud{position:fixed;inset:0;pointer-events:none;z-index:3}
@@ -364,7 +364,8 @@ const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
 const smooth=p=>{p=clamp(p);return p*p*(3-2*p)};
 const IY={},IT={},IA={};let loadedY=0,loadedT=0,tStarted=false,loadedA=0;
 const ADVENTURE_SCROLL_MULTIPLIER=2, ADVENTURE_MAX_PROGRESS_PER_SECOND=.038;
-let W=390,H=800,dpr=1,maxScroll=1,target=0,progress=0,lastTime=0,tickId=0,ready=false;
+let W=390,H=800,dpr=1,maxScroll=1,target=0,progress=0,lastTime=0,tickId=0,ready=false,layoutReady=false,visitedThrough=-1;
+try{history.scrollRestoration='manual'}catch(e){}
 let travelled=0,lastHamWorld=90;
 const yRender=createYEngine(IY,ctx);
 function loadImages(list,into,kind){
@@ -1167,8 +1168,11 @@ function frame(now){tickId=0;const dt=lastTime?Math.min(70,now-lastTime):16;last
  progress+=Math.max(-maxStep,Math.min(maxStep,desired-progress));
  if(Math.abs(progress-target)<.0001&&Math.abs(progress-target)<=maxStep)progress=target;
  if(progress>.20||loadedY>=24)startTokyo();
- // Once the alien has arrived, play the entire dialogue on its own clock.
- if(!duelCut.active&&!duelCut.departed&&target>=dialogueStart()&&progress>=dialogueStart()){duelCut.active=true;duelCut.elapsed=0}
+ // Count only chapters actually reached by the rendered camera, in order.
+ const chapter=chapterIndex(progress);
+ if(chapter<=visitedThrough+1)visitedThrough=Math.max(visitedThrough,chapter);
+ // Start the automatic dialogue only after all preceding chapters have been rendered.
+ if(!duelCut.active&&!duelCut.departed&&visitedThrough===7&&target>=dialogueStart()&&progress>=dialogueStart()){ duelCut.active=true;duelCut.elapsed=0}
  else if(duelCut.active)duelCut.elapsed+=dt;
  if(duelCut.active){const q=duelCut.elapsed>=DIALOGUE_TOTAL_MS?1:[.886,.931,.976][dialogueIndex()];progress=V_END+(1-V_END)*q}
  paint(now);
@@ -1182,7 +1186,11 @@ function frame(now){tickId=0;const dt=lastTime?Math.min(70,now-lastTime):16;last
  const trainInView=progress>=T_START&&progress<T_END;
  if(Math.abs(progress-target)>.0001||trainInView||(progress>=V_END&&progress<1)||duelCut.active)request();
 }
+function chapterBounds(){return [0,Y_END,T_START,T_END,I_START,C_END,F_END,V_END,1]}
+function chapterIndex(p,b=chapterBounds()){for(let i=0;i<b.length-2;i++)if(p<b[i+1])return i;return b.length-2}
+function remapChapter(p,oldB,newB){const i=chapterIndex(p,oldB),q=clamp((p-oldB[i])/Math.max(1e-9,oldB[i+1]-oldB[i]));return newB[i]+q*(newB[i+1]-newB[i])}
 function resize(){
+ const oldB=layoutReady?chapterBounds():null,oldProgress=progress;
  W=innerWidth;H=innerHeight;dpr=Math.min(devicePixelRatio||1,2);
  canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);
  canvas.style.width=W+'px';canvas.style.height=H+'px';
@@ -1207,8 +1215,10 @@ function resize(){
  track.style.height=Math.round(H*7.25*(1+(iCameraPixels+fCameraPixels+vinePixels+kingdomPixels)/Math.max(1,yCameraPixels+tCameraPixels))*1.07*ADVENTURE_SCROLL_MULTIPLIER)+'px';
  const scroller=document.scrollingElement||document.documentElement;
  maxScroll=Math.max(1,scroller.scrollHeight-scroller.clientHeight);
- target=scrollProgress();
- progress=target;request();
+ // Reflow must never promote an unrendered scroll target to the visible chapter.
+ progress=oldB?remapChapter(oldProgress,oldB,chapterBounds()):0;
+ target=progress;layoutReady=true;
+ window.scrollTo(0,Math.round(progress*maxScroll));request();
 }
 // Scroll positions are integer CSS pixels; snap subpixel rounding at each stop.
 function scrollProgress(){const p=clamp(window.scrollY/maxScroll);return stops.find(v=>Math.abs(v-p)<=1.01/maxScroll)??p;}
@@ -1222,14 +1232,14 @@ function rebuildStops(){
 }
 next.addEventListener('click',()=>{if(target>=.999){if(!duelCut.active&&!duelCut.departed){go(1);request()}return}go(stops.find(v=>v>target+.001)??1)});
 back.addEventListener('click',()=>go([...stops].reverse().find(v=>v<target-.001)??0));
-reset.addEventListener('click',()=>{resetDuelCut();progress=0;go(0);request()});
+reset.addEventListener('click',()=>{resetDuelCut();visitedThrough=-1;progress=0;go(0);request()});
 window.addEventListener('scroll',onScroll,{passive:true});
 window.addEventListener('resize',resize,{passive:true});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){lastTime=0;request()}});
-window.addEventListener('pageshow',()=>{resize();if(history.state&&history.state.hamcelloDuelVisited){try{history.replaceState({...history.state,hamcelloDuelVisited:false},'')}catch(e){}resetDuelCut();duelCut.departed=true;go(V_END+(1-V_END)*.95)}else onScroll()});
+window.addEventListener('pageshow',()=>{resize();if(history.state&&history.state.hamcelloDuelVisited){try{history.replaceState({...history.state,hamcelloDuelVisited:false},'')}catch(e){}resetDuelCut();duelCut.departed=true;visitedThrough=7;progress=V_END+(1-V_END)*.95;go(progress)}else onScroll()});
 resize();request();
 // Minimal fallback: never cover a functioning screen behind a persistent loader.
 setTimeout(()=>{loader.style.opacity='0';loader.hidden=true},1600);
-window.__hamcelloQA=()=>({scrollMultiplier:ADVENTURE_SCROLL_MULTIPLIER,maxProgressPerSecond:ADVENTURE_MAX_PROGRESS_PER_SECOND,progress,target,scrollY,maxScroll,loadedY,loadedT,tStarted,stage:title.textContent,world:world.textContent,transition:progress>=Y_END&&progress<T_START,hasEndY,hasEndT,loadedTrain:loadedA,tokyoScale:tokyoScale(),tokyoView:W/tokyoScale(),tokyoStops:tokyoStops(),Y_END,T_START,T_END,I_START,C_END,F_END,V_END,duelCut:{...duelCut},duelDestination:KUNG_FU_URL,kingdomBitten:kingdomBites.filter(b=>clamp((progress-V_END)/(1-V_END))>=b.start+(b.end-b.start)*.48).map(b=>b.name),dialogueLineMs:DIALOGUE_LINE_MS,dialogueTotalMs:DIALOGUE_TOTAL_MS,kingdomDialogue:duelCut.active?dialogueIndex():progress>=dialogueStart()?Math.min(2,Math.floor((clamp((progress-V_END)/(1-V_END))-.885)/.045)):-1,skyReady,skyFailed,hdReady,hdLoaded,farmCount:hdReady?hdFarmCount(clamp((progress-C_END)/(F_END-C_END))):farmCount(clamp((progress-C_END)/(F_END-C_END))),farmBackdropLoaded:valid(farmPhoto)});
+window.__hamcelloQA=()=>({visitedThrough,currentChapter:chapterIndex(progress),scrollMultiplier:ADVENTURE_SCROLL_MULTIPLIER,maxProgressPerSecond:ADVENTURE_MAX_PROGRESS_PER_SECOND,progress,target,scrollY,maxScroll,loadedY,loadedT,tStarted,stage:title.textContent,world:world.textContent,transition:progress>=Y_END&&progress<T_START,hasEndY,hasEndT,loadedTrain:loadedA,tokyoScale:tokyoScale(),tokyoView:W/tokyoScale(),tokyoStops:tokyoStops(),Y_END,T_START,T_END,I_START,C_END,F_END,V_END,duelCut:{...duelCut},duelDestination:KUNG_FU_URL,kingdomBitten:kingdomBites.filter(b=>clamp((progress-V_END)/(1-V_END))>=b.start+(b.end-b.start)*.48).map(b=>b.name),dialogueLineMs:DIALOGUE_LINE_MS,dialogueTotalMs:DIALOGUE_TOTAL_MS,kingdomDialogue:duelCut.active?dialogueIndex():progress>=dialogueStart()?Math.min(2,Math.floor((clamp((progress-V_END)/(1-V_END))-.885)/.045)):-1,skyReady,skyFailed,hdReady,hdLoaded,farmCount:hdReady?hdFarmCount(clamp((progress-C_END)/(F_END-C_END))):farmCount(clamp((progress-C_END)/(F_END-C_END))),farmBackdropLoaded:valid(farmPhoto)});
 })();
 </script></body></html>
