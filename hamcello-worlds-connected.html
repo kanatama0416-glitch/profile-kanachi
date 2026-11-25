@@ -1069,7 +1069,7 @@ function kingdomSpeech(lines,x,y){
  ctx.beginPath();ctx.moveTo(bx+10,by);ctx.lineTo(bx+maxW-10,by);ctx.lineTo(bx+maxW,by+10);ctx.lineTo(bx+maxW,by+h-10);ctx.lineTo(bx+maxW-10,by+h);const tail=Math.max(bx+22,Math.min(bx+maxW-20,x));ctx.lineTo(tail+9,by+h);ctx.lineTo(tail,by+h+16);ctx.lineTo(tail-8,by+h);ctx.lineTo(bx+10,by+h);ctx.lineTo(bx,by+h-10);ctx.lineTo(bx,by+10);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#fffdf6';ctx.fill();ctx.stroke();ctx.font='900 '+fs+'px sans-serif';ctx.fillStyle='#143923';ctx.textAlign='center';ctx.textBaseline='middle';lines.forEach((line,i)=>ctx.fillText(line,bx+maxW/2,by+13+lh*(i+.5)));ctx.restore();
 }
 // Final dialogue -> closing vignette -> two-character spotlight -> kung fu.
-const KUNG_FU_URL='https://kanatama0416-glitch.github.io/game/hamuche-kungfu.html?v=08-768c553&story=1';
+const KUNG_FU_URL='https://kanatama0416-glitch.github.io/game/hamuche-kungfu.html?v=full-20261125&story=1';
 const DIALOGUE_LINE_MS=3200,DIALOGUE_TOTAL_MS=DIALOGUE_LINE_MS*dialogueLines.length;
 const duelCut={elapsed:0,active:false,departed:false};
 const dialogueStart=()=>V_END+(1-V_END)*.885;
