@@ -363,6 +363,7 @@ const reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
 const smooth=p=>{p=clamp(p);return p*p*(3-2*p)};
 const IY={},IT={},IA={};let loadedY=0,loadedT=0,tStarted=false,loadedA=0;
+const ADVENTURE_SCROLL_MULTIPLIER=2, ADVENTURE_MAX_PROGRESS_PER_SECOND=.038;
 let W=390,H=800,dpr=1,maxScroll=1,target=0,progress=0,lastTime=0,tickId=0,ready=false;
 let travelled=0,lastHamWorld=90;
 const yRender=createYEngine(IY,ctx);
@@ -1075,6 +1076,7 @@ function resetDuelCut(){
  adventureHud.style.opacity='';adventureHud.style.visibility='';
 }
 function duelPhase(t){
+ t/=1.5;
  return {speech:t<1350,iris:smooth((t-1350)/1300),isolate:smooth((t-2650)/620),fade:smooth((t-4070)/650),navigate:t>=4820};
 }
 function duelFocus(frame,wx,alien,t){
@@ -1155,8 +1157,10 @@ function paint(now){
 }
 function request(){if(tickId||document.visibilityState==='hidden')return;tickId=requestAnimationFrame(frame)}
 function frame(now){tickId=0;const dt=lastTime?Math.min(70,now-lastTime):16;lastTime=now;
- progress=reduce?target:progress+(target-progress)*(1-Math.exp(-dt/135));
- if(Math.abs(progress-target)<.0001)progress=target;
+ const desired=reduce?target:progress+(target-progress)*(1-Math.exp(-dt/230));
+ const maxStep=ADVENTURE_MAX_PROGRESS_PER_SECOND*dt/1000;
+ progress+=Math.max(-maxStep,Math.min(maxStep,desired-progress));
+ if(Math.abs(progress-target)<.0001&&Math.abs(progress-target)<=maxStep)progress=target;
  if(progress>.20||loadedY>=24)startTokyo();
  // Let the final line settle before starting an automatic cinematic.
  if(target>=.9999&&progress>=.9999){
@@ -1196,7 +1200,7 @@ function resize(){
  F_END=C_END+walkFraction*fCameraPixels/Math.max(1,total);
  V_END=F_END+walkFraction*vinePixels/Math.max(1,total);
  rebuildStops();
- track.style.height=Math.round(H*7.25*(1+(iCameraPixels+fCameraPixels+vinePixels+kingdomPixels)/Math.max(1,yCameraPixels+tCameraPixels))*1.07)+'px';
+ track.style.height=Math.round(H*7.25*(1+(iCameraPixels+fCameraPixels+vinePixels+kingdomPixels)/Math.max(1,yCameraPixels+tCameraPixels))*1.07*ADVENTURE_SCROLL_MULTIPLIER)+'px';
  const scroller=document.scrollingElement||document.documentElement;
  maxScroll=Math.max(1,scroller.scrollHeight-scroller.clientHeight);
  target=scrollProgress();
@@ -1222,6 +1226,6 @@ window.addEventListener('pageshow',()=>{resize();if(history.state&&history.state
 resize();request();
 // Minimal fallback: never cover a functioning screen behind a persistent loader.
 setTimeout(()=>{loader.style.opacity='0';loader.hidden=true},1600);
-window.__hamcelloQA=()=>({progress,target,scrollY,maxScroll,loadedY,loadedT,tStarted,stage:title.textContent,world:world.textContent,transition:progress>=Y_END&&progress<T_START,hasEndY,hasEndT,loadedTrain:loadedA,tokyoScale:tokyoScale(),tokyoView:W/tokyoScale(),tokyoStops:tokyoStops(),Y_END,T_START,T_END,I_START,C_END,F_END,V_END,duelCut:{...duelCut},duelDestination:KUNG_FU_URL,kingdomBitten:kingdomBites.filter(b=>clamp((progress-V_END)/(1-V_END))>=b.start+(b.end-b.start)*.48).map(b=>b.name),kingdomDialogue:progress>=V_END+(1-V_END)*.885?Math.min(2,Math.floor((clamp((progress-V_END)/(1-V_END))-.885)/.045)):-1,skyReady,skyFailed,hdReady,hdLoaded,farmCount:hdReady?hdFarmCount(clamp((progress-C_END)/(F_END-C_END))):farmCount(clamp((progress-C_END)/(F_END-C_END))),farmBackdropLoaded:valid(farmPhoto)});
+window.__hamcelloQA=()=>({scrollMultiplier:ADVENTURE_SCROLL_MULTIPLIER,maxProgressPerSecond:ADVENTURE_MAX_PROGRESS_PER_SECOND,progress,target,scrollY,maxScroll,loadedY,loadedT,tStarted,stage:title.textContent,world:world.textContent,transition:progress>=Y_END&&progress<T_START,hasEndY,hasEndT,loadedTrain:loadedA,tokyoScale:tokyoScale(),tokyoView:W/tokyoScale(),tokyoStops:tokyoStops(),Y_END,T_START,T_END,I_START,C_END,F_END,V_END,duelCut:{...duelCut},duelDestination:KUNG_FU_URL,kingdomBitten:kingdomBites.filter(b=>clamp((progress-V_END)/(1-V_END))>=b.start+(b.end-b.start)*.48).map(b=>b.name),kingdomDialogue:progress>=V_END+(1-V_END)*.885?Math.min(2,Math.floor((clamp((progress-V_END)/(1-V_END))-.885)/.045)):-1,skyReady,skyFailed,hdReady,hdLoaded,farmCount:hdReady?hdFarmCount(clamp((progress-C_END)/(F_END-C_END))):farmCount(clamp((progress-C_END)/(F_END-C_END))),farmBackdropLoaded:valid(farmPhoto)});
 })();
 </script></body></html>
